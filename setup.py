@@ -298,10 +298,26 @@ if __name__ == '__main__':
         print(done_string)
 
         #- Updating Configuration files -#
+        print_verbose("\t%sGenerating the base config..." % fdbg_string, args.verbose)
+        with open(os.path.join(__root_path, "bin", "inst", "cnfg", "install_CONFIG.config"), "r") as file:
+            base_config = t.load(file)
+
+        # - Changing necessary directories -#
+        base_config = set_directories_in_config(ticket_info.installation_location, base_config)
+
+        with open(os.path.join(ticket_info.installation_location, "bin", "configs", "CONFIG.config"), "r") as file:
+            local_config = t.load(file)
+            print(local_config,base_config)
+            local_config_update = update_dict(base_config,local_config)
+
+        with open(os.path.join(ticket_info.installation_location, "bin", "configs", "CONFIG.config"), "w") as file:
+            t.dump(local_config_update,file)
+        print_verbose("\t"+done_string,args.verbose)
+
         for file in os.listdir(os.path.join(__root_path, "bin", "inst", "cnfg")):
             # - is the file a file or a directory -#
             if os.path.isfile(os.path.join(__root_path, "bin", "inst", "cnfg",
-                                           file)) and ".config" in file:
+                                           file)) and ".config" in file and file != "install_CONFIG.config":
                 print_verbose("\t\t%sLocated configuration file %s. Updating..." % (fdbg_string, file),
                               args.verbose, end="")
 
@@ -320,7 +336,7 @@ if __name__ == '__main__':
                     with open(os.path.join(ticket_info.installation_location, "bin", "configs", file.replace("install_", "")),"w+") as f:
                         t.dump(updated_dict,f)
 
-                print_verbose("\t\t" + done_string, args.verbose)
+                print_verbose(done_string, args.verbose)
 
         # - Generating the ticket -#
         print("%sGenerating ticket..." % fdbg_string, end="")
