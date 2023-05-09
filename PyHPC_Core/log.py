@@ -5,7 +5,7 @@ import pathlib as pt
 from datetime import datetime
 
 import yaml
-
+from PyHPC_Core.utils import time_function
 from PyHPC_Core.configuration import read_config
 from PyHPC_Utils.text_display_utilities import get_dict_str
 
@@ -112,7 +112,7 @@ def set_logging(filename,
 def get_module_logger(group,
                       module,
                       level=CONFIG["System"]["Logging"]["default_root_level"],
-                      frmt=CONFIG["System"]["Logging"]["formats"]["module_file"]["format"]):
+                      frmt=CONFIG["System"]["Logging"]["formats"]["file_module"]["format"]):
     global __logging_data
 
     # Grabbing the logger
@@ -142,4 +142,9 @@ def get_module_logger(group,
 if __name__ == '__main__':
     set_logging(_filename, output_to_file=True)
     logger = get_module_logger(_location, _filename)
-    logger.debug("Shit went down!!")
+    import numpy as np
+    @time_function
+    def rand(x):
+        return np.random.randint(10)
+
+    print(rand(10))

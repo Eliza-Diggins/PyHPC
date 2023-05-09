@@ -1,20 +1,5 @@
 # Log Configuration for PyHPC - Eliza Diggins
 version: 1
-
-#----------------------------------------------------------------------------------------------------------------------#
-# FORMATTERS:
-#   1. file_standard: This format is the standard file output format.
-#
-#----------------------------------------------------------------------------------------------------------------------#
-formatters:
-  file_standard:
-    format: 'CONFIG'
-  file_meta:
-    format: 'CONFIG'
-  console_standard:
-    format: 'CONFIG'
-
-
 #----------------------------------------------------------------------------------------------------------------------#
 # FORMATTERS:
 #   1. file_standard: This format is the standard file output format.
@@ -41,6 +26,11 @@ handlers:
     level: INFO
     formatter: file_meta
     filename: "meta.log"
+  time_file:
+    class: logging.FileHandler
+    level: INFO
+    formatter: file_time
+    filename: "time.log"
 
 #----------------------------------------------------------------------------------------------------------------------#
 # FORMATTERS:
@@ -55,6 +45,10 @@ loggers:
   message:
     level: DEBUG
     handlers: [msg_channel]
+  time:
+    level: DEBUG
+    handlers: [time_file]
+    propagate: no
 #----------------------------------------------------------------------------------------------------------------------#
 # Root:
 #   1. file_standard: This format is the standard file output format.
