@@ -307,7 +307,6 @@ if __name__ == '__main__':
 
         with open(os.path.join(ticket_info.installation_location, "bin", "configs", "CONFIG.config"), "r") as file:
             local_config = t.load(file)
-            print(local_config,base_config)
             local_config_update = update_dict(base_config,local_config)
 
         with open(os.path.join(ticket_info.installation_location, "bin", "configs", "CONFIG.config"), "w") as file:

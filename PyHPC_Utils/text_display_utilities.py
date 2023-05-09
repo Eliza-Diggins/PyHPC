@@ -27,5 +27,24 @@ def print_verbose(msg,verbose,**kwargs):
         pass
     return None
 
+def get_dict_str(di,tabs=0):
+    str = ""
+    for k,v in di.items():
+        if isinstance(v,dict):
+            str += ("\t"*tabs) + "%s: {\n"%k
+            str += get_dict_str(v,tabs=tabs+1)
+            str +=("\t"*tabs) + "}\n"
+        else:
+            str += ("\t"*tabs+"%s: %s\n"%(k,v))
+
+    return str
+
 if __name__ == '__main__':
-    print_title()
+    print(get_dict_str(
+        {"version"              : "0.2-Alpha", "stable": "False", "installation_date": "05-09-2023_11-59-11",
+         "installation_location": "/home/ediggins/PyHPC_install","new_stuff":{
+            "a new layer":{
+                "another new layer":3
+            }
+        }}
+    ))

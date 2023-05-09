@@ -1,0 +1,65 @@
+# Log Configuration for PyHPC - Eliza Diggins
+version: 1
+
+#----------------------------------------------------------------------------------------------------------------------#
+# FORMATTERS:
+#   1. file_standard: This format is the standard file output format.
+#
+#----------------------------------------------------------------------------------------------------------------------#
+formatters:
+  file_standard:
+    format: 'CONFIG'
+  file_meta:
+    format: 'CONFIG'
+  console_standard:
+    format: 'CONFIG'
+
+
+#----------------------------------------------------------------------------------------------------------------------#
+# FORMATTERS:
+#   1. file_standard: This format is the standard file output format.
+#
+#----------------------------------------------------------------------------------------------------------------------#
+handlers:
+  msg_channel:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: console_standard
+    stream: ext://sys.stdout
+  err_channel:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: console_standard
+    stream: ext://sys.stderr
+  root_file:
+    class: logging.FileHandler
+    level: DEBUG
+    formatter: file_standard
+    filename: "root.log"
+  meta_file:
+    class: logging.FileHandler
+    level: INFO
+    formatter: file_meta
+    filename: "meta.log"
+
+#----------------------------------------------------------------------------------------------------------------------#
+# FORMATTERS:
+#   1. file_standard: This format is the standard file output format.
+#
+#----------------------------------------------------------------------------------------------------------------------#
+loggers:
+  meta:
+    level: INFO
+    handlers: [meta_file]
+    propagate: no
+  message:
+    level: DEBUG
+    handlers: [msg_channel]
+#----------------------------------------------------------------------------------------------------------------------#
+# Root:
+#   1. file_standard: This format is the standard file output format.
+#
+#----------------------------------------------------------------------------------------------------------------------#
+root:
+  level: DEBUG
+  handlers: [root_file]
