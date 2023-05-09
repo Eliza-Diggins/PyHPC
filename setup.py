@@ -9,11 +9,11 @@ import os
 import pathlib as pt
 import shutil
 from types import SimpleNamespace
-
-import toml
 from colorama import Fore, Style
-
 from PyHPC_Utils.text_display_utilities import print_title, print_verbose
+from PyHPC_Core.utils import get_system_info
+import tomlkit as t
+from datetime import datetime
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Setup  ============================================================================================================ #
@@ -35,11 +35,19 @@ __root_path = os.path.join(pt.Path(__file__).parents[0])
 #  Sub Functions ===================================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
 def generate_directories(location, overwrite=False):
+    ### Generates the necessary directories for install from lib/struct/fstruct.json ###
+
     # - Checking if location exists -#
     if not os.path.exists(location):
         print_verbose("\t%sGenerating %s..." % (fdbg_string, location), args.verbose, end="")
-        pt.Path(location).mkdir(parents=True)
-        print_verbose(done_string, args.verbose)
+        try:
+            pt.Path(location).mkdir(parents=True)
+            print_verbose(done_string, args.verbose)
+        except Exception:
+            print_verbose(fail_string, args.verbose)
+            print("%sLocation %s could not be found or created." % (fdbg_string, location))
+            exit()
+
     else:
         pass
 
@@ -51,12 +59,12 @@ def generate_directories(location, overwrite=False):
     except FileNotFoundError:
         print_verbose(fail_string, args.verbose)
         print("%sFailed to find %s. Rebuild from github." % (
-        fdbg_string, os.path.join(__root_path, "bin", "lib", "struct", "fstruct.json")))
+            fdbg_string, os.path.join(__root_path, "bin", "lib", "struct", "fstruct.json")))
         exit()
     except Exception:
         print_verbose(fail_string, args.verbose)
         print("%sFile %s had incorrect structure. Rebuild from github." % (
-        fdbg_string, os.path.join(__root_path, "bin", "lib", "struct", "fstruct.json")))
+            fdbg_string, os.path.join(__root_path, "bin", "lib", "struct", "fstruct.json")))
         exit()
 
     print_verbose(done_string, args.verbose)
@@ -88,6 +96,50 @@ def rec_gen_dirs(loc, dic, ovr):
             print("%sFailed to generate %s." % (fail_string, os.path.join(loc)))
             exit()
         print_verbose(done_string, args.verbose)
+
+
+def set_directories_in_config(location, cnfg):
+    # - Generating the necessary files -#
+    print_verbose("\t\t%sAttempting to re-load structure files..." % fdbg_string, args.verbose, end="")
+    try:
+        with open(os.path.join(__root_path, "bin", "lib", "struct", "fstruct.json"), "r") as file:
+            file_structure = json.load(file)
+    except FileNotFoundError:
+        print_verbose(fail_string, args.verbose)
+        print("\t\t%sFailed to find %s. Rebuild from github." % (
+            fdbg_string, os.path.join(__root_path, "bin", "lib", "struct", "fstruct.json")))
+        exit()
+    except Exception:
+        print_verbose(fail_string, args.verbose)
+        print("\t\t%sFile %s had incorrect structure. Rebuild from github." % (
+            fdbg_string, os.path.join(__root_path, "bin", "lib", "struct", "fstruct.json")))
+        exit()
+
+    print_verbose(done_string, args.verbose)
+
+    return set_directories_config_recur(cnfg, file_structure, location)
+
+
+def set_directories_config_recur(cnfg, data, location):
+    try:
+        for k, v in data["files"].items():
+            if isinstance(v, dict):
+                if v["link"] != "":
+                    cnfg["System"]["Directories"][v["link"]] = os.path.join(location, v["path"])
+                else:
+                    pass
+
+                if isinstance(v["files"], dict):
+                    cnfg = set_directories_config_recur(cnfg, v, os.path.join(location, v["path"]))
+                else:
+                    pass
+            else:
+                pass
+    except KeyError as err:
+        print("\t\t\t%sFailed to set directories at %s. Message = %s." % (fdbg_string, location, repr(err)))
+        exit()
+
+    return cnfg
 
 
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
@@ -133,6 +185,7 @@ if __name__ == '__main__':
                 print(fail_string)
                 print("\t%sThe ticket is not correctly formatted or is corrupted." % fdbg_string)
                 new_install = True
+        print(done_string)
     else:
         pass
 
@@ -161,14 +214,60 @@ if __name__ == '__main__':
         # - Creating configuration file -#
         print("%sGenerating the configuration files..." % fdbg_string, end=("" if not args.verbose else "\n"))
 
-        print_verbose("\t%sGenerating the base config...", args.verbose, end="")
-        base_config = toml.load(os.path.join(__root_path, "bin", "inst", "cnfg", "install_CONFIG.config"))
+        print_verbose("\t%sGenerating the base config..." % fdbg_string, args.verbose)
+        with open(os.path.join(__root_path, "bin", "inst", "cnfg", "install_CONFIG.config"), "r") as file:
+            base_config = t.load(file)
 
+        # - Changing necessary directories -#
+        base_config = set_directories_in_config(args.location, base_config)
+
+        with open(os.path.join(args.location, "bin", "configs", "CONFIG.config"), "w+") as file:
+            t.dump(base_config, file)
+        print_verbose("\t" + done_string, args.verbose)
+
+        print_verbose("\t%sCopying remaining configuration files to path..." % fdbg_string, args.verbose)
+
+        for file in os.listdir(os.path.join(__root_path, "bin", "inst", "cnfg")):
+            # - is the file a file or a directory -#
+            if os.path.isfile(os.path.join(__root_path, "bin", "inst", "cnfg",
+                                           file)) and ".config" in file and file != "install_CONFIG.config":
+                print_verbose("\t\t%sLocated configuration file %s. Transferring data..." % (fdbg_string, file),
+                              args.verbose, end="")
+                shutil.copyfile(os.path.join(__root_path, "bin", "inst", "cnfg", file),
+                                os.path.join(args.location, "bin", "configs", file.replace("install_", "")))
+                print_verbose("\t\t" + done_string, args.verbose)
+
+        print(done_string)
+
+        # - Generating the ticket -#
+        print("%sGenerating ticket..." % fdbg_string, end="")
+        ticket_info = {
+            "version"              : get_system_info().version,
+            "stable"               : get_system_info().stable,
+            "installation_date"    : datetime.now().strftime('%m-%d-%Y_%H-%M-%S'),
+            "installation_location": args.location
+        }
+
+        with open(os.path.join(__root_path, "bin", "local", "install.tkc"), "w") as file:
+            json.dump(ticket_info, file)
+        print(done_string)
+
+        print("%sInstallation Succeeded." % fdbg_string)
+        exit()
 
     else:
         # ------------------------------------------------------------------------------------------------------------ #
         #  Updating     ============================================================================================== #
         # ------------------------------------------------------------------------------------------------------------ #
         print("%sUpdating installation..." % fdbg_string, end=("" if not args.verbose else "\n"))
-        generate_directories(ticket_info.install_location, overwrite=False)
+        print_verbose("\t%sFetching update from git." % fdbg_string,args.verbose,end="")
+        os.system("git fetch --all")  # Fetch all the updates.
+        os.system("git reset --hard origin/master")  # Resetting the system
+        print_verbose(done_string,args.verbose)
+
+        print("%sGenerating directories..."%fdbg_string,end=("" if not args.verbose else "\n"))
+        generate_directories(ticket_info.installation_location, overwrite=False)
+        print_verbose(done_string,args.verbose)
+
+
         print(done_string)
