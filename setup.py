@@ -140,7 +140,27 @@ def set_directories_config_recur(cnfg, data, location):
         exit()
 
     return cnfg
+def update_dict(master: dict, local: dict) -> dict:
+    """
+    Searches for updates to the local dictionary in master and applies them without lossing user entries in the local dict.
+    :param master: The master dict from which to find updates
+    :param local: The local dict with user settings.
+    :return: dict.
+    """
+    master_keys, local_keys = master.keys(), local.keys()  # grab all of the keys
 
+    for master_key in list(master_keys):  # cycle through each of the master keys
+        if isinstance(master[master_key], dict) and master_key in local:
+            master[master_key] = update_dict(master[master_key], local[master_key])
+        elif isinstance(master[master_key], dict) and master_key not in local:
+            pass
+        else:
+            if master_key in list(local_keys) and master_key != "version":
+                ### There is a local match ###
+                master[master_key] = local[master_key]
+            else:
+                pass
+    return master
 
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
 # ------------------------------------------------------- Main ----------------------------------------------------------#
@@ -159,6 +179,7 @@ if __name__ == '__main__':
                                  action="store_true")
     argument_parser.add_argument("-l", "--location", help="The location for the installation.", default=None)
     argument_parser.add_argument("-v", "--verbose", help="Enable verbose mode", action="store_true")
+    argument_parser.add_argument("-g","--git",help="Update from github.",action="store_true")
 
     # - Parsing -#
     args = argument_parser.parse_args()
@@ -260,14 +281,59 @@ if __name__ == '__main__':
         #  Updating     ============================================================================================== #
         # ------------------------------------------------------------------------------------------------------------ #
         print("%sUpdating installation..." % fdbg_string, end=("" if not args.verbose else "\n"))
-        print_verbose("\t%sFetching update from git." % fdbg_string,args.verbose,end="")
-        os.system("git fetch --all")  # Fetch all the updates.
-        os.system("git reset --hard origin/master")  # Resetting the system
-        print_verbose(done_string,args.verbose)
+        if args.git:
+            print_verbose("\t%sFetching update from git." % fdbg_string,args.verbose,end="")
 
-        print("%sGenerating directories..."%fdbg_string,end=("" if not args.verbose else "\n"))
-        generate_directories(ticket_info.installation_location, overwrite=False)
-        print_verbose(done_string,args.verbose)
+            os.system("git fetch --all")  # Fetch all the updates.
+            os.system("git reset --hard origin/master")  # Resetting the system
 
+            print(done_string)
+        else:
+            print_verbose("\t%sUpdating from local. Use -g flag to update from remote repo."%(fdbg_string),args.verbose)
 
         print(done_string)
+
+        print("%sGenerating directories..."%fdbg_string)
+        generate_directories(ticket_info.installation_location, overwrite=False)
+        print(done_string)
+
+        #- Updating Configuration files -#
+        for file in os.listdir(os.path.join(__root_path, "bin", "inst", "cnfg")):
+            # - is the file a file or a directory -#
+            if os.path.isfile(os.path.join(__root_path, "bin", "inst", "cnfg",
+                                           file)) and ".config" in file:
+                print_verbose("\t\t%sLocated configuration file %s. Updating..." % (fdbg_string, file),
+                              args.verbose, end="")
+
+                if not os.path.exists(os.path.join(ticket_info.installation_location, "bin", "configs", file.replace("install_", ""))):
+                    shutil.copyfile(os.path.join(__root_path, "bin", "inst", "cnfg", file),
+                                os.path.join(ticket_info.installation_location, "bin", "configs", file.replace("install_", "")))
+                else:
+                    #- the path does exist -#
+                    with open(os.path.join(ticket_info.installation_location, "bin", "configs", file.replace("install_", "")),"r") as f:
+                        local_dict = t.load(f)
+                    with open(os.path.join(__root_path, "bin", "inst", "cnfg", file),"r") as f:
+                        master_dict = t.load(f)
+
+                    updated_dict = update_dict(master_dict,local_dict)
+
+                    with open(os.path.join(ticket_info.installation_location, "bin", "configs", file.replace("install_", "")),"w+") as f:
+                        t.dump(updated_dict,f)
+
+                print_verbose("\t\t" + done_string, args.verbose)
+
+        # - Generating the ticket -#
+        print("%sGenerating ticket..." % fdbg_string, end="")
+        ticket_info = {
+            "version"              : get_system_info().version,
+            "stable"               : get_system_info().stable,
+            "installation_date"    : datetime.now().strftime('%m-%d-%Y_%H-%M-%S'),
+            "installation_location": ticket_info.installation_location
+        }
+
+        with open(os.path.join(__root_path, "bin", "local", "install.tkc"), "w") as file:
+            json.dump(ticket_info, file)
+        print(done_string)
+
+        print("%sInstallation Succeeded." % fdbg_string)
+        exit()
