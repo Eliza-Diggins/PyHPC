@@ -1,0 +1,15 @@
+{
+   "files":
+     {
+       "logging": {
+         "path": "logging",
+         "files": "",
+         "link": "log"
+       },
+       "bin": {
+         "path": "bin",
+         "files": "",
+         "link": "bin"
+       }
+     }
+ }
