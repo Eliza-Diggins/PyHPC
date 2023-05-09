@@ -3,8 +3,19 @@
      {
        "logging": {
          "path": "logging",
-         "files": "",
-         "link": "log"
+         "files": {
+           "logs": {
+             "path": "logs",
+             "files": "",
+             "link": "log_directory"
+           },
+           "tests": {
+             "path": "tests",
+             "files": "",
+             "link": "test_reports"
+           }
+         },
+         "link": ""
        },
        "bin": {
          "path": "bin",
