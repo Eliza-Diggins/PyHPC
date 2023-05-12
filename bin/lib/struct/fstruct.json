@@ -1,6 +1,38 @@
 {
    "files":
      {
+       "unfiled": {
+         "path": "unfiled",
+         "files": "",
+         "link": "unfiled_directory"
+       },
+       "Reports": {
+         "path": "reports",
+         "files": {
+           "slurm": {
+             "path": "slurm_outputs",
+             "files": "",
+             "link": "SLURM_output_directory"
+           }
+         },
+         "link": "reports_directory"
+       },
+       "initialization_files": {
+         "path": "initialization_files",
+         "files": {
+           "nml": {
+             "path": "RAMSES_nml_files",
+             "files": "",
+             "link": "nml_directory"
+           },
+            "ic": {
+             "path": "ICs",
+             "files": "",
+             "link": "ic_directory"
+           }
+         },
+         "link": "initialization_files_directory"
+       },
        "logging": {
          "path": "logging",
          "files": {
@@ -27,6 +59,22 @@
            }
          },
          "link": "bin"
+       },
+       "analyses": {
+         "path": "analyses",
+         "files": {
+           "figs": {
+             "path": "figures",
+             "files": "",
+             "link": "figures_directory"
+           },
+           "movies": {
+             "path": "movies",
+             "files": "",
+             "link": "movies_directory"
+           }
+         },
+         "link": "analyses_directory"
        }
      }
  }

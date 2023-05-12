@@ -1,0 +1,21 @@
+{
+  "location_config_links": {
+    "info": "These all link the values in CONFIG['System']['Directories'] to names to display.",
+    "values": {
+      "figures_directory": "Figures",
+      "movies_directory": "Movies",
+      "ic_directory": "Initial Conditions",
+      "nml_directory": "RAMSES NMLs"
+    }
+  },
+  "rclone_paths": {
+    "info": "These store the locations of the directories as they should appear through use of rclone",
+    "values": {
+      "figures_directory": "PyHPC/Analyses/Figures",
+      "movies_directory": "PyHPC/Analyses/Movies",
+      "ic_directory": "PyHPC/Initial Conditions",
+      "nml_directory": "PyHPC/RAMSES NMLs",
+      "unfiled": "PyHPC/unfiled"
+    }
+  }
+}

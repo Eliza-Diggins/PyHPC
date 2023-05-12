@@ -1,10 +1,6 @@
 # Log Configuration for PyHPC - Eliza Diggins
 version: 1
-#----------------------------------------------------------------------------------------------------------------------#
-# FORMATTERS:
-#   1. file_standard: This format is the standard file output format.
-#
-#----------------------------------------------------------------------------------------------------------------------#
+
 handlers:
   msg_channel:
     class: logging.StreamHandler
@@ -49,6 +45,7 @@ loggers:
     level: DEBUG
     handlers: [time_file]
     propagate: no
+
 #----------------------------------------------------------------------------------------------------------------------#
 # Root:
 #   1. file_standard: This format is the standard file output format.
