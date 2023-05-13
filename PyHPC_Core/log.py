@@ -7,7 +7,6 @@ from datetime import datetime
 import yaml
 from PyHPC_Core.utils import time_function
 from PyHPC_Core.configuration import read_config
-from PyHPC_Utils.text_display_utilities import get_dict_str
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Setup ============================================================================================================= #
@@ -21,6 +20,20 @@ __logging_data = {"dir":os.path.join(CONFIG["System"]["Directories"]["log_direct
                                      datetime.now().strftime('%m-%d-%Y_%H-%M-%S')),
                   "files":CONFIG["System"]["Logging"]["output_to_file"]}
 
+# -------------------------------------------------------------------------------------------------------------------- #
+# Utility Functions ================================================================================================== #
+# -------------------------------------------------------------------------------------------------------------------- #
+def get_dict_str(di,tabs=0):
+    str = ""
+    for k,v in di.items():
+        if isinstance(v,dict):
+            str += ("\t"*tabs) + "%s: {\n"%k
+            str += get_dict_str(v,tabs=tabs+1)
+            str +=("\t"*tabs) + "}\n"
+        else:
+            str += ("\t"*tabs+"%s: %s\n"%(k,v))
+
+    return str
 # ------------------------------------------------------------------------------------------------------------------#
 # Managing files ================================================================================================= #
 # ------------------------------------------------------------------------------------------------------------------#
@@ -116,11 +129,4 @@ def get_module_logger(group,
 
 
 if __name__ == '__main__':
-    set_logging(output_to_file=True)
-    logger = get_module_logger(_location, _filename)
-    import numpy as np
-    @time_function
-    def rand(x):
-        return np.random.randint(10)
-
-    print(rand(10))
+    pass

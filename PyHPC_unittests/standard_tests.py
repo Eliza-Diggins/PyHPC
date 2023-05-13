@@ -8,9 +8,10 @@ from unittest import TestCase
 import pathlib as pt
 import os
 from PyHPC_Core.configuration import read_config
-from PyHPC_Core.log import set_logging,get_module_logger
+from PyHPC_Core.log import get_module_logger
 from datetime import datetime
 from PyHPC_Core.utils import time_function
+from PyHPC_System.file_management import get_all_files,get_all_remote_files,rclone_listdir,send_item_to_rclone,get_item_from_rclone
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Setup ============================================================================================================= #
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -18,8 +19,7 @@ _location = "uTests"
 _filename = pt.Path(__file__).name.replace(".py", "")
 _dbg_string = "%s:%s:" % (_location, _filename)
 CONFIG = read_config()
-set_logging(_filename)
-
+modlog = get_module_logger(_location,_filename)
 # Setting up testlogs file #
 report_directory = os.path.join(CONFIG["System"]["Directories"]["test_reports"],"Report_%s"%datetime.now().strftime('%m-%d-%Y_%H-%M-%S'))
 
@@ -40,6 +40,9 @@ class TestCore(TestCase):
             read_config()
         except Exception as excep:
             raise AssertionError(repr(excep))
+
+
+
 
 
 

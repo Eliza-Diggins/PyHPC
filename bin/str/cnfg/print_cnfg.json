@@ -1,0 +1,35 @@
+{
+  "Info": "These are print configuration settings to be used by all of the printing facilities.",
+  "Settings": {
+    "Components": {
+      "span_string": {
+        "info": "This is the string component which is stretched to fit the size of the terminal.",
+        "value": "-=|="
+      },
+      "corner_string": {
+        "info": "This is the corner string to use in connected corners",
+        "value": "+"
+      },
+      "vertical_span_string": {
+        "info": "The symbol to use for vertical spanning",
+        "value": "|"
+      }
+    },
+    "Formats": {
+      "dict_entry": {
+        "info": "This is the default format for a dict entry print out.",
+        "value": "%s : [%s | %s] --- %s",
+        "value_empty": "%s"
+      }
+    },
+    "Colors": {
+      "Dictionary": {
+        "key": "GREEN",
+        "value": "WHITE",
+        "default": "WHITE",
+        "info": "BLUE",
+        "selected": "WHITE"
+      }
+    }
+  }
+}
