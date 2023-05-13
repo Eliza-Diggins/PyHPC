@@ -29,6 +29,11 @@
         "default": "WHITE",
         "info": "BLUE",
         "selected": "WHITE"
+      },
+      "Directories": {
+        "name_file": "GREEN",
+        "name_directory": "RED",
+        "path": "BLUE"
       }
     }
   }

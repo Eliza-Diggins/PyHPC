@@ -40,3 +40,15 @@ def rclone_listdir(directory) -> list:
     output = output.decode("utf8").split("\n")[:-1]
 
     return output
+
+def rclone_isfile(directory)->bool:
+    if pt.Path(directory).suffix == "":
+        return False
+    else:
+        return True
+
+def rclone_isdir(directory)->bool:
+    if pt.Path(directory).suffix == "":
+        return True
+    else:
+        return False

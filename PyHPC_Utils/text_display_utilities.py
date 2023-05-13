@@ -13,6 +13,7 @@ from PyHPC_Core.utils import get_system_info
 from PyHPC_Utils.standard_utils import getFromDict, setInDict
 from PyHPC_Core.log import get_module_logger
 from PyHPC_Core.configuration import read_config
+from PyHPC_Utils.remote_utils import rclone_listdir,rclone_isfile,rclone_isdir
 import json
 import shutil
 from sshkeyboard import listen_keyboard, stop_listening
@@ -73,6 +74,8 @@ class TerminalString:
 
         self.h = self.corner + (self.span_h * (int(self.dim_alt[0] / len(self.span_h)))) + self.corner
 
+    def get_color(self,val,obj):
+        return getattr(obj,getFromDict(self.pi["Settings"]["Colors"],val))
     def str_in_grid(self, value: str, alignment: str = "left") -> str:
         """
         prints the value as it is correctly aligned in the grid
@@ -88,16 +91,16 @@ class TerminalString:
 
         if diff < 0:
             diff = 0
-            value = str(value)[:self.dim_alt[0] - 3] + "..."
+            value = str(value)[:self.dim_alt[0] - 3] + Style.RESET_ALL+"..."
 
         #  Generating the printable
         # ----------------------------------------------------------------------------------------------------------------- #
         if alignment == "right":
-            string = self.span_v + (diff * " ") + str(value) + self.span_v
+            string = self.span_v + (diff * " ") + str(value) + Style.RESET_ALL+self.span_v
         elif alignment == "left":
-            string = self.span_v + str(value) + (diff * " ") + self.span_v
+            string = self.span_v + str(value) + (diff * " ") + Style.RESET_ALL+self.span_v
         elif alignment == "center":
-            string = self.span_v + ((diff - int(diff / 2)) * " ") + str(value) + (int(diff / 2) * " ") + self.span_v
+            string = self.span_v + ((diff - int(diff / 2)) * " ") + str(value) + (int(diff / 2) * " ") + Style.RESET_ALL+self.span_v
         else:
             raise ValueError("alignment must be center,left, or right. Not %s." % alignment)
 
@@ -140,7 +143,18 @@ class TerminalString:
             "") + "\n" + self.h
         print(str)
 
+    def print_directory_string(self,path,selected=False,maxl=None):
+        if not maxl:
+            maxl = len(str(path.name))
 
+        space = maxl+2 - len(str(path.name))
+
+        if not selected:
+            out_string = self.get_color(["Directories",("name_file" if os.path.isfile(path) else "name_directory")],Fore) + str(path.name) + Style.RESET_ALL +(" "*space) +  self.get_color(["Directories","path"],Fore) + str(path) + Style.RESET_ALL
+        else:
+            out_string = Fore.BLACK+Back.WHITE + path.name+(" "*space) + str(path)
+
+        return self.str_in_grid(out_string)
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Printings    ====================================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -193,6 +207,28 @@ class KeyLogger:
         except AttributeError as ex:
             pass
 
+    def file_keylog(self,key):
+        try:
+            if key == "up":
+                self.location = (self.location-1 if self.location != 0 else self.length)
+                stop_listening()
+            elif key == "down":
+                self.location = (self.location + 1 if self.location < self.length else 0)
+                stop_listening()
+            elif key == "a":
+                self.command = "add"
+                stop_listening()
+            elif key == "d":
+                self.command = "remove"
+                stop_listening()
+            elif key == "enter":
+                self.command = "enter"
+                stop_listening()
+            elif key == "backspace":
+                self.command = "back"
+                stop_listening()
+        except Exception:
+            pass
 
 def print_title():
     # - Prints the title of the project -#
@@ -246,7 +282,21 @@ def print_option_dict(dict, location, header=None):
 
     print(text_t.h)
 
+def print_directories_dict(directories,selected,location=None):
+    text_t = TerminalString()
+    text_t.print_title("File Selector")
+    print(text_t.str_in_grid("Select A Directory:")+"\n"+text_t.h)
+    max_dir_length = max([len(str(i.name)) for i in directories])
+    for id,dir in enumerate(directories):
+        print(text_t.print_directory_string(pt.Path(dir),selected=(id==location),maxl=max_dir_length))
 
+    print(text_t.h)
+    print(text_t.str_in_grid("Selected Directories:"))
+    print(text_t.h)
+    max_select_length = max([len(str(i.name)) for i in directories])
+    for id,select in enumerate(selected):
+        print(text_t.print_directory_string(pt.Path(select),selected=(id+len(directories) == location),maxl=max_select_length))
+    print(text_t.h)
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Movement Related Behaviors ======================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -398,9 +448,161 @@ def get_options(option_dict, title):
         os.system('cls' if os.name == 'nt' else 'clear')
     return settings
 
+def select_files(root_directories,max=None):
+    """
+    Allows the user to select files from the root directories, selecting a maximum of max subject to conditions.
+    :param root_directories: The root directories to search from
+    :param max: The maximum number of selectable items
+    :param condition: Conditions by which to sort.
+    :return:
+    """
+    #  Debugging and Setup
+    # ----------------------------------------------------------------------------------------------------------------- #
+    modlog.debug("Selecting %s files from %s"%(max,root_directories))
+    root_directories = [pt.Path(i) for i in root_directories]
+    #- Creating the print manager and the key logger -#
+    klog = KeyLogger(display_directories = root_directories,
+                     position="",
+                     location=0,
+                     command=None)
+    text_t = TerminalString()
+
+    #- Selected items -#
+    selected_items = []
+    exit = False
+
+    while not exit:
+        #------------------------------------------------------------------------------------------------------------- #
+        # Printing
+        # ------------------------------------------------------------------------------------------------------------ #
+        klog.length = len(klog.display_directories)+len(selected_items)-1
+        print_directories_dict(klog.display_directories,selected_items,location=klog.location)
+
+        #------------------------------------------------------------------------------------------------------------- #
+        # Listening ================================================================================================== #
+        #--------------------------------------------------------------------------------------------------------------#
+        listen_keyboard(on_press=klog.file_keylog)
+
+        klog.position = (klog.display_directories+selected_items)[klog.location]
+        #  Command management
+        # ----------------------------------------------------------------------------------------------------------------- #
+        if klog.command:
+            if klog.command == "add":
+                if klog.position in klog.display_directories:
+                    selected_items.append(klog.position)
+                    klog.display_directories.remove(klog.position)
+                    klog.position = (klog.display_directories + selected_items)[klog.location]
+                else:
+                    pass
+            elif klog.command == "remove":
+                if klog.position in selected_items:
+                    selected_items.remove(klog.position)
+                    klog.display_directories.append(klog.position)
+                    klog.position = (klog.display_directories + selected_items)[klog.location]
+                else:
+                    pass
+            elif klog.command == "enter":
+                if os.path.isdir(klog.position):
+                    klog.display_directories = [pt.Path(os.path.join(klog.position,i)) for i in os.listdir(klog.position)]
+                    klog.location = 0
+                    klog.position = (klog.display_directories + selected_items)[klog.location]
+            elif klog.command == "back":
+                if klog.position not in root_directories:
+                    if klog.position.parents[0] in root_directories:
+                        klog.display_directories = root_directories
+                    else:
+                        klog.display_directories = [pt.Path(os.path.join(klog.position.parents[1],i)) for i in os.listdir(klog.position.parents[1])]
+                    klog.location = 0
+                    klog.position = (klog.display_directories + selected_items)[klog.location]
+                else:
+                    klog.command = "exit"
+
+            #  Exit Command
+            # ----------------------------------------------------------------------------------------------------------------- #
+            if klog.command == "exit":
+                os.system('cls' if os.name == 'nt' else 'clear')
+                return selected_items
+            klog.command = None
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+def select_files_remote(root_directories,max=None):
+    """
+    Allows the user to select files from the root directories, selecting a maximum of max subject to conditions.
+    :param root_directories: The root directories to search from
+    :param max: The maximum number of selectable items
+    :param condition: Conditions by which to sort.
+    :return:
+    """
+    #  Debugging and Setup
+    # ----------------------------------------------------------------------------------------------------------------- #
+    modlog.debug("Selecting %s files from %s"%(max,root_directories))
+    root_directories = [pt.Path(i) for i in root_directories]
+    #- Creating the print manager and the key logger -#
+    klog = KeyLogger(display_directories = root_directories,
+                     position="",
+                     location=0,
+                     command=None)
+    text_t = TerminalString()
+
+    #- Selected items -#
+    selected_items = []
+    exit = False
+
+    while not exit:
+        #------------------------------------------------------------------------------------------------------------- #
+        # Printing
+        # ------------------------------------------------------------------------------------------------------------ #
+        klog.length = len(klog.display_directories)+len(selected_items)-1
+        print_directories_dict(klog.display_directories,selected_items,location=klog.location)
+
+        #------------------------------------------------------------------------------------------------------------- #
+        # Listening ================================================================================================== #
+        #--------------------------------------------------------------------------------------------------------------#
+        listen_keyboard(on_press=klog.file_keylog)
+
+        klog.position = (klog.display_directories+selected_items)[klog.location]
+        #  Command management
+        # ----------------------------------------------------------------------------------------------------------------- #
+        if klog.command:
+            if klog.command == "add":
+                if klog.position in klog.display_directories:
+                    selected_items.append(klog.position)
+                    klog.display_directories.remove(klog.position)
+                    klog.position = (klog.display_directories + selected_items)[klog.location]
+                else:
+                    pass
+            elif klog.command == "remove":
+                if klog.position in selected_items:
+                    selected_items.remove(klog.position)
+                    klog.display_directories.append(klog.position)
+                    klog.position = (klog.display_directories + selected_items)[klog.location]
+                else:
+                    pass
+            elif klog.command == "enter":
+                if rclone_listdir(klog.position):
+
+                    klog.display_directories = [pt.Path(os.path.join(klog.position,i)) for i in rclone_listdir(klog.position)]
+                    klog.location = 0
+                    klog.position = (klog.display_directories + selected_items)[klog.location]
+            elif klog.command == "back":
+                if klog.position not in root_directories:
+                    if klog.position.parents[0] in root_directories:
+                        klog.display_directories = root_directories
+                    else:
+                        klog.display_directories = [pt.Path(os.path.join(klog.position.parents[1],i)) for i in rclone_listdir(klog.position.parents[1])]
+                    klog.location = 0
+                    klog.position = (klog.display_directories + selected_items)[klog.location]
+                else:
+                    klog.command = "exit"
+
+            #  Exit Command
+            # ----------------------------------------------------------------------------------------------------------------- #
+            if klog.command == "exit":
+                os.system('cls' if os.name == 'nt' else 'clear')
+                return selected_items
+            klog.command = None
+        os.system('cls' if os.name == 'nt' else 'clear')
 
 if __name__ == '__main__':
-    get_options({"Run Params": {"v": True, "d": False, "i": "Utilize the run params?"},
-                 "Option 2"  : {
-                     "Option 3": {"v": 1, "d": 2, "i": "None"}
-                 }}, "Somewhere!")
+    text_t = TerminalString()
+    select_files_remote(["box:/PyCS"])
