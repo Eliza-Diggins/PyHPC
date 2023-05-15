@@ -3,18 +3,19 @@
                 Written by: Eliza Diggins
                 -- Last Check: 12/16 --
 """
+import json
 import os
 import pathlib as pt
+from types import SimpleNamespace
+
 import toml as tml
 from colorama import Fore
-import cmocean as cmo
 from matplotlib.pyplot import cm
-import json
-from types import SimpleNamespace
+
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
 # ------------------------------------------------------ Variables ------------------------------------------------------#
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
-with open(os.path.join(pt.Path(__file__).parents[1],"bin","local","install.tkc")) as file:
+with open(os.path.join(pt.Path(__file__).parents[1], "bin", "local", "install.tkc")) as file:
     ### Reading the CONFIG file from the installation ticket.
     ticket_info = SimpleNamespace(**json.load(file))
 
@@ -33,7 +34,7 @@ def read_config() -> dict:
     :return: The configuration dictionary
     """
     ### reading the TOML string ###
-    config_dict = tml.load(os.path.join(ticket_info.installation_location,"bin","configs","CONFIG.config"))
+    config_dict = tml.load(os.path.join(ticket_info.installation_location, "bin", "configs", "CONFIG.config"))
 
     #
     #       Post Processing...
@@ -46,7 +47,7 @@ def read_config() -> dict:
             config_dict["Visualization"]["Colormaps"][key] = cm.get_cmap(config_dict["Visualization"]["Colormaps"][key])
         except ValueError:  # The colormap doesn't exist
             raise ValueError("%s Configuration key %s failed. %s is not a colormap." % (
-            _fdbg_string, key, config_dict["Visualization"]["Colormaps"][key]))
+                _fdbg_string, key, config_dict["Visualization"]["Colormaps"][key]))
 
     return config_dict
 

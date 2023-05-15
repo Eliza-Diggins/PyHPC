@@ -36,14 +36,14 @@ handlers:
 loggers:
   meta:
     level: INFO
-    handlers: [meta_file]
+    handlers: [ meta_file ]
     propagate: no
   message:
     level: DEBUG
-    handlers: [msg_channel]
+    handlers: [ msg_channel ]
   time:
     level: DEBUG
-    handlers: [time_file]
+    handlers: [ time_file ]
     propagate: no
 
 #----------------------------------------------------------------------------------------------------------------------#
@@ -53,4 +53,4 @@ loggers:
 #----------------------------------------------------------------------------------------------------------------------#
 root:
   level: DEBUG
-  handlers: [root_file]
+  handlers: [ root_file ]

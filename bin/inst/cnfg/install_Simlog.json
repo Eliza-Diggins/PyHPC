@@ -1,11 +1,12 @@
 {
-  "info": ["This file contains all of the simulation data accrued during the course of use."],
+  "info": [
+    "This file contains all of the simulation data accrued during the course of use."
+  ],
   "sims": {
     "Example_Simulation": {
       "r_path": "/home/ediggins"
     }
   },
   "ics": {
-
   }
 }

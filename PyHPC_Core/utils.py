@@ -9,6 +9,7 @@ import pathlib as pt
 from functools import wraps
 from time import perf_counter
 from types import SimpleNamespace
+
 import numpy as np
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -55,17 +56,17 @@ def time_function(func):
         global _time_logger
         global _time_tabs
         _time_logger.info(("\t" * _time_tabs) + "%s:%s: Running." % (
-        str(pt.Path(inspect.getfile(func)).absolute().relative_to(__proj_directory)),
-        func.__name__))
+            str(pt.Path(inspect.getfile(func)).absolute().relative_to(__proj_directory)),
+            func.__name__))
         t_in = perf_counter()
         _time_tabs += 1
         res = func(*args, **kwargs)
         _time_tabs -= 1
         t_out = perf_counter()
         _time_logger.info(("\t" * _time_tabs) + "%s:%s: %s s." % (
-        str(pt.Path(inspect.getfile(func)).absolute().relative_to(__proj_directory)),
-        func.__name__,
-        np.format_float_scientific(t_out - t_in, precision=3)))
+            str(pt.Path(inspect.getfile(func)).absolute().relative_to(__proj_directory)),
+            func.__name__,
+            np.format_float_scientific(t_out - t_in, precision=3)))
         return res
 
     return wrapper_function

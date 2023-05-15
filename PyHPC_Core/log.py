@@ -1,11 +1,12 @@
 import logging
 import logging.config
-import sys
 import os
 import pathlib as pt
+import sys
 from datetime import datetime
+
 import yaml
-from PyHPC_Core.utils import time_function
+
 from PyHPC_Core.configuration import read_config
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -15,25 +16,29 @@ _location = "PyHPC_Core"
 _filename = pt.Path(__file__).name.replace(".py", "")
 _dbg_string = "%s:%s" % (_location, _filename)
 CONFIG = read_config()
-__logging_data = {"dir":os.path.join(CONFIG["System"]["Directories"]["log_directory"],
-                                     str(pt.Path(sys.modules["__main__"].__file__).name if hasattr(sys.modules["__main__"],"__file__") else "console"),
-                                     datetime.now().strftime('%m-%d-%Y_%H-%M-%S')),
-                  "files":CONFIG["System"]["Logging"]["output_to_file"]}
+__logging_data = {"dir"  : os.path.join(CONFIG["System"]["Directories"]["log_directory"],
+                                        str(pt.Path(sys.modules["__main__"].__file__).name if hasattr(
+                                            sys.modules["__main__"], "__file__") else "console"),
+                                        datetime.now().strftime('%m-%d-%Y_%H-%M-%S')),
+                  "files": CONFIG["System"]["Logging"]["output_to_file"]}
+
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Utility Functions ================================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
-def get_dict_str(di,tabs=0):
+def get_dict_str(di, tabs=0):
     str = ""
-    for k,v in di.items():
-        if isinstance(v,dict):
-            str += ("\t"*tabs) + "%s: {\n"%k
-            str += get_dict_str(v,tabs=tabs+1)
-            str +=("\t"*tabs) + "}\n"
+    for k, v in di.items():
+        if isinstance(v, dict):
+            str += ("\t" * tabs) + "%s: {\n" % k
+            str += get_dict_str(v, tabs=tabs + 1)
+            str += ("\t" * tabs) + "}\n"
         else:
-            str += ("\t"*tabs+"%s: %s\n"%(k,v))
+            str += ("\t" * tabs + "%s: %s\n" % (k, v))
 
     return str
+
+
 # ------------------------------------------------------------------------------------------------------------------#
 # Managing files ================================================================================================= #
 # ------------------------------------------------------------------------------------------------------------------#
@@ -94,6 +99,7 @@ logging.config.dictConfig(log_config_dict)
 # ---------------------------------------------------------------------------------------------------------------- #
 meta_logger = logging.getLogger("meta")
 meta_logger.info("Completed log setup with settings \n%s." % get_dict_str(log_config_dict))
+
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #   Functions   ====================================================================================================== #

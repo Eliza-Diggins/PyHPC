@@ -18,7 +18,8 @@ from PyHPC_Core.utils import time_function
 import json
 from time import perf_counter
 import numpy as np
-from colorama import Fore,Style,Back
+from colorama import Fore, Style
+
 # generating screen locking #
 screen_lock = t.Semaphore(value=1)  # locks off multi-threaded screen.
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
@@ -145,7 +146,7 @@ def get_remote_location(local_path, move_to_unfiled=CONFIG["System"]["Directorie
     # - Identifying matched paths -#
     matched_paths = [header for header in
                      [
-                         (k,v) for k,v in
+                         (k, v) for k, v in
                          list(file_struct["location_config_links"]["values"].items())
                      ]
                      if header[1] in local_path
@@ -166,7 +167,7 @@ def get_remote_location(local_path, move_to_unfiled=CONFIG["System"]["Directorie
         # We did find a matching header.
         if len(matched_paths) > 1:
             modlog.warning("The length of matched paths is %s for local path %s. Selected %s." % (
-            len(matched_paths), local_path, matched_paths[0]))
+                len(matched_paths), local_path, matched_paths[0]))
             match = matched_paths[0]
         else:
             match = matched_paths[0]
@@ -196,13 +197,13 @@ def get_local_location(remote_path, move_to_unfiled=CONFIG["System"]["Directorie
     """
     #  Intro Debugging
     # ----------------------------------------------------------------------------------------------------------------- #
-    modlog.debug("Seeking correct local equivalent for remote path %s."%remote_path)
+    modlog.debug("Seeking correct local equivalent for remote path %s." % remote_path)
 
     #  Managing matches
     # ----------------------------------------------------------------------------------------------------------------- #
     matched_paths = [
         header for header in [
-            (k,v) for k,v in file_struct["rclone_paths"]["values"].items()
+            (k, v) for k, v in file_struct["rclone_paths"]["values"].items()
         ]
         if header[1] in remote_path
     ]
@@ -220,7 +221,8 @@ def get_local_location(remote_path, move_to_unfiled=CONFIG["System"]["Directorie
     else:
         # There are matches
         if len(matched_paths) > 1:
-            modlog.warning("The matched paths (%s) are not of length 1. Selecting %s as match to %s."%(matched_paths,matched_paths[0],remote_path))
+            modlog.warning("The matched paths (%s) are not of length 1. Selecting %s as match to %s." % (
+            matched_paths, matched_paths[0], remote_path))
 
         match = matched_paths[0]
 
@@ -232,6 +234,7 @@ def get_local_location(remote_path, move_to_unfiled=CONFIG["System"]["Directorie
 
     modlog.debug("Found proper path for %s to be %s in local." % (remote_path, proper_path))
     return proper_path
+
 
 #  Remote Management IO - Complex
 # ----------------------------------------------------------------------------------------------------------------- #
@@ -248,25 +251,26 @@ def send_item_to_rclone(location_path, move_to_unfiled=CONFIG["System"]["Directo
     """
     #  Logging
     # ----------------------------------------------------------------------------------------------------------------- #
-    modlog.debug("Sending file at %s to remote."%location_path)
+    modlog.debug("Sending file at %s to remote." % location_path)
 
     #  Getting the remote path
     # ----------------------------------------------------------------------------------------------------------------- #
     path = get_remote_location(location_path, move_to_unfiled=move_to_unfiled)
 
-    modlog.debug("Remote path corresponding to %s was found to be %s."%(location_path,path))
+    modlog.debug("Remote path corresponding to %s was found to be %s." % (location_path, path))
 
     if path != False:
         # We actually found a path.
         try:
             os.system("rclone copy '%s' '%s'" % (location_path, path))
         except Exception:
-            modlog.exception("Transfer %s -> %s Failed."%(location_path,path)
-                      )
+            modlog.exception("Transfer %s -> %s Failed." % (location_path, path)
+                             )
     else:
-        modlog.warning("Failed to find a reasonable path for %s. Not transfering."%(location_path))
+        modlog.warning("Failed to find a reasonable path for %s. Not transfering." % (location_path))
 
     return None
+
 
 def mt_send_item_to_rclone(location_path, move_to_unfiled=CONFIG["System"]["Directories"]["Remote"]["send_to_unfiled"]):
     """
@@ -281,7 +285,7 @@ def mt_send_item_to_rclone(location_path, move_to_unfiled=CONFIG["System"]["Dire
     """
     #  Intro debugging
     # ----------------------------------------------------------------------------------------------------------------- #
-    modlog.debug("Transferring %s to remote..."%location_path)
+    modlog.debug("Transferring %s to remote..." % location_path)
 
     t_s = perf_counter()
     path = get_remote_location(location_path, move_to_unfiled=move_to_unfiled)
@@ -295,7 +299,6 @@ def mt_send_item_to_rclone(location_path, move_to_unfiled=CONFIG["System"]["Dire
                              )
     else:
         modlog.warning("Failed to find a reasonable path for %s. Not transfering." % (location_path))
-
 
     t_f = str(np.round(perf_counter() - t_s, decimals=2))
 
@@ -321,28 +324,29 @@ def get_item_from_rclone(location_path, move_to_unfiled=CONFIG["System"]["Direct
         """
     #  Logging
     # ----------------------------------------------------------------------------------------------------------------- #
-    modlog.debug("Getting file at %s to remote."%location_path)
+    modlog.debug("Getting file at %s to remote." % location_path)
 
     #  Getting the remote path
     # ----------------------------------------------------------------------------------------------------------------- #
     path = get_local_location(location_path, move_to_unfiled=move_to_unfiled)
 
-    modlog.debug("Remote path corresponding to %s was found to be %s."%(location_path,path))
+    modlog.debug("Remote path corresponding to %s was found to be %s." % (location_path, path))
 
     if path != False:
         # We actually found a path.
         try:
             os.system("rclone copy '%s' '%s'" % (location_path, path))
         except Exception:
-            modlog.exception("Transfer %s -> %s Failed."%(location_path,path)
-                      )
+            modlog.exception("Transfer %s -> %s Failed." % (location_path, path)
+                             )
     else:
-        modlog.warning("Failed to find a reasonable path for %s. Not transfering."%(location_path))
+        modlog.warning("Failed to find a reasonable path for %s. Not transfering." % (location_path))
 
     return None
 
 
-def mt_get_item_from_rclone(location_path, move_to_unfiled=CONFIG["System"]["Directories"]["Remote"]["send_to_unfiled"]):
+def mt_get_item_from_rclone(location_path,
+                            move_to_unfiled=CONFIG["System"]["Directories"]["Remote"]["send_to_unfiled"]):
     """
         Downloads an item from box using rclone. (MULTI-Threaded)
     Parameters
@@ -383,6 +387,7 @@ def mt_get_item_from_rclone(location_path, move_to_unfiled=CONFIG["System"]["Dir
             Fore.GREEN + Style.BRIGHT + "%s s" % t_f + Style.RESET_ALL
         ))
     screen_lock.release()
+
 
 if __name__ == '__main__':
     print(get_remote_location(os.path.join(CONFIG["System"]["Directories"]["figures_directory"], "Fig1")))
