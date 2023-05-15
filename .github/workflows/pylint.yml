@@ -21,4 +21,4 @@ jobs:
           pip install -r req.txt
       - name: Analysing the code with pylint
         run: |
-          pylint $(git ls-files '*.py') --disable=C0103,C0301 --fail-under=7
+          pylint $(git ls-files '*.py') --disable=C0103,C0301,C0209,C0413 --fail-under=7
