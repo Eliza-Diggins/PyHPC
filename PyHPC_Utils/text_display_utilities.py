@@ -242,7 +242,14 @@ class KeyLogger:
 def print_title():
     # - Prints the title of the project -#
     with open(os.path.join(_text_file_directory, "general", "title.txt"), "r") as file:
-        print(file.read().encode("utf-8").decode("unicode_escape") % tuple(get_system_info().__dict__.values()))
+        string = file.read().encode("utf-8").decode("unicode_escape") % tuple(get_system_info().__dict__.values())
+
+    term_string = TerminalString()
+    print(term_string.h)
+    for line in string.split("\n"):
+        print(term_string.str_in_grid(line,alignment="center"))
+
+    print(term_string.h)
 
 
 def print_verbose(msg, verbose, **kwargs):
@@ -298,17 +305,18 @@ def print_directories_dict(directories, selected, location=None, smax=None):
     if max:
         print(text_t.str_in_grid("Select A Directory: %s" % (
             "(%s/%s Selected)" % (len(selected), smax) if len(selected) != smax else "(%s/%s Selected)" % (
-                Fore.RED + str(len(selected)), str(smax) + Style.RESET_ALL))) + "\n" + text_t.h)
+                Fore.RED + str(len(selected)), str(smax) + Style.RESET_ALL))) + "\n"+ text_t.str_in_grid(""))
     else:
-        print(text_t.str_in_grid("Select A Directory: ") + "\n" + text_t.h)
-    max_dir_length = max([len(str(i.name)) for i in directories])
+        print(text_t.str_in_grid("Select A Directory: "))
+        print(text_t.str_in_grid(""))
+    max_dir_length = max([0]+[len(str(i.name)) for i in directories])
     for id, dir in enumerate(directories):
         print(text_t.print_directory_string(pt.Path(dir), selected=(id == location), maxl=max_dir_length))
 
     print(text_t.h)
     print(text_t.str_in_grid("Selected Directories:"))
-    print(text_t.h)
-    max_select_length = max([len(str(i.name)) for i in directories])
+    print(text_t.str_in_grid(""))
+    max_select_length = max([0]+[len(str(i.name)) for i in directories])
     for id, select in enumerate(selected):
         print(text_t.print_directory_string(pt.Path(select), selected=(id + len(directories) == location),
                                             maxl=max_select_length))
@@ -525,7 +533,7 @@ def select_files(root_directories, max=None, condition=lambda x: True):
                 else:
                     pass
             elif klog.command == "enter":
-                if os.path.isdir(klog.position):
+                if os.path.isdir(klog.position) and klog.position not in selected_items:
                     sub_dirs = [pt.Path(os.path.join(klog.position, i)) for i in
                                 os.listdir(klog.position) if condition(pt.Path(os.path.join(klog.position, i)))]
                     if len(sub_dirs):

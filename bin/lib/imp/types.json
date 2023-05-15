@@ -1,0 +1,10 @@
+{
+  "info": "This file contains typing information and implementation information for software.",
+  "software": {
+    "RAMSES": ["RAMSES","RAYMOND_Q","RAYMOND_A"]
+  },
+  "extensions": {
+    "initial_conditions": [".g2",".dat"],
+    "namelist": [".nml"]
+  }
+}
