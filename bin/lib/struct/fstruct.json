@@ -29,6 +29,11 @@
              "path": "ICs",
              "files": "",
              "link": "ic_directory"
+           },
+           "slurm": {
+             "path": "slurm",
+             "files": "",
+             "link": "slurm_directory"
            }
          },
          "link": "initialization_files_directory"

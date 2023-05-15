@@ -1,8 +1,8 @@
 """
 Text display utilities
 """
-import pathlib as pt
 import os
+import pathlib as pt
 import sys
 
 sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
@@ -13,7 +13,7 @@ from PyHPC_Core.utils import get_system_info
 from PyHPC_Utils.standard_utils import getFromDict, setInDict
 from PyHPC_Core.log import get_module_logger
 from PyHPC_Core.configuration import read_config
-from PyHPC_Utils.remote_utils import rclone_listdir,rclone_isfile,rclone_isdir
+from PyHPC_Utils.remote_utils import rclone_listdir, rclone_isdir
 import json
 import shutil
 from sshkeyboard import listen_keyboard, stop_listening
@@ -29,13 +29,18 @@ _text_file_directory = os.path.join(pt.Path(__file__).parents[1], "bin", "str")
 modlog = get_module_logger(_location, _filename)
 CONFIG = read_config()
 _GSV = {}  # -> This global variable allows for communication between the listener and the function
-strip_ANSI_escape_sequences_sub = re.compile(r"\x1b\[[;\d]*[A-Za-z]", re.VERBOSE).sub
+strip_ANSI_escape_sequences_sub = re.compile(r"\x1b\[[;\d]*[A-Za-z]", re.VERBOSE).sub  # Function to remove color.
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Strings Class ====================================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
-def lenwc(string):
+def lenwc(string: str) -> int:
+    """
+    Returns the length of the string without counting the color bytes.
+    :param string: The string to analyze.
+    :return:
+    """
     return len(strip_ANSI_escape_sequences_sub("", string))
 
 
@@ -46,11 +51,7 @@ class TerminalString:
 
     def __init__(self):
         global _text_file_directory
-        #  Debugging
-        # ----------------------------------------------------------------------------------------------------------------- #
-        modlog.debug("Loading a TerminalString object...")
-
-        # Attempting to laod
+        # Attempting to load
         # ------------------------------------------------------------------------------------------------------------ #
         try:
             with open(os.path.join(_text_file_directory, "cnfg", "print_cnfg.json"), "r") as print_f:
@@ -74,8 +75,9 @@ class TerminalString:
 
         self.h = self.corner + (self.span_h * (int(self.dim_alt[0] / len(self.span_h)))) + self.corner
 
-    def get_color(self,val,obj):
-        return getattr(obj,getFromDict(self.pi["Settings"]["Colors"],val))
+    def get_color(self, val, obj):
+        return getattr(obj, getFromDict(self.pi["Settings"]["Colors"], val))
+
     def str_in_grid(self, value: str, alignment: str = "left") -> str:
         """
         prints the value as it is correctly aligned in the grid
@@ -91,16 +93,17 @@ class TerminalString:
 
         if diff < 0:
             diff = 0
-            value = str(value)[:self.dim_alt[0] - 3] + Style.RESET_ALL+"..."
+            value = str(value)[:self.dim_alt[0] - 3] + Style.RESET_ALL + "..."
 
         #  Generating the printable
         # ----------------------------------------------------------------------------------------------------------------- #
         if alignment == "right":
-            string = self.span_v + (diff * " ") + str(value) + Style.RESET_ALL+self.span_v
+            string = self.span_v + (diff * " ") + str(value) + Style.RESET_ALL + self.span_v
         elif alignment == "left":
-            string = self.span_v + str(value) + (diff * " ") + Style.RESET_ALL+self.span_v
+            string = self.span_v + str(value) + (diff * " ") + Style.RESET_ALL + self.span_v
         elif alignment == "center":
-            string = self.span_v + ((diff - int(diff / 2)) * " ") + str(value) + (int(diff / 2) * " ") + Style.RESET_ALL+self.span_v
+            string = self.span_v + ((diff - int(diff / 2)) * " ") + str(value) + (
+                    int(diff / 2) * " ") + Style.RESET_ALL + self.span_v
         else:
             raise ValueError("alignment must be center,left, or right. Not %s." % alignment)
 
@@ -143,21 +146,21 @@ class TerminalString:
             "") + "\n" + self.h
         print(str)
 
-    def print_directory_string(self,path,selected=False,maxl=None):
+    def print_directory_string(self, path, selected=False, maxl=None):
         if not maxl:
             maxl = len(str(path.name))
 
-        space = maxl+2 - len(str(path.name))
+        space = maxl + 2 - len(str(path.name))
 
         if not selected:
-            out_string = self.get_color(["Directories",("name_file" if os.path.isfile(path) else "name_directory")],Fore) + str(path.name) + Style.RESET_ALL +(" "*space) +  self.get_color(["Directories","path"],Fore) + str(path) + Style.RESET_ALL
+            out_string = self.get_color(["Directories", ("name_file" if os.path.isfile(path) else "name_directory")],
+                                        Fore) + str(path.name) + Style.RESET_ALL + (" " * space) + self.get_color(
+                ["Directories", "path"], Fore) + str(path) + Style.RESET_ALL
         else:
-            out_string = Fore.BLACK+Back.WHITE + path.name+(" "*space) + str(path)
+            out_string = Fore.BLACK + Back.WHITE + path.name + (" " * space) + str(path)
 
         return self.str_in_grid(out_string)
-# -------------------------------------------------------------------------------------------------------------------- #
-#  Printings    ====================================================================================================== #
-# -------------------------------------------------------------------------------------------------------------------- #
+
 
 class KeyLogger:
     """
@@ -169,7 +172,7 @@ class KeyLogger:
             self.__setattr__(k, v)
 
     def yes_no_keylog(self, key):
-        ## Managing key entering ##
+        # Key logger for the yes no answer dialog #
         try:
             if key == "enter":
                 # do something
@@ -185,6 +188,7 @@ class KeyLogger:
             pass
 
     def nav_keylog(self, key):
+        # Key logger for the options navigation #
         try:
             if key == "enter":
                 self.command = "edit"
@@ -207,10 +211,11 @@ class KeyLogger:
         except AttributeError as ex:
             pass
 
-    def file_keylog(self,key):
+    def file_keylog(self, key):
+        "keylogger for managing files."
         try:
             if key == "up":
-                self.location = (self.location-1 if self.location != 0 else self.length)
+                self.location = (self.location - 1 if self.location != 0 else self.length)
                 stop_listening()
             elif key == "down":
                 self.location = (self.location + 1 if self.location < self.length else 0)
@@ -230,6 +235,10 @@ class KeyLogger:
         except Exception:
             pass
 
+
+# -------------------------------------------------------------------------------------------------------------------- #
+#  Printings    ====================================================================================================== #
+# -------------------------------------------------------------------------------------------------------------------- #
 def print_title():
     # - Prints the title of the project -#
     with open(os.path.join(_text_file_directory, "general", "title.txt"), "r") as file:
@@ -282,21 +291,30 @@ def print_option_dict(dict, location, header=None):
 
     print(text_t.h)
 
-def print_directories_dict(directories,selected,location=None):
+
+def print_directories_dict(directories, selected, location=None, smax=None):
     text_t = TerminalString()
     text_t.print_title("File Selector")
-    print(text_t.str_in_grid("Select A Directory:")+"\n"+text_t.h)
+    if max:
+        print(text_t.str_in_grid("Select A Directory: %s" % (
+            "(%s/%s Selected)" % (len(selected), smax) if len(selected) != smax else "(%s/%s Selected)" % (
+                Fore.RED + str(len(selected)), str(smax) + Style.RESET_ALL))) + "\n" + text_t.h)
+    else:
+        print(text_t.str_in_grid("Select A Directory: ") + "\n" + text_t.h)
     max_dir_length = max([len(str(i.name)) for i in directories])
-    for id,dir in enumerate(directories):
-        print(text_t.print_directory_string(pt.Path(dir),selected=(id==location),maxl=max_dir_length))
+    for id, dir in enumerate(directories):
+        print(text_t.print_directory_string(pt.Path(dir), selected=(id == location), maxl=max_dir_length))
 
     print(text_t.h)
     print(text_t.str_in_grid("Selected Directories:"))
     print(text_t.h)
     max_select_length = max([len(str(i.name)) for i in directories])
-    for id,select in enumerate(selected):
-        print(text_t.print_directory_string(pt.Path(select),selected=(id+len(directories) == location),maxl=max_select_length))
+    for id, select in enumerate(selected):
+        print(text_t.print_directory_string(pt.Path(select), selected=(id + len(directories) == location),
+                                            maxl=max_select_length))
     print(text_t.h)
+
+
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Movement Related Behaviors ======================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -387,7 +405,6 @@ def get_options(option_dict, title):
         # -------------------------------------------------------------------------------------------------------------------- #
         #  Navigation ======================================================================================================== #
         # -------------------------------------------------------------------------------------------------------------------- #
-        print(klog.position, klog.location)
         listen_keyboard(on_press=klog.nav_keylog)
         # - Forcing location parity -#
         klog.position[-1] = list(klog.sub_dict.keys())[klog.location]
@@ -401,8 +418,8 @@ def get_options(option_dict, title):
                     # This is an explicit value
                     inp = input(
                         "%sPlease enter a new value for %s. ['n' to return]:" % (
-                        "[" + Fore.RED + "INPUT" + Style.RESET_ALL + "]: ",
-                        klog.position[-1]))
+                            "[" + Fore.RED + "INPUT" + Style.RESET_ALL + "]: ",
+                            klog.position[-1]))
                     if inp != "n":
                         setInDict(settings, klog.position + ["v"], inp)
                         klog.sub_dict = getFromDict(settings, klog.position[:-1])
@@ -448,7 +465,8 @@ def get_options(option_dict, title):
         os.system('cls' if os.name == 'nt' else 'clear')
     return settings
 
-def select_files(root_directories,max=None):
+
+def select_files(root_directories, max=None, condition=lambda x: True):
     """
     Allows the user to select files from the root directories, selecting a maximum of max subject to conditions.
     :param root_directories: The root directories to search from
@@ -458,40 +476,45 @@ def select_files(root_directories,max=None):
     """
     #  Debugging and Setup
     # ----------------------------------------------------------------------------------------------------------------- #
-    modlog.debug("Selecting %s files from %s"%(max,root_directories))
+    modlog.debug("Selecting %s files from %s" % (max, root_directories))
     root_directories = [pt.Path(i) for i in root_directories]
-    #- Creating the print manager and the key logger -#
-    klog = KeyLogger(display_directories = root_directories,
+    # - Creating the print manager and the key logger -#
+    klog = KeyLogger(display_directories=[i for i in root_directories if condition(i)],
                      position="",
                      location=0,
                      command=None)
     text_t = TerminalString()
 
-    #- Selected items -#
+    # - Selected items -#
     selected_items = []
     exit = False
 
     while not exit:
-        #------------------------------------------------------------------------------------------------------------- #
+        # ------------------------------------------------------------------------------------------------------------- #
         # Printing
         # ------------------------------------------------------------------------------------------------------------ #
-        klog.length = len(klog.display_directories)+len(selected_items)-1
-        print_directories_dict(klog.display_directories,selected_items,location=klog.location)
+        klog.length = len(klog.display_directories) + len(selected_items) - 1
+        print_directories_dict(klog.display_directories, selected_items, location=klog.location, smax=max)
 
-        #------------------------------------------------------------------------------------------------------------- #
+        # ------------------------------------------------------------------------------------------------------------- #
         # Listening ================================================================================================== #
-        #--------------------------------------------------------------------------------------------------------------#
+        # --------------------------------------------------------------------------------------------------------------#
         listen_keyboard(on_press=klog.file_keylog)
 
-        klog.position = (klog.display_directories+selected_items)[klog.location]
+        klog.position = (klog.display_directories + selected_items)[klog.location]
         #  Command management
         # ----------------------------------------------------------------------------------------------------------------- #
         if klog.command:
             if klog.command == "add":
                 if klog.position in klog.display_directories:
-                    selected_items.append(klog.position)
-                    klog.display_directories.remove(klog.position)
-                    klog.position = (klog.display_directories + selected_items)[klog.location]
+                    check = True if not max else len(selected_items) < max
+
+                    if check:
+                        selected_items.append(klog.position)
+                        klog.display_directories.remove(klog.position)
+                        klog.position = (klog.display_directories + selected_items)[klog.location]
+                    else:
+                        print("You have selected the maximal number of objects because max=%s." % max)
                 else:
                     pass
             elif klog.command == "remove":
@@ -503,15 +526,23 @@ def select_files(root_directories,max=None):
                     pass
             elif klog.command == "enter":
                 if os.path.isdir(klog.position):
-                    klog.display_directories = [pt.Path(os.path.join(klog.position,i)) for i in os.listdir(klog.position)]
-                    klog.location = 0
-                    klog.position = (klog.display_directories + selected_items)[klog.location]
+                    sub_dirs = [pt.Path(os.path.join(klog.position, i)) for i in
+                                os.listdir(klog.position) if condition(pt.Path(os.path.join(klog.position, i)))]
+                    if len(sub_dirs):
+                        klog.display_directories = sub_dirs
+                        klog.location = 0
+                        klog.position = (klog.display_directories + selected_items)[klog.location]
+                    else:
+                        pass
+
             elif klog.command == "back":
                 if klog.position not in root_directories:
                     if klog.position.parents[0] in root_directories:
-                        klog.display_directories = root_directories
+                        klog.display_directories = [i for i in root_directories if condition(i)]
                     else:
-                        klog.display_directories = [pt.Path(os.path.join(klog.position.parents[1],i)) for i in os.listdir(klog.position.parents[1])]
+                        klog.display_directories = [pt.Path(os.path.join(klog.position.parents[1], i)) for i in
+                                                    os.listdir(klog.position.parents[1]) if
+                                                    condition(pt.Path(os.path.join(klog.position.parents[1], i)))]
                     klog.location = 0
                     klog.position = (klog.display_directories + selected_items)[klog.location]
                 else:
@@ -525,7 +556,8 @@ def select_files(root_directories,max=None):
             klog.command = None
         os.system('cls' if os.name == 'nt' else 'clear')
 
-def select_files_remote(root_directories,max=None):
+
+def select_files_remote(root_directories, max=None, condition=lambda x: True):
     """
     Allows the user to select files from the root directories, selecting a maximum of max subject to conditions.
     :param root_directories: The root directories to search from
@@ -535,40 +567,45 @@ def select_files_remote(root_directories,max=None):
     """
     #  Debugging and Setup
     # ----------------------------------------------------------------------------------------------------------------- #
-    modlog.debug("Selecting %s files from %s"%(max,root_directories))
+    modlog.debug("Selecting %s files from %s" % (max, root_directories))
     root_directories = [pt.Path(i) for i in root_directories]
-    #- Creating the print manager and the key logger -#
-    klog = KeyLogger(display_directories = root_directories,
+    # - Creating the print manager and the key logger -#
+    klog = KeyLogger(display_directories=[i for i in root_directories if condition(i)],
                      position="",
                      location=0,
                      command=None)
     text_t = TerminalString()
 
-    #- Selected items -#
+    # - Selected items -#
     selected_items = []
     exit = False
 
     while not exit:
-        #------------------------------------------------------------------------------------------------------------- #
+        # ------------------------------------------------------------------------------------------------------------- #
         # Printing
         # ------------------------------------------------------------------------------------------------------------ #
-        klog.length = len(klog.display_directories)+len(selected_items)-1
-        print_directories_dict(klog.display_directories,selected_items,location=klog.location)
+        klog.length = len(klog.display_directories) + len(selected_items) - 1
+        print_directories_dict(klog.display_directories, selected_items, location=klog.location, smax=max)
 
-        #------------------------------------------------------------------------------------------------------------- #
+        # ------------------------------------------------------------------------------------------------------------- #
         # Listening ================================================================================================== #
-        #--------------------------------------------------------------------------------------------------------------#
+        # --------------------------------------------------------------------------------------------------------------#
         listen_keyboard(on_press=klog.file_keylog)
 
-        klog.position = (klog.display_directories+selected_items)[klog.location]
+        klog.position = (klog.display_directories + selected_items)[klog.location]
         #  Command management
         # ----------------------------------------------------------------------------------------------------------------- #
         if klog.command:
             if klog.command == "add":
                 if klog.position in klog.display_directories:
-                    selected_items.append(klog.position)
-                    klog.display_directories.remove(klog.position)
-                    klog.position = (klog.display_directories + selected_items)[klog.location]
+                    check = True if not max else len(selected_items) < max
+
+                    if check:
+                        selected_items.append(klog.position)
+                        klog.display_directories.remove(klog.position)
+                        klog.position = (klog.display_directories + selected_items)[klog.location]
+                    else:
+                        print("You have selected the maximal number of objects because max=%s." % max)
                 else:
                     pass
             elif klog.command == "remove":
@@ -579,17 +616,23 @@ def select_files_remote(root_directories,max=None):
                 else:
                     pass
             elif klog.command == "enter":
-                if rclone_listdir(klog.position):
-
-                    klog.display_directories = [pt.Path(os.path.join(klog.position,i)) for i in rclone_listdir(klog.position)]
-                    klog.location = 0
-                    klog.position = (klog.display_directories + selected_items)[klog.location]
+                if rclone_isdir(klog.position):
+                    sub_dirs = [pt.Path(os.path.join(klog.position, i)) for i in
+                                rclone_listdir(klog.position) if condition(pt.Path(os.path.join(klog.position, i)))]
+                    if len(sub_dirs):
+                        klog.display_directories = sub_dirs
+                        klog.location = 0
+                        klog.position = (klog.display_directories + selected_items)[klog.location]
+                    else:
+                        pass
             elif klog.command == "back":
                 if klog.position not in root_directories:
                     if klog.position.parents[0] in root_directories:
-                        klog.display_directories = root_directories
+                        klog.display_directories = [i for i in root_directories if condition(i)]
                     else:
-                        klog.display_directories = [pt.Path(os.path.join(klog.position.parents[1],i)) for i in rclone_listdir(klog.position.parents[1])]
+                        klog.display_directories = [pt.Path(os.path.join(klog.position.parents[1], i)) for i in
+                                                    rclone_listdir(klog.position.parents[1]) if
+                                                    condition(pt.Path(os.path.join(klog.position.parents[1], i)))]
                     klog.location = 0
                     klog.position = (klog.display_directories + selected_items)[klog.location]
                 else:
@@ -603,6 +646,7 @@ def select_files_remote(root_directories,max=None):
             klog.command = None
         os.system('cls' if os.name == 'nt' else 'clear')
 
+
 if __name__ == '__main__':
     text_t = TerminalString()
-    select_files_remote(["box:/PyCS"])
+    select_files_remote(["box:/PyCS"], max=3, condition=lambda x: (rclone_isdir(x) or x.suffix == ".mp4"))
