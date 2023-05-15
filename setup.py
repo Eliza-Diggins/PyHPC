@@ -336,6 +336,14 @@ if __name__ == '__main__':
                         t.dump(updated_dict,f)
 
                 print_verbose(done_string, args.verbose)
+            elif os.path.isfile(os.path.join(__root_path, "bin", "inst", "cnfg",
+                                           file)) and ".json" in file:
+                print_verbose("\t\t%sCopying %s..."%(fdbg_string,file),args.verbose,end="")
+                shutil.copyfile(os.path.join(__root_path, "bin", "inst", "cnfg", file),
+                                os.path.join(ticket_info.installation_location, "bin", "configs", file.replace("install_", "")))
+                print_verbose(done_string,args.verbose)
+
+
 
         # - Generating the ticket -#
         print("%sGenerating ticket..." % fdbg_string, end="")
