@@ -236,20 +236,40 @@ class KeyLogger:
             pass
 
 
+class PrintRetainer:
+    """
+    Designed for retained printing.
+    """
+
+    def __init__(self):
+        self.string = ""
+        self.end = ""
+
+    def print(self, msg, end="\n"):
+        self.string += msg + end
+        print(msg, end=end)
+        self.end = end
+
+    def reprint(self, end="\n"):
+        msg = self.string
+        self.string = ""
+        self.print(msg[:-len(self.end)], end=end)
+
+
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Printings    ====================================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
-def print_title():
+def print_title(func=print):
     # - Prints the title of the project -#
     with open(os.path.join(_text_file_directory, "general", "title.txt"), "r") as file:
         string = file.read().encode("utf-8").decode("unicode_escape") % tuple(get_system_info().__dict__.values())
 
     term_string = TerminalString()
-    print(term_string.h)
+    func(term_string.h)
     for line in string.split("\n"):
-        print(term_string.str_in_grid(line,alignment="center"))
+        func(term_string.str_in_grid(line, alignment="center"))
 
-    print(term_string.h)
+    func(term_string.h)
 
 
 def print_verbose(msg, verbose, **kwargs):
@@ -305,18 +325,18 @@ def print_directories_dict(directories, selected, location=None, smax=None):
     if max:
         print(text_t.str_in_grid("Select A Directory: %s" % (
             "(%s/%s Selected)" % (len(selected), smax) if len(selected) != smax else "(%s/%s Selected)" % (
-                Fore.RED + str(len(selected)), str(smax) + Style.RESET_ALL))) + "\n"+ text_t.str_in_grid(""))
+                Fore.RED + str(len(selected)), str(smax) + Style.RESET_ALL))) + "\n" + text_t.str_in_grid(""))
     else:
         print(text_t.str_in_grid("Select A Directory: "))
         print(text_t.str_in_grid(""))
-    max_dir_length = max([0]+[len(str(i.name)) for i in directories])
+    max_dir_length = max([0] + [len(str(i.name)) for i in directories])
     for id, dir in enumerate(directories):
         print(text_t.print_directory_string(pt.Path(dir), selected=(id == location), maxl=max_dir_length))
 
     print(text_t.h)
     print(text_t.str_in_grid("Selected Directories:"))
     print(text_t.str_in_grid(""))
-    max_select_length = max([0]+[len(str(i.name)) for i in directories])
+    max_select_length = max([0] + [len(str(i.name)) for i in directories])
     for id, select in enumerate(selected):
         print(text_t.print_directory_string(pt.Path(select), selected=(id + len(directories) == location),
                                             maxl=max_select_length))

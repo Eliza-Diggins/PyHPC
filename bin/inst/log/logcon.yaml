@@ -22,6 +22,11 @@ handlers:
     level: INFO
     formatter: file_meta
     filename: "meta.log"
+  term_file:
+    class: logging.FileHandler
+    level: DEBUG
+    formatter: file_meta
+    filename: "term.log"
   time_file:
     class: logging.FileHandler
     level: INFO
@@ -45,7 +50,10 @@ loggers:
     level: DEBUG
     handlers: [ time_file ]
     propagate: no
-
+  term:
+    level: DEBUG
+    handlers: [ term_file ]
+    propagate: no
 #----------------------------------------------------------------------------------------------------------------------#
 # Root:
 #   1. file_standard: This format is the standard file output format.

@@ -7,7 +7,7 @@ import json
 import os
 import pathlib as pt
 from types import SimpleNamespace
-import cmocean as cmo
+
 import toml as tml
 from colorama import Fore
 from matplotlib.pyplot import cm

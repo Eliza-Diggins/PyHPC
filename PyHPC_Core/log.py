@@ -134,5 +134,9 @@ def get_module_logger(group,
     return logger
 
 
+def getlogger(name):
+    return logging.getLogger(name)
+
+
 if __name__ == '__main__':
     pass

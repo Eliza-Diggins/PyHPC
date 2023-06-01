@@ -222,7 +222,7 @@ def get_local_location(remote_path, move_to_unfiled=CONFIG["System"]["Directorie
         # There are matches
         if len(matched_paths) > 1:
             modlog.warning("The matched paths (%s) are not of length 1. Selecting %s as match to %s." % (
-            matched_paths, matched_paths[0], remote_path))
+                matched_paths, matched_paths[0], remote_path))
 
         match = matched_paths[0]
 

@@ -6,6 +6,7 @@ import pathlib as pt
 import sys
 
 sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
+import json
 from PyHPC_Core.log import get_module_logger
 from PyHPC_Core.configuration import read_config
 import pathlib as pt
@@ -13,6 +14,7 @@ import threading as t
 import warnings
 import toml
 from PyHPC_Utils.text_display_utilities import get_options
+from PyHPC_Utils.standard_utils import setInDict
 from datetime import datetime
 
 # generating screen locking #
@@ -145,6 +147,16 @@ def write_slurm_file(command_string, slurm_config=None, name=None):
 def write_ramses_nml(settings: dict, output_location: str) -> bool:
     """
     Writes a RAMSES nml file at the output_location using the settings specified in ``settings``.
+
+    **Processes:**
+
+    1. Removes the meta key from the settings.
+    2. Converts the memory type to the correct form.
+    3. Removes disabled keys
+    4. Removes software non compatible headers.
+    5. Manages the initial condition file's location.
+
+
     :param settings: The settings
     :param output_location: The output location
     :return: True if pass, Fail if not.
@@ -153,10 +165,42 @@ def write_ramses_nml(settings: dict, output_location: str) -> bool:
     # ----------------------------------------------------------------------------------------------------------------- #
     modlog.debug("Generating ramses nml file at %s." % output_location)
 
+    # Managing the software details.
+    # ----------------------------------------------------------------------------------------------------------------- #
+    software, ic_file, mem_mode = settings["META"]["software"]["v"], settings["META"]["ic_file"]["v"], \
+                                  settings["META"]["Memory"]["mode"]["v"]
+
+    modlog.debug("software=%s, ic_file=%s, mem_mode=%s." % (software, ic_file, mem_mode))
+
+    with open(os.path.join(pt.Path(__file__).parents[1], "bin", "lib", "imp", "types.json"), "r") as type_file:
+        types = json.load(type_file)
+
+    # - Checking the software is actually implemented
+    if software not in types["software"]["RAMSES"]:
+        raise ValueError("The software %s does not match any of the implemented softwares!" % software)
+
+    # - Managing locations
+    for k, v in types["software"]["RAMSES"][software]["header_control"].items():
+        settings[k]["enabled"]["v"] = v
+        modlog.debug("Enabled %s" % k if v else "Disabled %s" % k)
+
+    # - managing the IC location -#
+    for loc in types["software"]["RAMSES"][software]["ic_headers"]:
+        setInDict(settings, loc + ["v"], ic_file)
+        modlog.debug("Setting %s to the ic_file %s." % (loc, ic_file))
+
+    # - managing the memory type -#
+    for setting in ["ngrid", "npart"]:
+        settings["AMR_PARAMS"][setting + str(mem_mode)] = {
+            "v": settings["AMR_PARAMS"][setting]["v"],
+            "d": "",
+            "i": ""
+        }
+        del settings["AMR_PARAMS"][setting]
+
     ramses_nml_string = ""
     #  Writing
     # ----------------------------------------------------------------------------------------------------------------- #
-    print(settings)
     for k, v in settings.items():  # -> cycle through all of the values seeking headers.
         if k != "META":  # -> We should actually be doing something with this
             # - Checking -#
@@ -172,7 +216,10 @@ def write_ramses_nml(settings: dict, output_location: str) -> bool:
         else:
             pass
 
-    print(ramses_nml_string)
+    with open(output_location, "w+") as nml_file:
+        nml_file.write(ramses_nml_string)
+
+    return None
 
 
 if __name__ == '__main__':

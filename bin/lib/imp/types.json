@@ -1,10 +1,29 @@
 {
   "info": "This file contains typing information and implementation information for software.",
   "software": {
-    "RAMSES": ["RAMSES","RAYMOND_Q","RAYMOND_A"]
+    "RAMSES": {
+      "R-DICE": {
+        "header_control": {
+          "MOND_PARAMS": false,
+          "DICE_PARAMS": true
+        },
+        "ic_headers": [
+          [
+            "INIT_PARAMS",
+            "initfile(1)"
+          ]
+        ],
+        "exec_string": "ml purge\nml %(gcc_install)s\nml %(mpi_install)s\n\n something something"
+      }
+    }
   },
   "extensions": {
-    "initial_conditions": [".g2",".dat"],
-    "namelist": [".nml"]
+    "initial_conditions": [
+      ".g2",
+      ".dat"
+    ],
+    "namelist": [
+      ".nml"
+    ]
   }
 }
