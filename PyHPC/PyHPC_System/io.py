@@ -7,14 +7,14 @@ import sys
 
 sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
 import json
-from PyHPC_Core.log import get_module_logger
-from PyHPC_Core.configuration import read_config
+from PyHPC.PyHPC_Core.log import get_module_logger
+from PyHPC.PyHPC_Core.configuration import read_config
 import pathlib as pt
 import threading as t
 import warnings
 import toml
-from PyHPC_Utils.text_display_utilities import get_options
-from PyHPC_Utils.standard_utils import setInDict
+from PyHPC.PyHPC_Utils.text_display_utilities import get_options
+from PyHPC.PyHPC_Utils.standard_utils import setInDict
 from datetime import datetime
 
 # generating screen locking #

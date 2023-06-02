@@ -7,7 +7,7 @@ from datetime import datetime
 
 import yaml
 
-from PyHPC_Core.configuration import read_config
+from PyHPC.PyHPC_Core.configuration import read_config
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Setup ============================================================================================================= #

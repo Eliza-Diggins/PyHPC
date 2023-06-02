@@ -6,13 +6,11 @@ import pathlib as pt
 import sys
 
 sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
-from PyHPC_Core.log import get_module_logger
-from PyHPC_Core.configuration import read_config
+from PyHPC.PyHPC_Core.log import get_module_logger
+from PyHPC.PyHPC_Core.configuration import read_config
 import pathlib as pt
 import threading as t
 import warnings
-import json
-from datetime import datetime
 
 # generating screen locking #
 screen_lock = t.Semaphore(value=1)  # locks off multi-threaded screen.
@@ -55,10 +53,7 @@ class SimulationLog:
 
         #  Reading
         # ------------------------------------------------------------------------------------------------------------ #
-        try:
-            self.dictionary
+
 
 if __name__ == '__main__':
-    simlog = SimulationLog()
-    print(simlog.log)
-    print(simlog.search("sims", r_path="/home/ediggins"))
+    pass

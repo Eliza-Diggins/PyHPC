@@ -6,8 +6,8 @@ import os
 import pathlib as pt
 from functools import reduce
 
-from PyHPC_Core.configuration import read_config
-from PyHPC_Core.log import get_module_logger
+from PyHPC.PyHPC_Core.configuration import read_config
+from PyHPC.PyHPC_Core.log import get_module_logger
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Setup  ============================================================================================================ #

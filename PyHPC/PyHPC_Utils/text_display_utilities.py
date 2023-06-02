@@ -9,11 +9,11 @@ sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
 
 from colorama import Fore, Back, Style
 import re
-from PyHPC_Core.utils import get_system_info
-from PyHPC_Utils.standard_utils import getFromDict, setInDict
-from PyHPC_Core.log import get_module_logger
-from PyHPC_Core.configuration import read_config
-from PyHPC_Utils.remote_utils import rclone_listdir, rclone_isdir
+from PyHPC.PyHPC_Core.utils import get_system_info
+from PyHPC.PyHPC_Utils.standard_utils import getFromDict, setInDict
+from PyHPC.PyHPC_Core.log import get_module_logger
+from PyHPC.PyHPC_Core.configuration import read_config
+from PyHPC.PyHPC_Utils.remote_utils import rclone_listdir, rclone_isdir
 import json
 import shutil
 from sshkeyboard import listen_keyboard, stop_listening

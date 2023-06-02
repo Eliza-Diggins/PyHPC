@@ -8,13 +8,13 @@ import pathlib as pt
 import sys
 
 sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
-from PyHPC_Core.log import get_module_logger
-from PyHPC_Core.configuration import read_config
-from PyHPC_Utils.remote_utils import rclone_listdir
+from PyHPC.PyHPC_Core.log import get_module_logger
+from PyHPC.PyHPC_Core.configuration import read_config
+from PyHPC.PyHPC_Utils.remote_utils import rclone_listdir
 import pathlib as pt
 import threading as t
 import warnings
-from PyHPC_Core.utils import time_function
+from PyHPC.PyHPC_Core.utils import time_function
 import json
 from time import perf_counter
 import numpy as np

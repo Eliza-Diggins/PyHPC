@@ -8,9 +8,9 @@ import pathlib as pt
 from datetime import datetime
 from unittest import TestCase
 
-from PyHPC_Core.configuration import read_config
-from PyHPC_Core.log import get_module_logger
-from PyHPC_Core.utils import time_function
+from PyHPC.PyHPC_Core.configuration import read_config
+from PyHPC.PyHPC_Core.log import get_module_logger
+from PyHPC.PyHPC_Core.utils import time_function
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Setup ============================================================================================================= #

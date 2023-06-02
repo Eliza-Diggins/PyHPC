@@ -16,11 +16,11 @@ from colorama import Fore, Style
 
 sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
 
-from PyHPC_Core.configuration import read_config
-from PyHPC_Core.errors import PyHPC_Error
-from PyHPC_Core.log import get_module_logger
-from PyHPC_Utils.text_display_utilities import print_title, TerminalString, select_files, PrintRetainer, get_options
-from PyHPC_System.io import write_ramses_nml, write_slurm_file
+from PyHPC.PyHPC_Core.configuration import read_config
+from PyHPC.PyHPC_Core import PyHPC_Error
+from PyHPC.PyHPC_Core.log import get_module_logger
+from PyHPC.PyHPC_Utils import print_title, TerminalString, select_files, PrintRetainer, get_options
+from PyHPC.PyHPC_System import write_ramses_nml, write_slurm_file
 
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
 # ------------------------------------------------------ Setup ----------------------------------------------------------#
