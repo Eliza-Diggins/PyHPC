@@ -1,6 +1,8 @@
 """
 Installation script for the PyHPC system. This script will install the necessary configuration files and
-other critical resources for execution to the output location of your choice.
+other critical resources for execution to the output location of your choice. If a ticket exists for your current
+installation, then an update will occur unless the ```-ri``` or ``--reinstall`` flag is used in the command line, in
+which case a full reinstallation will occur.
 
 **Usage:**
 

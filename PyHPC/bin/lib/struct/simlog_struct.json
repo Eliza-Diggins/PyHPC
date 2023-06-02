@@ -1,0 +1,24 @@
+{
+  "information": "This file contains all of the information about required entries for simulation log objects.",
+  "SimulationLog": {
+    "format": {
+      "information" : "str",
+      "meta": {
+        "dateCreated": "str",
+        "lastEdited": "str"
+      },
+      "simulations": {
+
+      },
+      "core": {
+
+      }
+    }
+  },
+  "InitCon": {
+
+  },
+  "SimRec": {
+
+  }
+}
