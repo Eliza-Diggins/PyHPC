@@ -1,7 +1,38 @@
 """
-Setup script for the PyHPC code system
+Installation script for the PyHPC system. This script will install the necessary configuration files and
+other critical resources for execution to the output location of your choice.
 
-Written by: Eliza Diggins
+**Usage:**
+
+```commandline
+  _/_/_/_/_/_/                 _/          _/   _/_/_/_/_/_/       _/_/_/_/_/
+  _/         _/                _/          _/   _/         _/    _/
+  _/         _/  _/      _/    _/          _/   _/         _/   _/
+  _/_/_/_/_/_/   _/      _/    _/_/_/_/_/_/_/   _/_/_/_/_/_/    _/
+  _/              _/_/_/_/     _/          _/   _/              _/
+  _/                  _/       _/          _/   _/               _/
+  _/             _/_/_/        _/          _/   _/                 _/_/_/_/_/
+#-------------------------------------------------------------------------------#
+Written by Eliza C. Diggins, University of Utah Department of Physics and Astronomy
+
+Version = 0.2-Alpha
+#-----------#
+
+Stable = False
+#------------#
+
+PyHPC:setup: [INSTALL WIZARD]: Running setup.py...
+usage: setup.py [-h] [-ri] [-l LOCATION] [-v] [-g]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -ri, --reinstall      Flag to force a complete reinstallation.
+  -l LOCATION, --location LOCATION
+                        The location for the installation.
+  -v, --verbose         Enable verbose mode
+  -g, --git             Update from github.
+```
+
 """
 import argparse
 import json
@@ -15,7 +46,7 @@ import tomlkit as t
 from colorama import Fore, Style
 
 from PyHPC_Core.utils import get_system_info
-from PyHPC_Utils.text_display_utilities import print_title, print_verbose
+
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Setup  ============================================================================================================ #
@@ -24,6 +55,7 @@ _location = "PyHPC"
 _filename = pt.Path(__file__).name.replace(".py", "")
 
 # - Strings -#
+__text_file_directory = os.path.join(pt.Path(__file__).parents[0], "bin", "str")
 _dbg_string = "%s:%s:" % (_location, _filename)
 fdbg_string = _dbg_string + " [" + Fore.LIGHTGREEN_EX + Style.BRIGHT + "INSTALL WIZARD" + Style.RESET_ALL + "]: "
 done_string = "[" + Fore.CYAN + Style.BRIGHT + "DONE" + Style.RESET_ALL + "]"
@@ -33,9 +65,21 @@ fail_string = "[" + Fore.RED + Style.BRIGHT + "FAILED" + Style.RESET_ALL + "]"
 __root_path = os.path.join(pt.Path(__file__).parents[0])
 
 
+
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Sub Functions ===================================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
+def print_verbose(msg, verbose, **kwargs):
+    if verbose:
+        print(msg, **kwargs)
+    else:
+        pass
+    return None
+
+def print_title():
+    #- Prints the title of the project -#
+    with open(os.path.join(__text_file_directory,"general","title.txt"),"r") as file:
+        print(file.read().encode("utf-8").decode("unicode_escape")%tuple(get_system_info().__dict__.values()))
 def generate_directories(location, overwrite=False):
     ### Generates the necessary directories for install from lib/struct/fstruct.json ###
 

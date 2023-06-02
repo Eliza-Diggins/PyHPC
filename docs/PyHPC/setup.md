@@ -1,14 +1,52 @@
 Module PyHPC.setup
 ==================
-Setup script for the PyHPC code system
+Installation script for the PyHPC system. This script will install the necessary configuration files and
+other critical resources for execution to the output location of your choice.
 
-Written by: Eliza Diggins
+**Usage:**
+
+```commandline
+  _/_/_/_/_/_/                 _/          _/   _/_/_/_/_/_/       _/_/_/_/_/
+  _/         _/                _/          _/   _/         _/    _/
+  _/         _/  _/      _/    _/          _/   _/         _/   _/
+  _/_/_/_/_/_/   _/      _/    _/_/_/_/_/_/_/   _/_/_/_/_/_/    _/
+  _/              _/_/_/_/     _/          _/   _/              _/
+  _/                  _/       _/          _/   _/               _/
+  _/             _/_/_/        _/          _/   _/                 _/_/_/_/_/
+#-------------------------------------------------------------------------------#
+Written by Eliza C. Diggins, University of Utah Department of Physics and Astronomy
+
+Version = 0.2-Alpha
+#-----------#
+
+Stable = False
+#------------#
+
+PyHPC:setup: [INSTALL WIZARD]: Running setup.py...
+usage: setup.py [-h] [-ri] [-l LOCATION] [-v] [-g]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -ri, --reinstall      Flag to force a complete reinstallation.
+  -l LOCATION, --location LOCATION
+                        The location for the installation.
+  -v, --verbose         Enable verbose mode
+  -g, --git             Update from github.
+```
 
 Functions
 ---------
 
     
 `generate_directories(location, overwrite=False)`
+:   
+
+    
+`print_title()`
+:   
+
+    
+`print_verbose(msg, verbose, **kwargs)`
 :   
 
     
