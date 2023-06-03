@@ -16,9 +16,16 @@
     }
   },
   "InitCon": {
-
-  },
-  "SimRec": {
-
+    "format": {
+              "information": "str",
+              "action_log": {
+              },
+              "meta": {
+              },
+              "core": {
+              },
+              "outputs": {
+              }
+            }
   }
 }

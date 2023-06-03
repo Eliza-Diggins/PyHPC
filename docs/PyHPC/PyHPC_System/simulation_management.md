@@ -61,13 +61,13 @@ Classes
     ### Instance variables
 
     `core`
-    :   ``self.core`` contains all of the core information.
+    :   ``self.core``  contains all of the core information for this entry.
 
     `inf`
-    :   ``self.inf`` contains the information stored at ``self.raw["information"]``
+    :   ``self.inf`` contains all of the description information for this entry.
 
     `meta`
-    :   ``self.meta`` contains the meta data for this particular entry.
+    :   ``self.meta`` contains all of the meta information for this entry.
 
     `name`
     :   ``self.name`` contains the key value of the entry in the ``SimulationLog`` object.
@@ -80,6 +80,40 @@ Classes
 
     `sims`
     :   ``self.sims`` contains all of the ``SimRec`` objects in the simulation.
+
+    ### Methods
+
+    `add(self, entries, auto_save=True, force=False)`
+    :   adds the entry contained in ``**kwargs`` to the ``InitCon`` object. The ``entries`` may contain any number
+        of individual (<u>correctly formatted</u>) entries to add.
+        
+        Parameters
+        ----------
+        auto_save : bool
+            ``auto_save=True`` will immediately write the simulation log to file once alterations are made.
+        entries : dict
+            The entries to add to the ``InitCon``. Each entry should have the standard format:
+        
+            ```
+             "format": {
+              "information": "str",
+              "action_log": {
+              },
+              "meta": {
+              },
+              "core": {
+              },
+              "outputs": {
+              }
+            }
+            ```
+        force : bool
+            Forces the Simulation log to accommodate the structure used regardless of if it meets the standard format
+            ..warning:: This could have catastrophic consequences and should be used only if sure of the result.
+        
+        Returns
+        -------
+        None
 
 `SimRec(name, data, parent=None)`
 :   The ``SimRec`` class contains all of the information for a single simulation record in the ``SimulationLog`` system.
@@ -110,19 +144,19 @@ Classes
     ### Instance variables
 
     `core`
-    :   ``self.core`` contains the core information.
+    :   ``self.core``  contains all of the core information for this entry.
 
-    `log`
-    :   ``self.log`` contains all of the logging information for the particular entry.
+    `inf`
+    :   ``self.inf`` contains all of the description information for this entry.
 
     `meta`
-    :   ``self.meta`` contains the meta-data associated with the entry.
+    :   ``self.meta`` contains all of the meta information for this entry.
 
     `name`
     :   ``self.name`` contains the <u>absolute path</u> to the ``.nml`` file or equivalent init file for runtime use.
 
     `outputs`
-    :   ``self.outputs`` contains a record of all of the output directories for the simulation instance.
+    :   ``self.outputs`` Contains all of the outputs for the ``SimRec`` object.
 
     `parent`
     :   ``self.parent`` is a reference to the parent object.
@@ -250,8 +284,13 @@ Classes
 
     ### Instance variables
 
-    `ics`
-    :   ``self.ics`` contains a list of all of the ``InitCon`` objects in the ``SimulationLog`` object.
+    `ics: dict`
+    :   Contains the dictionary of ``InitCon`` objects to use during execution.
+        
+        Returns
+        -------
+        val : ``dict``
+            The dictionary of ``InitCon`` objects.
 
     ### Methods
 

@@ -38,7 +38,7 @@ import os
 import pathlib as pt
 import sys
 
-sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
+sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[2]))
 from PyHPC.PyHPC_Core.log import get_module_logger
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.errors import PyHPC_Error
@@ -49,7 +49,8 @@ import json
 import operator
 from functools import reduce
 import builtins
-
+from datetime import datetime
+import copy
 # generating screen locking #
 screen_lock = t.Semaphore(value=1)  # locks off multi-threaded screen.
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
@@ -60,7 +61,7 @@ _filename = pt.Path(__file__).name.replace(&#34;.py&#34;, &#34;&#34;)
 _dbg_string = &#34;%s:%s:&#34; % (_location, _filename)
 CONFIG = read_config()
 modlog = get_module_logger(_location, _filename)
-_structure_file = os.path.join(pt.Path(os.path.realpath(__file__)).parents[1], &#34;bin&#34;, &#34;struct&#34;, &#34;simlog_struct.json&#34;)
+_structure_file = os.path.join(pt.Path(os.path.realpath(__file__)).parents[1], &#34;bin&#34;,&#34;lib&#34;, &#34;struct&#34;, &#34;simlog_struct.json&#34;)
 # - managing warnings -#
 if not CONFIG[&#34;System&#34;][&#34;Logging&#34;][&#34;warnings&#34;]:
     warnings.filterwarnings(&#39;ignore&#39;)
@@ -210,12 +211,27 @@ class SimulationLog:
         with open(self.path, &#34;r+&#34;) as simfile:
             self.raw = json.load(simfile)
 
-        #  Generating the sub items
-        # ----------------------------------------------------------------------------------------------------------------- #
-        #: ``self.ics`` contains a list of all of the ``InitCon`` objects in the ``SimulationLog`` object.
-        self.ics = {
+    # ---------------------------------------------------------------------------------------------------------------- #
+    # Defining and Managing Properties =============================================================================== #
+    # ---------------------------------------------------------------------------------------------------------------- #
+
+    @property
+    def ics(self) -&gt; dict:
+        &#34;&#34;&#34;
+        Contains the dictionary of ``InitCon`` objects to use during execution.
+
+        Returns
+        -------
+        val : ``dict``
+            The dictionary of ``InitCon`` objects.
+        &#34;&#34;&#34;
+        return {
             k: InitCon(k, v, parent=self) for k, v in self.raw.items()
         }
+
+    # ---------------------------------------------------------------------------------------------------------------- #
+    # Dunder Methods ================================================================================================= #
+    # ---------------------------------------------------------------------------------------------------------------- #
 
     def __repr__(self):
         &#34;&#34;&#34;
@@ -258,6 +274,8 @@ class SimulationLog:
             self.__missing__(item)
 
     def __setitem__(self, keys: list, value):
+        if not isinstance(keys, list):
+            keys = [keys]
         self.__getitem__(keys[:-1])[keys[-1]] = value
 
     def __len__(self):
@@ -267,6 +285,8 @@ class SimulationLog:
         return item in self.ics
 
     def __delitem__(self, key_list):
+        if not isinstance(key_list, list):
+            key_list = [key_list]
         del self.__getitem__(key_list[:-1])[key_list[-1]]
 
     def __iter__(self):
@@ -283,7 +303,7 @@ class SimulationLog:
         All of the ``SimRec``
         &#34;&#34;&#34;
         obs = []
-        for ic in self.ics:
+        for ic in self.ics.values():
             obs += ic.sims
 
         return obs
@@ -405,12 +425,34 @@ class SimulationLog:
                 raise PyHPC_Error(
                     &#34;Failed to parse the simulation log structure file at %s. Check installation.&#34; % _structure_file)
 
-            # - Cleaning the structure - #
-            for item in entries:
-                if not check_dictionary_structure(_struct[&#34;SimulationLog&#34;], item):
+            #  Cleaning up the structure
+            # -------------------------------------------------------------------------------------------------------- #
+            ##- Trying to add any issues -##
+            generation_time = datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+            new_entries = {}
+            for item,data in entries.items():
+                new = data.copy()
+
+                #- Adding necessary headers -#
+                for header,obj in zip([&#34;information&#34;,&#34;meta&#34;,&#34;simulations&#34;,&#34;core&#34;],[&#34;&#34;,{},{},{}]):
+                    if header not in data:
+                        new[header] = obj
+
+                #- Dealing with specialized items -#
+                if &#34;dateCreated&#34; not in new[&#34;meta&#34;]:
+                    new[&#34;meta&#34;][&#34;dateCreated&#34;] = generation_time
+                if &#34;lastEdited&#34; not in new[&#34;meta&#34;]:
+                    new[&#34;meta&#34;][&#34;lastEdited&#34;] = generation_time
+
+                new_entries[item] = new
+            entries = new_entries
+
+
+            for item,data in entries.items():
+                if not check_dictionary_structure(_struct[&#34;SimulationLog&#34;][&#34;format&#34;], data):
                     raise SyntaxError(
                         &#34;SimulationLog %s failed to add entry %s due to item %s which failed to match structure.&#34; % (
-                        repr(self), entries, item))
+                            repr(self), entries, item))
 
         else:
             modlog.warning(&#34;parameter ``force`` was specified in execution of SimulationLog.add on %s.&#34; % (repr(self)))
@@ -418,9 +460,6 @@ class SimulationLog:
         #  Adding
         # ------------------------------------------------------------------------------------------------------------ #
         self.raw = {**self.raw, **entries}
-        self.ics = {**self.ics, **{
-            k: InitCon(k, v, parent=self) for k, v in entries.items()
-        }}
 
         #  Managing Saves
         # ------------------------------------------------------------------------------------------------------------ #
@@ -443,7 +482,6 @@ class SimulationLog:
         # ------------------------------------------------------------------------------------------------------------ #
         with open(self.path, &#34;w+&#34;) as simlog_file:
             json.dump(self.raw, simlog_file)
-
 
 class InitCon:
     &#34;&#34;&#34;
@@ -483,18 +521,44 @@ class InitCon:
         #: ``self.raw`` is the core information in the ``InitCon`` object.
         self.raw = raw
 
-        #: ``self.sims`` contains all of the ``SimRec`` objects in the simulation.
-        self.sims = {k: SimRec(k, data, parent=self) for k, data in self.raw[&#34;simulations&#34;].items()}
+    # ---------------------------------------------------------------------------------------------------------------- #
+    # Managing Properties   ========================================================================================== #
+    # ---------------------------------------------------------------------------------------------------------------- #
+    @property
+    def sims(self):
+        &#34;&#34;&#34;``self.sims`` contains all of the ``SimRec`` objects in the simulation.&#34;&#34;&#34;
+        try:
+            return {k: SimRec(k, data, parent=self) for k, data in self.raw[&#34;simulations&#34;].items()}
+        except KeyError:
+            return None
 
-        #: ``self.core`` contains all of the core information.
-        self.core = self.raw[&#34;core&#34;]
+    @property
+    def core(self):
+        &#34;&#34;&#34;``self.core``  contains all of the core information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;core&#34;]
+        except KeyError:
+            return None
 
-        #: ``self.inf`` contains the information stored at ``self.raw[&#34;information&#34;]``
-        self.inf = self.raw[&#34;information&#34;]
+    @property
+    def inf(self):
+        &#34;&#34;&#34;``self.inf`` contains all of the description information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;information&#34;]
+        except KeyError:
+            return None
 
-        #: ``self.meta`` contains the meta data for this particular entry.
-        self.meta = self.raw[&#34;meta&#34;]
+    @property
+    def meta(self):
+        &#34;&#34;&#34;``self.meta`` contains all of the meta information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;meta&#34;]
+        except KeyError:
+            return None
 
+    # ---------------------------------------------------------------------------------------------------------------- #
+    #  Dunder Methods ================================================================================================ #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def __repr__(self):
         &#34;&#34;&#34;
         Defines the representation string for the ``SimulationLog`` object.
@@ -536,15 +600,19 @@ class InitCon:
             self.__missing__(item_map)
 
     def __setitem__(self, keys: list, value):
+        if not isinstance(keys, list):
+            keys = [keys]
         self.__getitem__(keys[:-1])[keys[-1]] = value
 
     def __len__(self):
-        return len(self.raw)
+        return len(self.sims)
 
     def __contains__(self, item):
         return item in self.sims
 
     def __delitem__(self, key_list):
+        if not isinstance(key_list, list):
+            key_list = [key_list]
         del self.__getitem__(key_list[:-1])[key_list[-1]]
 
     def __iter__(self):
@@ -553,6 +621,103 @@ class InitCon:
     def __missing__(self, key):
         return None
 
+    def add(self, entries, auto_save=True, force=False):
+        &#34;&#34;&#34;
+        adds the entry contained in ``**kwargs`` to the ``InitCon`` object. The ``entries`` may contain any number
+        of individual (&lt;u&gt;correctly formatted&lt;/u&gt;) entries to add.
+
+        Parameters
+        ----------
+        auto_save : bool
+            ``auto_save=True`` will immediately write the simulation log to file once alterations are made.
+        entries : dict
+            The entries to add to the ``InitCon``. Each entry should have the standard format:
+
+            ```
+             &#34;format&#34;: {
+              &#34;information&#34;: &#34;str&#34;,
+              &#34;action_log&#34;: {
+              },
+              &#34;meta&#34;: {
+              },
+              &#34;core&#34;: {
+              },
+              &#34;outputs&#34;: {
+              }
+            }
+            ```
+        force : bool
+            Forces the Simulation log to accommodate the structure used regardless of if it meets the standard format
+            ..warning:: This could have catastrophic consequences and should be used only if sure of the result.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+        #  Debugging
+        # ------------------------------------------------------------------------------------------------------------ #
+        modlog.debug(&#34;Adding %s to %s&#34; % (entries, repr(self)))
+
+        #  Checking structure
+        # ------------------------------------------------------------------------------------------------------------ #
+        if not force:
+
+            # - Loading the structure information -#
+            try:
+                with open(_structure_file, &#34;r&#34;) as struc_file:
+                    _struct = json.load(struc_file)
+            except FileNotFoundError:
+                modlog.exception(
+                    &#34;Failed to locate the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+                raise PyHPC_Error(
+                    &#34;Failed to locate the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+            except json.JSONDecoder:
+                modlog.exception(
+                    &#34;Failed to parse the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+                raise PyHPC_Error(
+                    &#34;Failed to parse the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+
+            #  Cleaning up the structure
+            # -------------------------------------------------------------------------------------------------------- #
+            ##- Trying to add any issues -##
+            generation_time = datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+            new_entries = {}
+            for item,data in entries.items():
+                new = data.copy()
+
+                #- Adding necessary headers -#
+                for header,obj in zip([&#34;information&#34;,&#34;meta&#34;,&#34;simulations&#34;,&#34;core&#34;],[&#34;&#34;,{},{},{}]):
+                    if header not in data:
+                        new[header] = obj
+
+                #- Dealing with specialized items -#
+                if &#34;dateCreated&#34; not in new[&#34;meta&#34;]:
+                    new[&#34;meta&#34;][&#34;dateCreated&#34;] = generation_time
+                if &#34;lastEdited&#34; not in new[&#34;meta&#34;]:
+                    new[&#34;meta&#34;][&#34;lastEdited&#34;] = generation_time
+
+                new_entries[item] = new
+            entries = new_entries
+
+            for item,data in entries.items():
+                if not check_dictionary_structure(_struct[&#34;InitCon&#34;][&#34;format&#34;], data):
+                    raise SyntaxError(
+                        &#34;InitCon %s failed to add entry %s due to item %s which failed to match structure.&#34; % (
+                            repr(self), entries, item))
+
+        else:
+            modlog.warning(&#34;parameter ``force`` was specified in execution of InitCon.add on %s.&#34; % (repr(self)))
+
+        #  Adding
+        # ------------------------------------------------------------------------------------------------------------ #
+        self.raw[&#34;simulations&#34;] = {**self.raw[&#34;simulations&#34;], **entries}
+
+        #  Managing Saves
+        # ------------------------------------------------------------------------------------------------------------ #
+        if auto_save:
+            self.parent.save()
+
+        print(get_dict_str(self.raw))
 
 class SimRec:
     &#34;&#34;&#34;
@@ -593,20 +758,44 @@ class SimRec:
         #: ``self.raw`` contains all of the raw data provided in the ``SimRec`` object.
         self.raw = data
 
-        #  Generating sub-attributes
-        # ------------------------------------------------------------------------------------------------------------ #
-        #: ``self.meta`` contains the meta-data associated with the entry.
-        self.meta = data[&#34;meta&#34;]
+    # ---------------------------------------------------------------------------------------------------------------- #
+    # Managing Properties   ========================================================================================== #
+    # ---------------------------------------------------------------------------------------------------------------- #
+    @property
+    def outputs(self):
+        &#34;&#34;&#34;``self.outputs`` Contains all of the outputs for the ``SimRec`` object.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;outputs&#34;]
+        except KeyError:
+            return None
 
-        #: ``self.core`` contains the core information.
-        self.core = data[&#34;core&#34;]
+    @property
+    def core(self):
+        &#34;&#34;&#34;``self.core``  contains all of the core information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;core&#34;]
+        except KeyError:
+            return None
 
-        #: ``self.outputs`` contains a record of all of the output directories for the simulation instance.
-        self.outputs = data[&#34;outputs&#34;]
+    @property
+    def inf(self):
+        &#34;&#34;&#34;``self.inf`` contains all of the description information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;information&#34;]
+        except KeyError:
+            return None
 
-        #: ``self.log`` contains all of the logging information for the particular entry.
-        self.log = data[&#34;action_log&#34;]
+    @property
+    def meta(self):
+        &#34;&#34;&#34;``self.meta`` contains all of the meta information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;meta&#34;]
+        except KeyError:
+            return None
 
+    # ---------------------------------------------------------------------------------------------------------------- #
+    #  Dunder Methods ================================================================================================ #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def __repr__(self):
         &#34;&#34;&#34;
         Defines the representation string for the ``SimulationLog`` object.
@@ -648,6 +837,8 @@ class SimRec:
             self.__missing__(item)
 
     def __setitem__(self, keys: list, value):
+        if not isinstance(keys, list):
+            keys = [keys]
         self.__getitem__(keys[:-1])[keys[-1]] = value
 
     def __len__(self):
@@ -669,6 +860,8 @@ class SimRec:
         return path in self.outputs
 
     def __delitem__(self, key_list):
+        if not isinstance(key_list, list):
+            key_list = [key_list]
         del self.__getitem__(key_list[:-1])[key_list[-1]]
 
     def __iter__(self):
@@ -707,23 +900,37 @@ def check_dictionary_structure(master: dict, base: dict) -&gt; bool:
     result = True  # -&gt; this is used to check for the match throughout.
     for key, value in master.items():
         if key not in base:
+            modlog.debug(&#34;key %s not in base (%s), result = False&#34;%(key,base))
             result = False
         else:
             if isinstance(value, dict) and len(value):
                 result = result and check_dictionary_structure(value, base[key])
             elif isinstance(value, str):
                 result = result and isinstance(base[key], getattr(builtins, value))
+
+                if not isinstance(base[key], getattr(builtins, value)):
+                    modlog.debug(&#34;key %s of base %s failed to match type %s, result = %s.&#34;%(key,base,value,result))
             else:
                 pass
     return result
 
 
 if __name__ == &#39;__main__&#39;:
+    from PyHPC.PyHPC_Utils.text_display_utilities import get_dict_str
     h = SimulationLog()
-    print(h)
-    print(h.ics)
-    print(h.ics[&#34;test.g2&#34;].sims)
-    print(h[[&#34;test.g2&#34;, &#34;test.nml&#34;, &#34;information&#34;]])</code></pre>
+    h[[&#34;test.g2&#34;]].add({&#34;sim1&#34;:{
+              &#34;information&#34;: &#34;str&#34;,
+              &#34;action_log&#34;: {
+              },
+              &#34;meta&#34;: {
+              },
+              &#34;core&#34;: {
+              },
+              &#34;outputs&#34;: {
+              }
+            }},auto_save=False)
+    print(get_dict_str(h.raw))
+    print(&#34;sim1&#34; in h.get_simulation_records(),&#34;test.nml&#34; in h.get_simulation_records())</code></pre>
 </details>
 </section>
 <section>
@@ -791,12 +998,16 @@ matches and <code>False</code> if the structure fails to correctly match.</p>
     result = True  # -&gt; this is used to check for the match throughout.
     for key, value in master.items():
         if key not in base:
+            modlog.debug(&#34;key %s not in base (%s), result = False&#34;%(key,base))
             result = False
         else:
             if isinstance(value, dict) and len(value):
                 result = result and check_dictionary_structure(value, base[key])
             elif isinstance(value, str):
                 result = result and isinstance(base[key], getattr(builtins, value))
+
+                if not isinstance(base[key], getattr(builtins, value)):
+                    modlog.debug(&#34;key %s of base %s failed to match type %s, result = %s.&#34;%(key,base,value,result))
             else:
                 pass
     return result</code></pre>
@@ -874,18 +1085,44 @@ the individual sub-units of the <code><a title="PyHPC.PyHPC_System.simulation_ma
         #: ``self.raw`` is the core information in the ``InitCon`` object.
         self.raw = raw
 
-        #: ``self.sims`` contains all of the ``SimRec`` objects in the simulation.
-        self.sims = {k: SimRec(k, data, parent=self) for k, data in self.raw[&#34;simulations&#34;].items()}
+    # ---------------------------------------------------------------------------------------------------------------- #
+    # Managing Properties   ========================================================================================== #
+    # ---------------------------------------------------------------------------------------------------------------- #
+    @property
+    def sims(self):
+        &#34;&#34;&#34;``self.sims`` contains all of the ``SimRec`` objects in the simulation.&#34;&#34;&#34;
+        try:
+            return {k: SimRec(k, data, parent=self) for k, data in self.raw[&#34;simulations&#34;].items()}
+        except KeyError:
+            return None
 
-        #: ``self.core`` contains all of the core information.
-        self.core = self.raw[&#34;core&#34;]
+    @property
+    def core(self):
+        &#34;&#34;&#34;``self.core``  contains all of the core information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;core&#34;]
+        except KeyError:
+            return None
 
-        #: ``self.inf`` contains the information stored at ``self.raw[&#34;information&#34;]``
-        self.inf = self.raw[&#34;information&#34;]
+    @property
+    def inf(self):
+        &#34;&#34;&#34;``self.inf`` contains all of the description information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;information&#34;]
+        except KeyError:
+            return None
 
-        #: ``self.meta`` contains the meta data for this particular entry.
-        self.meta = self.raw[&#34;meta&#34;]
+    @property
+    def meta(self):
+        &#34;&#34;&#34;``self.meta`` contains all of the meta information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;meta&#34;]
+        except KeyError:
+            return None
 
+    # ---------------------------------------------------------------------------------------------------------------- #
+    #  Dunder Methods ================================================================================================ #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def __repr__(self):
         &#34;&#34;&#34;
         Defines the representation string for the ``SimulationLog`` object.
@@ -927,36 +1164,175 @@ the individual sub-units of the <code><a title="PyHPC.PyHPC_System.simulation_ma
             self.__missing__(item_map)
 
     def __setitem__(self, keys: list, value):
+        if not isinstance(keys, list):
+            keys = [keys]
         self.__getitem__(keys[:-1])[keys[-1]] = value
 
     def __len__(self):
-        return len(self.raw)
+        return len(self.sims)
 
     def __contains__(self, item):
         return item in self.sims
 
     def __delitem__(self, key_list):
+        if not isinstance(key_list, list):
+            key_list = [key_list]
         del self.__getitem__(key_list[:-1])[key_list[-1]]
 
     def __iter__(self):
         return iter(self.raw)
 
     def __missing__(self, key):
-        return None</code></pre>
+        return None
+
+    def add(self, entries, auto_save=True, force=False):
+        &#34;&#34;&#34;
+        adds the entry contained in ``**kwargs`` to the ``InitCon`` object. The ``entries`` may contain any number
+        of individual (&lt;u&gt;correctly formatted&lt;/u&gt;) entries to add.
+
+        Parameters
+        ----------
+        auto_save : bool
+            ``auto_save=True`` will immediately write the simulation log to file once alterations are made.
+        entries : dict
+            The entries to add to the ``InitCon``. Each entry should have the standard format:
+
+            ```
+             &#34;format&#34;: {
+              &#34;information&#34;: &#34;str&#34;,
+              &#34;action_log&#34;: {
+              },
+              &#34;meta&#34;: {
+              },
+              &#34;core&#34;: {
+              },
+              &#34;outputs&#34;: {
+              }
+            }
+            ```
+        force : bool
+            Forces the Simulation log to accommodate the structure used regardless of if it meets the standard format
+            ..warning:: This could have catastrophic consequences and should be used only if sure of the result.
+
+        Returns
+        -------
+        None
+        &#34;&#34;&#34;
+        #  Debugging
+        # ------------------------------------------------------------------------------------------------------------ #
+        modlog.debug(&#34;Adding %s to %s&#34; % (entries, repr(self)))
+
+        #  Checking structure
+        # ------------------------------------------------------------------------------------------------------------ #
+        if not force:
+
+            # - Loading the structure information -#
+            try:
+                with open(_structure_file, &#34;r&#34;) as struc_file:
+                    _struct = json.load(struc_file)
+            except FileNotFoundError:
+                modlog.exception(
+                    &#34;Failed to locate the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+                raise PyHPC_Error(
+                    &#34;Failed to locate the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+            except json.JSONDecoder:
+                modlog.exception(
+                    &#34;Failed to parse the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+                raise PyHPC_Error(
+                    &#34;Failed to parse the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+
+            #  Cleaning up the structure
+            # -------------------------------------------------------------------------------------------------------- #
+            ##- Trying to add any issues -##
+            generation_time = datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+            new_entries = {}
+            for item,data in entries.items():
+                new = data.copy()
+
+                #- Adding necessary headers -#
+                for header,obj in zip([&#34;information&#34;,&#34;meta&#34;,&#34;simulations&#34;,&#34;core&#34;],[&#34;&#34;,{},{},{}]):
+                    if header not in data:
+                        new[header] = obj
+
+                #- Dealing with specialized items -#
+                if &#34;dateCreated&#34; not in new[&#34;meta&#34;]:
+                    new[&#34;meta&#34;][&#34;dateCreated&#34;] = generation_time
+                if &#34;lastEdited&#34; not in new[&#34;meta&#34;]:
+                    new[&#34;meta&#34;][&#34;lastEdited&#34;] = generation_time
+
+                new_entries[item] = new
+            entries = new_entries
+
+            for item,data in entries.items():
+                if not check_dictionary_structure(_struct[&#34;InitCon&#34;][&#34;format&#34;], data):
+                    raise SyntaxError(
+                        &#34;InitCon %s failed to add entry %s due to item %s which failed to match structure.&#34; % (
+                            repr(self), entries, item))
+
+        else:
+            modlog.warning(&#34;parameter ``force`` was specified in execution of InitCon.add on %s.&#34; % (repr(self)))
+
+        #  Adding
+        # ------------------------------------------------------------------------------------------------------------ #
+        self.raw[&#34;simulations&#34;] = {**self.raw[&#34;simulations&#34;], **entries}
+
+        #  Managing Saves
+        # ------------------------------------------------------------------------------------------------------------ #
+        if auto_save:
+            self.parent.save()
+
+        print(get_dict_str(self.raw))</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
 <dt id="PyHPC.PyHPC_System.simulation_management.InitCon.core"><code class="name">var <span class="ident">core</span></code></dt>
 <dd>
-<div class="desc"><p><code>self.core</code> contains all of the core information.</p></div>
+<div class="desc"><p><code>self.core</code>
+contains all of the core information for this entry.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def core(self):
+    &#34;&#34;&#34;``self.core``  contains all of the core information for this entry.&#34;&#34;&#34;
+    try:
+        return self.raw[&#34;core&#34;]
+    except KeyError:
+        return None</code></pre>
+</details>
 </dd>
 <dt id="PyHPC.PyHPC_System.simulation_management.InitCon.inf"><code class="name">var <span class="ident">inf</span></code></dt>
 <dd>
-<div class="desc"><p><code>self.inf</code> contains the information stored at <code>self.raw["information"]</code></p></div>
+<div class="desc"><p><code>self.inf</code> contains all of the description information for this entry.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def inf(self):
+    &#34;&#34;&#34;``self.inf`` contains all of the description information for this entry.&#34;&#34;&#34;
+    try:
+        return self.raw[&#34;information&#34;]
+    except KeyError:
+        return None</code></pre>
+</details>
 </dd>
 <dt id="PyHPC.PyHPC_System.simulation_management.InitCon.meta"><code class="name">var <span class="ident">meta</span></code></dt>
 <dd>
-<div class="desc"><p><code>self.meta</code> contains the meta data for this particular entry.</p></div>
+<div class="desc"><p><code>self.meta</code> contains all of the meta information for this entry.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def meta(self):
+    &#34;&#34;&#34;``self.meta`` contains all of the meta information for this entry.&#34;&#34;&#34;
+    try:
+        return self.raw[&#34;meta&#34;]
+    except KeyError:
+        return None</code></pre>
+</details>
 </dd>
 <dt id="PyHPC.PyHPC_System.simulation_management.InitCon.name"><code class="name">var <span class="ident">name</span></code></dt>
 <dd>
@@ -973,6 +1349,160 @@ the individual sub-units of the <code><a title="PyHPC.PyHPC_System.simulation_ma
 <dt id="PyHPC.PyHPC_System.simulation_management.InitCon.sims"><code class="name">var <span class="ident">sims</span></code></dt>
 <dd>
 <div class="desc"><p><code>self.sims</code> contains all of the <code><a title="PyHPC.PyHPC_System.simulation_management.SimRec" href="#PyHPC.PyHPC_System.simulation_management.SimRec">SimRec</a></code> objects in the simulation.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def sims(self):
+    &#34;&#34;&#34;``self.sims`` contains all of the ``SimRec`` objects in the simulation.&#34;&#34;&#34;
+    try:
+        return {k: SimRec(k, data, parent=self) for k, data in self.raw[&#34;simulations&#34;].items()}
+    except KeyError:
+        return None</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="PyHPC.PyHPC_System.simulation_management.InitCon.add"><code class="name flex">
+<span>def <span class="ident">add</span></span>(<span>self, entries, auto_save=True, force=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>adds the entry contained in <code>**kwargs</code> to the <code><a title="PyHPC.PyHPC_System.simulation_management.InitCon" href="#PyHPC.PyHPC_System.simulation_management.InitCon">InitCon</a></code> object. The <code>entries</code> may contain any number
+of individual (<u>correctly formatted</u>) entries to add.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>auto_save</code></strong> :&ensp;<code>bool</code></dt>
+<dd><code>auto_save=True</code> will immediately write the simulation log to file once alterations are made.</dd>
+<dt><strong><code>entries</code></strong> :&ensp;<code>dict</code></dt>
+<dd>
+<p>The entries to add to the <code><a title="PyHPC.PyHPC_System.simulation_management.InitCon" href="#PyHPC.PyHPC_System.simulation_management.InitCon">InitCon</a></code>. Each entry should have the standard format:</p>
+<p><code>"format": {
+"information": "str",
+"action_log": {
+},
+"meta": {
+},
+"core": {
+},
+"outputs": {
+}
+}</code></p>
+</dd>
+<dt><strong><code>force</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Forces the Simulation log to accommodate the structure used regardless of if it meets the standard format<div class="admonition warning">
+<p class="admonition-title">Warning:&ensp;This could have catastrophic consequences and should be used only if sure of the result.</p>
+</div>
+</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add(self, entries, auto_save=True, force=False):
+    &#34;&#34;&#34;
+    adds the entry contained in ``**kwargs`` to the ``InitCon`` object. The ``entries`` may contain any number
+    of individual (&lt;u&gt;correctly formatted&lt;/u&gt;) entries to add.
+
+    Parameters
+    ----------
+    auto_save : bool
+        ``auto_save=True`` will immediately write the simulation log to file once alterations are made.
+    entries : dict
+        The entries to add to the ``InitCon``. Each entry should have the standard format:
+
+        ```
+         &#34;format&#34;: {
+          &#34;information&#34;: &#34;str&#34;,
+          &#34;action_log&#34;: {
+          },
+          &#34;meta&#34;: {
+          },
+          &#34;core&#34;: {
+          },
+          &#34;outputs&#34;: {
+          }
+        }
+        ```
+    force : bool
+        Forces the Simulation log to accommodate the structure used regardless of if it meets the standard format
+        ..warning:: This could have catastrophic consequences and should be used only if sure of the result.
+
+    Returns
+    -------
+    None
+    &#34;&#34;&#34;
+    #  Debugging
+    # ------------------------------------------------------------------------------------------------------------ #
+    modlog.debug(&#34;Adding %s to %s&#34; % (entries, repr(self)))
+
+    #  Checking structure
+    # ------------------------------------------------------------------------------------------------------------ #
+    if not force:
+
+        # - Loading the structure information -#
+        try:
+            with open(_structure_file, &#34;r&#34;) as struc_file:
+                _struct = json.load(struc_file)
+        except FileNotFoundError:
+            modlog.exception(
+                &#34;Failed to locate the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+            raise PyHPC_Error(
+                &#34;Failed to locate the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+        except json.JSONDecoder:
+            modlog.exception(
+                &#34;Failed to parse the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+            raise PyHPC_Error(
+                &#34;Failed to parse the simulation log structure file at %s. Check installation.&#34; % _structure_file)
+
+        #  Cleaning up the structure
+        # -------------------------------------------------------------------------------------------------------- #
+        ##- Trying to add any issues -##
+        generation_time = datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+        new_entries = {}
+        for item,data in entries.items():
+            new = data.copy()
+
+            #- Adding necessary headers -#
+            for header,obj in zip([&#34;information&#34;,&#34;meta&#34;,&#34;simulations&#34;,&#34;core&#34;],[&#34;&#34;,{},{},{}]):
+                if header not in data:
+                    new[header] = obj
+
+            #- Dealing with specialized items -#
+            if &#34;dateCreated&#34; not in new[&#34;meta&#34;]:
+                new[&#34;meta&#34;][&#34;dateCreated&#34;] = generation_time
+            if &#34;lastEdited&#34; not in new[&#34;meta&#34;]:
+                new[&#34;meta&#34;][&#34;lastEdited&#34;] = generation_time
+
+            new_entries[item] = new
+        entries = new_entries
+
+        for item,data in entries.items():
+            if not check_dictionary_structure(_struct[&#34;InitCon&#34;][&#34;format&#34;], data):
+                raise SyntaxError(
+                    &#34;InitCon %s failed to add entry %s due to item %s which failed to match structure.&#34; % (
+                        repr(self), entries, item))
+
+    else:
+        modlog.warning(&#34;parameter ``force`` was specified in execution of InitCon.add on %s.&#34; % (repr(self)))
+
+    #  Adding
+    # ------------------------------------------------------------------------------------------------------------ #
+    self.raw[&#34;simulations&#34;] = {**self.raw[&#34;simulations&#34;], **entries}
+
+    #  Managing Saves
+    # ------------------------------------------------------------------------------------------------------------ #
+    if auto_save:
+        self.parent.save()
+
+    print(get_dict_str(self.raw))</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -1045,20 +1575,44 @@ This is the most granular view available in the <code><a title="PyHPC.PyHPC_Syst
         #: ``self.raw`` contains all of the raw data provided in the ``SimRec`` object.
         self.raw = data
 
-        #  Generating sub-attributes
-        # ------------------------------------------------------------------------------------------------------------ #
-        #: ``self.meta`` contains the meta-data associated with the entry.
-        self.meta = data[&#34;meta&#34;]
+    # ---------------------------------------------------------------------------------------------------------------- #
+    # Managing Properties   ========================================================================================== #
+    # ---------------------------------------------------------------------------------------------------------------- #
+    @property
+    def outputs(self):
+        &#34;&#34;&#34;``self.outputs`` Contains all of the outputs for the ``SimRec`` object.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;outputs&#34;]
+        except KeyError:
+            return None
 
-        #: ``self.core`` contains the core information.
-        self.core = data[&#34;core&#34;]
+    @property
+    def core(self):
+        &#34;&#34;&#34;``self.core``  contains all of the core information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;core&#34;]
+        except KeyError:
+            return None
 
-        #: ``self.outputs`` contains a record of all of the output directories for the simulation instance.
-        self.outputs = data[&#34;outputs&#34;]
+    @property
+    def inf(self):
+        &#34;&#34;&#34;``self.inf`` contains all of the description information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;information&#34;]
+        except KeyError:
+            return None
 
-        #: ``self.log`` contains all of the logging information for the particular entry.
-        self.log = data[&#34;action_log&#34;]
+    @property
+    def meta(self):
+        &#34;&#34;&#34;``self.meta`` contains all of the meta information for this entry.&#34;&#34;&#34;
+        try:
+            return self.raw[&#34;meta&#34;]
+        except KeyError:
+            return None
 
+    # ---------------------------------------------------------------------------------------------------------------- #
+    #  Dunder Methods ================================================================================================ #
+    # ---------------------------------------------------------------------------------------------------------------- #
     def __repr__(self):
         &#34;&#34;&#34;
         Defines the representation string for the ``SimulationLog`` object.
@@ -1100,6 +1654,8 @@ This is the most granular view available in the <code><a title="PyHPC.PyHPC_Syst
             self.__missing__(item)
 
     def __setitem__(self, keys: list, value):
+        if not isinstance(keys, list):
+            keys = [keys]
         self.__getitem__(keys[:-1])[keys[-1]] = value
 
     def __len__(self):
@@ -1121,6 +1677,8 @@ This is the most granular view available in the <code><a title="PyHPC.PyHPC_Syst
         return path in self.outputs
 
     def __delitem__(self, key_list):
+        if not isinstance(key_list, list):
+            key_list = [key_list]
         del self.__getitem__(key_list[:-1])[key_list[-1]]
 
     def __iter__(self):
@@ -1133,15 +1691,52 @@ This is the most granular view available in the <code><a title="PyHPC.PyHPC_Syst
 <dl>
 <dt id="PyHPC.PyHPC_System.simulation_management.SimRec.core"><code class="name">var <span class="ident">core</span></code></dt>
 <dd>
-<div class="desc"><p><code>self.core</code> contains the core information.</p></div>
+<div class="desc"><p><code>self.core</code>
+contains all of the core information for this entry.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def core(self):
+    &#34;&#34;&#34;``self.core``  contains all of the core information for this entry.&#34;&#34;&#34;
+    try:
+        return self.raw[&#34;core&#34;]
+    except KeyError:
+        return None</code></pre>
+</details>
 </dd>
-<dt id="PyHPC.PyHPC_System.simulation_management.SimRec.log"><code class="name">var <span class="ident">log</span></code></dt>
+<dt id="PyHPC.PyHPC_System.simulation_management.SimRec.inf"><code class="name">var <span class="ident">inf</span></code></dt>
 <dd>
-<div class="desc"><p><code>self.log</code> contains all of the logging information for the particular entry.</p></div>
+<div class="desc"><p><code>self.inf</code> contains all of the description information for this entry.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def inf(self):
+    &#34;&#34;&#34;``self.inf`` contains all of the description information for this entry.&#34;&#34;&#34;
+    try:
+        return self.raw[&#34;information&#34;]
+    except KeyError:
+        return None</code></pre>
+</details>
 </dd>
 <dt id="PyHPC.PyHPC_System.simulation_management.SimRec.meta"><code class="name">var <span class="ident">meta</span></code></dt>
 <dd>
-<div class="desc"><p><code>self.meta</code> contains the meta-data associated with the entry.</p></div>
+<div class="desc"><p><code>self.meta</code> contains all of the meta information for this entry.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def meta(self):
+    &#34;&#34;&#34;``self.meta`` contains all of the meta information for this entry.&#34;&#34;&#34;
+    try:
+        return self.raw[&#34;meta&#34;]
+    except KeyError:
+        return None</code></pre>
+</details>
 </dd>
 <dt id="PyHPC.PyHPC_System.simulation_management.SimRec.name"><code class="name">var <span class="ident">name</span></code></dt>
 <dd>
@@ -1149,7 +1744,19 @@ This is the most granular view available in the <code><a title="PyHPC.PyHPC_Syst
 </dd>
 <dt id="PyHPC.PyHPC_System.simulation_management.SimRec.outputs"><code class="name">var <span class="ident">outputs</span></code></dt>
 <dd>
-<div class="desc"><p><code>self.outputs</code> contains a record of all of the output directories for the simulation instance.</p></div>
+<div class="desc"><p><code>self.outputs</code> Contains all of the outputs for the <code><a title="PyHPC.PyHPC_System.simulation_management.SimRec" href="#PyHPC.PyHPC_System.simulation_management.SimRec">SimRec</a></code> object.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def outputs(self):
+    &#34;&#34;&#34;``self.outputs`` Contains all of the outputs for the ``SimRec`` object.&#34;&#34;&#34;
+    try:
+        return self.raw[&#34;outputs&#34;]
+    except KeyError:
+        return None</code></pre>
+</details>
 </dd>
 <dt id="PyHPC.PyHPC_System.simulation_management.SimRec.parent"><code class="name">var <span class="ident">parent</span></code></dt>
 <dd>
@@ -1411,12 +2018,27 @@ being added to the simulation log might look like</p>
         with open(self.path, &#34;r+&#34;) as simfile:
             self.raw = json.load(simfile)
 
-        #  Generating the sub items
-        # ----------------------------------------------------------------------------------------------------------------- #
-        #: ``self.ics`` contains a list of all of the ``InitCon`` objects in the ``SimulationLog`` object.
-        self.ics = {
+    # ---------------------------------------------------------------------------------------------------------------- #
+    # Defining and Managing Properties =============================================================================== #
+    # ---------------------------------------------------------------------------------------------------------------- #
+
+    @property
+    def ics(self) -&gt; dict:
+        &#34;&#34;&#34;
+        Contains the dictionary of ``InitCon`` objects to use during execution.
+
+        Returns
+        -------
+        val : ``dict``
+            The dictionary of ``InitCon`` objects.
+        &#34;&#34;&#34;
+        return {
             k: InitCon(k, v, parent=self) for k, v in self.raw.items()
         }
+
+    # ---------------------------------------------------------------------------------------------------------------- #
+    # Dunder Methods ================================================================================================= #
+    # ---------------------------------------------------------------------------------------------------------------- #
 
     def __repr__(self):
         &#34;&#34;&#34;
@@ -1459,6 +2081,8 @@ being added to the simulation log might look like</p>
             self.__missing__(item)
 
     def __setitem__(self, keys: list, value):
+        if not isinstance(keys, list):
+            keys = [keys]
         self.__getitem__(keys[:-1])[keys[-1]] = value
 
     def __len__(self):
@@ -1468,6 +2092,8 @@ being added to the simulation log might look like</p>
         return item in self.ics
 
     def __delitem__(self, key_list):
+        if not isinstance(key_list, list):
+            key_list = [key_list]
         del self.__getitem__(key_list[:-1])[key_list[-1]]
 
     def __iter__(self):
@@ -1484,7 +2110,7 @@ being added to the simulation log might look like</p>
         All of the ``SimRec``
         &#34;&#34;&#34;
         obs = []
-        for ic in self.ics:
+        for ic in self.ics.values():
             obs += ic.sims
 
         return obs
@@ -1606,12 +2232,34 @@ being added to the simulation log might look like</p>
                 raise PyHPC_Error(
                     &#34;Failed to parse the simulation log structure file at %s. Check installation.&#34; % _structure_file)
 
-            # - Cleaning the structure - #
-            for item in entries:
-                if not check_dictionary_structure(_struct[&#34;SimulationLog&#34;], item):
+            #  Cleaning up the structure
+            # -------------------------------------------------------------------------------------------------------- #
+            ##- Trying to add any issues -##
+            generation_time = datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+            new_entries = {}
+            for item,data in entries.items():
+                new = data.copy()
+
+                #- Adding necessary headers -#
+                for header,obj in zip([&#34;information&#34;,&#34;meta&#34;,&#34;simulations&#34;,&#34;core&#34;],[&#34;&#34;,{},{},{}]):
+                    if header not in data:
+                        new[header] = obj
+
+                #- Dealing with specialized items -#
+                if &#34;dateCreated&#34; not in new[&#34;meta&#34;]:
+                    new[&#34;meta&#34;][&#34;dateCreated&#34;] = generation_time
+                if &#34;lastEdited&#34; not in new[&#34;meta&#34;]:
+                    new[&#34;meta&#34;][&#34;lastEdited&#34;] = generation_time
+
+                new_entries[item] = new
+            entries = new_entries
+
+
+            for item,data in entries.items():
+                if not check_dictionary_structure(_struct[&#34;SimulationLog&#34;][&#34;format&#34;], data):
                     raise SyntaxError(
                         &#34;SimulationLog %s failed to add entry %s due to item %s which failed to match structure.&#34; % (
-                        repr(self), entries, item))
+                            repr(self), entries, item))
 
         else:
             modlog.warning(&#34;parameter ``force`` was specified in execution of SimulationLog.add on %s.&#34; % (repr(self)))
@@ -1619,9 +2267,6 @@ being added to the simulation log might look like</p>
         #  Adding
         # ------------------------------------------------------------------------------------------------------------ #
         self.raw = {**self.raw, **entries}
-        self.ics = {**self.ics, **{
-            k: InitCon(k, v, parent=self) for k, v in entries.items()
-        }}
 
         #  Managing Saves
         # ------------------------------------------------------------------------------------------------------------ #
@@ -1647,9 +2292,32 @@ being added to the simulation log might look like</p>
 </details>
 <h3>Instance variables</h3>
 <dl>
-<dt id="PyHPC.PyHPC_System.simulation_management.SimulationLog.ics"><code class="name">var <span class="ident">ics</span></code></dt>
+<dt id="PyHPC.PyHPC_System.simulation_management.SimulationLog.ics"><code class="name">var <span class="ident">ics</span> : dict</code></dt>
 <dd>
-<div class="desc"><p><code>self.ics</code> contains a list of all of the <code><a title="PyHPC.PyHPC_System.simulation_management.InitCon" href="#PyHPC.PyHPC_System.simulation_management.InitCon">InitCon</a></code> objects in the <code><a title="PyHPC.PyHPC_System.simulation_management.SimulationLog" href="#PyHPC.PyHPC_System.simulation_management.SimulationLog">SimulationLog</a></code> object.</p></div>
+<div class="desc"><p>Contains the dictionary of <code><a title="PyHPC.PyHPC_System.simulation_management.InitCon" href="#PyHPC.PyHPC_System.simulation_management.InitCon">InitCon</a></code> objects to use during execution.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>val</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The dictionary of <code><a title="PyHPC.PyHPC_System.simulation_management.InitCon" href="#PyHPC.PyHPC_System.simulation_management.InitCon">InitCon</a></code> objects.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def ics(self) -&gt; dict:
+    &#34;&#34;&#34;
+    Contains the dictionary of ``InitCon`` objects to use during execution.
+
+    Returns
+    -------
+    val : ``dict``
+        The dictionary of ``InitCon`` objects.
+    &#34;&#34;&#34;
+    return {
+        k: InitCon(k, v, parent=self) for k, v in self.raw.items()
+    }</code></pre>
+</details>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -1762,12 +2430,34 @@ of individual (<u>correctly formatted</u>) entries to add.</p>
             raise PyHPC_Error(
                 &#34;Failed to parse the simulation log structure file at %s. Check installation.&#34; % _structure_file)
 
-        # - Cleaning the structure - #
-        for item in entries:
-            if not check_dictionary_structure(_struct[&#34;SimulationLog&#34;], item):
+        #  Cleaning up the structure
+        # -------------------------------------------------------------------------------------------------------- #
+        ##- Trying to add any issues -##
+        generation_time = datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+        new_entries = {}
+        for item,data in entries.items():
+            new = data.copy()
+
+            #- Adding necessary headers -#
+            for header,obj in zip([&#34;information&#34;,&#34;meta&#34;,&#34;simulations&#34;,&#34;core&#34;],[&#34;&#34;,{},{},{}]):
+                if header not in data:
+                    new[header] = obj
+
+            #- Dealing with specialized items -#
+            if &#34;dateCreated&#34; not in new[&#34;meta&#34;]:
+                new[&#34;meta&#34;][&#34;dateCreated&#34;] = generation_time
+            if &#34;lastEdited&#34; not in new[&#34;meta&#34;]:
+                new[&#34;meta&#34;][&#34;lastEdited&#34;] = generation_time
+
+            new_entries[item] = new
+        entries = new_entries
+
+
+        for item,data in entries.items():
+            if not check_dictionary_structure(_struct[&#34;SimulationLog&#34;][&#34;format&#34;], data):
                 raise SyntaxError(
                     &#34;SimulationLog %s failed to add entry %s due to item %s which failed to match structure.&#34; % (
-                    repr(self), entries, item))
+                        repr(self), entries, item))
 
     else:
         modlog.warning(&#34;parameter ``force`` was specified in execution of SimulationLog.add on %s.&#34; % (repr(self)))
@@ -1775,9 +2465,6 @@ of individual (<u>correctly formatted</u>) entries to add.</p>
     #  Adding
     # ------------------------------------------------------------------------------------------------------------ #
     self.raw = {**self.raw, **entries}
-    self.ics = {**self.ics, **{
-        k: InitCon(k, v, parent=self) for k, v in entries.items()
-    }}
 
     #  Managing Saves
     # ------------------------------------------------------------------------------------------------------------ #
@@ -1805,7 +2492,7 @@ Returns</p>
     All of the ``SimRec``
     &#34;&#34;&#34;
     obs = []
-    for ic in self.ics:
+    for ic in self.ics.values():
         obs += ic.sims
 
     return obs</code></pre>
@@ -1949,6 +2636,7 @@ Individual entries in the <code>kwargs</code> are searched based on <code>AND</c
 <li>
 <h4><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon" href="#PyHPC.PyHPC_System.simulation_management.InitCon">InitCon</a></code></h4>
 <ul class="two-column">
+<li><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon.add" href="#PyHPC.PyHPC_System.simulation_management.InitCon.add">add</a></code></li>
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon.core" href="#PyHPC.PyHPC_System.simulation_management.InitCon.core">core</a></code></li>
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon.inf" href="#PyHPC.PyHPC_System.simulation_management.InitCon.inf">inf</a></code></li>
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon.meta" href="#PyHPC.PyHPC_System.simulation_management.InitCon.meta">meta</a></code></li>
@@ -1962,7 +2650,7 @@ Individual entries in the <code>kwargs</code> are searched based on <code>AND</c
 <h4><code><a title="PyHPC.PyHPC_System.simulation_management.SimRec" href="#PyHPC.PyHPC_System.simulation_management.SimRec">SimRec</a></code></h4>
 <ul class="two-column">
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.SimRec.core" href="#PyHPC.PyHPC_System.simulation_management.SimRec.core">core</a></code></li>
-<li><code><a title="PyHPC.PyHPC_System.simulation_management.SimRec.log" href="#PyHPC.PyHPC_System.simulation_management.SimRec.log">log</a></code></li>
+<li><code><a title="PyHPC.PyHPC_System.simulation_management.SimRec.inf" href="#PyHPC.PyHPC_System.simulation_management.SimRec.inf">inf</a></code></li>
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.SimRec.meta" href="#PyHPC.PyHPC_System.simulation_management.SimRec.meta">meta</a></code></li>
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.SimRec.name" href="#PyHPC.PyHPC_System.simulation_management.SimRec.name">name</a></code></li>
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.SimRec.outputs" href="#PyHPC.PyHPC_System.simulation_management.SimRec.outputs">outputs</a></code></li>
