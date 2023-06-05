@@ -16,6 +16,28 @@ from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.log import get_module_logger
 from PyHPC.PyHPC_Utils.text_display_utilities import print_title, TerminalString, PrintRetainer,build_options
 
+
+def get_clustep_report(clustep_data):
+    """
+    Provides a report on the clustep objects.
+
+    Parameters
+    ----------
+    clustep_data: The clustep data
+
+    Returns
+    -------
+
+    """
+    n_comps = len(clustep_data)
+    pos = [comp["position"]["position"]["v"] for comp in clustep_data.values()]
+    vel = [comp["position"]["velocity"]["v"] for comp in clustep_data.values()]
+
+    printer.print("#----------- IC Report ------------#")
+    for i,data in enumerate(zip(pos,vel)):
+        p,v = data
+        printer.print("# Component %s: Position=%s, Velocity=%s"%(i+1,p,v))
+
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
 # ------------------------------------------------------ Setup ----------------------------------------------------------#
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
@@ -80,4 +102,8 @@ printer.print("%sBeginning Execution:" % fdbg_string)
 printer.print("%sGetting user inputs..." %fdbg_string,end="")
 
 # - Loading the defaults -  #
-build_options(clustep_ini,"Select CLUSTEP runtime options")
+clustep_options = build_options(clustep_ini,"Select CLUSTEP runtime options")
+
+#  Showing the report
+# ----------------------------------------------------------------------------------------------------------------- #
+get_clustep_report(clustep_options)

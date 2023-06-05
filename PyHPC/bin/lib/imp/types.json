@@ -19,7 +19,7 @@
     },
     "initial_conditions": {
       "clustep": {
-        "path": ["Initial Conditions","run_clustep.py"]
+        "path": ["initial_conditions","run_clustep.py"]
       }
     }
   },

@@ -211,6 +211,35 @@ class KeyLogger:
         except AttributeError as ex:
             pass
 
+    def nav_build_keylog(self, key):
+        # Key logger for the options navigation #
+        try:
+            if key == "enter":
+                self.command = "edit"
+                stop_listening()
+            if key == "down":
+                self.location = (self.location + 1 if self.location != len(self.sub_dict) - 1 else 0)
+                stop_listening()
+            if key == "up":
+                self.location = (self.location - 1 if self.location != 0 else len(self.sub_dict) - 1)
+                stop_listening()
+            if key == "backspace":
+                self.command = "back"
+                stop_listening()
+            if key == "q":
+                self.command = "quit"
+                stop_listening()
+            if key == "d":
+                self.command = "default"
+                stop_listening()
+            if key == "a":
+                self.command = "add"
+                stop_listening()
+            if key == "r":
+                self.command = "remove"
+                stop_listening()
+        except AttributeError as ex:
+            pass
     def menu_keylog(self, key):
         # Key logger for the options navigation #
         try:
@@ -466,11 +495,6 @@ def get_options(option_dict, title):
 
     # - Core printing utilities -#
     header = "Select the option to edit..."
-    setting_commands = {
-        "n": "Exit/Finish - Move down a level.",
-        "e": "Edit - Move to.",
-        "d": "Reset option to default",
-    }
 
     # startup copy and setting #
     settings = deepcopy(option_dict)  # create the copy we are going to use for the setting storage.
@@ -486,7 +510,6 @@ def get_options(option_dict, title):
     #  Main Cycle
     # ----------------------------------------------------------------------------------------------------------------- #
     CHECK_DONE = False  # whole scope check for finish.
-    new_calcs = True  # This flag lets us skip calculations if they aren't necessary.
 
     while not CHECK_DONE:  # we are still cycling'
 
@@ -529,7 +552,6 @@ def get_options(option_dict, title):
                     klog.sub_dict = getFromDict(settings, klog.position)
                     klog.position += [list(klog.sub_dict.keys())[0]]
                     klog.location = 0
-
 
             elif klog.command == "back":
 
@@ -595,19 +617,15 @@ def build_options(option_dict, title):
 
     # - Core printing utilities -#
     header = "Select the option to edit..."
-    setting_commands = {
-        "n": "Exit/Finish - Move down a level.",
-        "e": "Edit - Move to.",
-        "d": "Reset option to default",
-    }
 
     # startup copy and setting #
-    settings = deepcopy(option_dict)  # create the copy we are going to use for the setting storage.
+    settings = {"Component 1":deepcopy(option_dict)}  # create the copy we are going to use for the setting storage.
+
 
     klog = KeyLogger(position=["Component 1"],
                      location=0,
                      selected_key=None,
-                     sub_dict={"Component 1":option_dict.copy()},
+                     sub_dict=settings,
                      command=None,
                      reset=True,
                      reset_location=True)
@@ -628,11 +646,11 @@ def build_options(option_dict, title):
         # Printing the options dictionary ==================================================================================== #
         # -------------------------------------------------------------------------------------------------------------------- #
         print_option_dict(klog.sub_dict, klog.position[-1], header=header)
-
+        print("'backspace': move up level\n'enter': move down level / edit\n'+': add component\n'-': remove component\n'd': reset")
         # -------------------------------------------------------------------------------------------------------------------- #
         #  Navigation ======================================================================================================== #
         # -------------------------------------------------------------------------------------------------------------------- #
-        listen_keyboard(on_press=klog.nav_keylog)
+        listen_keyboard(on_press=klog.nav_build_keylog)
         # - Forcing location parity -#
         klog.position[-1] = list(klog.sub_dict.keys())[klog.location]
 
@@ -650,7 +668,6 @@ def build_options(option_dict, title):
                     if inp != "n":
                         setInDict(settings, klog.position + ["v"], inp)
                         klog.sub_dict = getFromDict(settings, klog.position[:-1])
-
 
                 else:
                     # We are not editing, we are entering.
@@ -687,6 +704,21 @@ def build_options(option_dict, title):
                 setInDict(settings, klog.position + ["v"], getFromDict(settings, klog.position + ["d"]))
                 klog.sub_dict = getFromDict(settings, klog.position[:-1])
 
+            elif klog.command == "add":
+                if len(klog.position) > 1:
+                    pass
+                else:
+                    comps = [int(k.split(" ")[1]) for k in settings]
+                    settings = {**settings,"Component %s"%str(max(comps)+1):deepcopy(option_dict)}
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
+
+            elif klog.command == "remove":
+                if len(klog.position) > 1 or len(settings) <=1:
+                    pass
+                else:
+                    settings ={k:v for k,v in settings.items() if k!=klog.position[-1]}
+                    klog.position = ["Component 1"]
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
             klog.command = None
         os.system('cls' if os.name == 'nt' else 'clear')
     return settings
