@@ -14,7 +14,7 @@ from colorama import Fore, Style
 sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[2]))
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.log import get_module_logger
-from PyHPC.PyHPC_Utils.text_display_utilities import print_title, TerminalString, PrintRetainer
+from PyHPC.PyHPC_Utils.text_display_utilities import print_title, TerminalString, PrintRetainer,build_options
 
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
 # ------------------------------------------------------ Setup ----------------------------------------------------------#
@@ -41,7 +41,7 @@ with open(os.path.join(pt.Path(__file__).parents[2], "PyHPC", "bin", "lib", "imp
     types = json.load(type_file)
 
 # - grabbing defaults - #
-clustep_ini = toml.load(os.path.join(CONFIG["System"]["Directories"]["bin"],"configs","install_CLUSTEP.config"))
+clustep_ini = toml.load(os.path.join(CONFIG["System"]["Directories"]["bin"],"configs","CLUSTEP.config"))
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Core Execution   =================================================================================================== #
@@ -80,3 +80,4 @@ printer.print("%sBeginning Execution:" % fdbg_string)
 printer.print("%sGetting user inputs..." %fdbg_string,end="")
 
 # - Loading the defaults - #
+build_options(clustep_ini,"Select CLUSTEP runtime options")
