@@ -7,25 +7,25 @@
 #----------------------------------------------------#
 # Managing modules ==================================#
 #----------------------------------------------------#
-echo "Loading necessary packages..."
-ml purge #- Remove all loaded modules
-ml %(open_mpi_package)s #- loads the open mpi package.
-ml %(gcc_package)s #- loads the gcc compiler package
-echo "[FINISHED]"
+echo "\[\033[0;32m\]Loading necessary packages...\[\033[0m\]"
+ml purge > & /dev/null #- Remove all loaded modules
+ml %(open_mpi_package)s > & /dev/null #- loads the open mpi package.
+ml %(gcc_package)s > & /dev/null #- loads the gcc compiler package
+echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
 
 #----------------------------------------------------#
 # Managing output location ==========================#
 #----------------------------------------------------#
 setenv OUTPUT_DIR "%(output_dir)s"
-echo "Checking output directory $OUTPUT_DIR for viability..."
+echo "\[\033[0;32m\]Checking output directory $OUTPUT_DIR for viability...\[\033[0m\]"
 
-if [ -d "$OUTPUT_DIR" ]; then
-  echo "    Failed to find $OUTPUT_DIR, attempting to generate it..."
+if ( ! -d "$OUTPUT_DIR" ) then
+  echo "    \[\033[0;32m\]Failed to find $OUTPUT_DIR, attempting to generate it...\[\033[0m\]"
   mkdir --parents $OUTPUT_DIR
-  echo "    [FINISHED]"
-  echo "[FINISHED]"
+  echo "\[\033[0;36m\]    [FINISHED]\[\033[0m\]"
+  echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
 else
-  echo "[FINISHED]"
+  echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
 endif
 
 cd $OUTPUT_DIR
@@ -34,4 +34,5 @@ cd $OUTPUT_DIR
 # Execution ========================================== #
 #------------------------------------------------------#
 mpirun -np $SLURM_NTASKS '%(executable)s' '%(nml_path)s'
+echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
 

@@ -297,14 +297,23 @@ if output_directory[0] == "$":
 else:
     output_directory = pt.Path(os.path.join(CONFIG["System"]["Simulations"]["simulation_directory"], output_directory))
 
-nml_log.raw["outputs"][str(output_directory)] = {
-    "meta": {
-        "path"       : output_directory,
-        "dateCreated": datetime.now().strftime('%m-%d-%Y_%H-%M-%S'),
-        "slurm_path" : slurm_path
+if str(output_directory) not in nml_log.raw["outputs"]:
+    nml_log.raw["outputs"][str(output_directory)] = {
+        "meta": {
+            "path"       : str(output_directory),
+            "dateCreated": datetime.now().strftime('%m-%d-%Y_%H-%M-%S'),
+            "slurm_path" : str(slurm_path)
+        }
     }
-}
-nml_log.log("Added output at %s." % str(output_directory), "ADD_OUTPUT")
+    nml_log.log("Added output at %s." % str(output_directory), "ADD_OUTPUT")
+else:
+    nml_log.raw["outputs"][str(output_directory)]["meta"] = {
+            "path"       : str(output_directory),
+            "dateCreated": datetime.now().strftime('%m-%d-%Y_%H-%M-%S'),
+            "slurm_path" : str(slurm_path)
+        }
+    nml_log.save()
+    nml_log.log("Updated output at %s." % str(output_directory), "UPDATED_OUTPUT")
 
 #  Generating the slurm file
 # ----------------------------------------------------------------------------------------------------------------- #
@@ -317,7 +326,7 @@ with open(os.path.join(pt.Path(__file__).parents[1], "PyHPC", "bin", "lib", "tem
                      open_mpi_package=CONFIG["System"]["Modules"]["open_mpi_package"],
                      gcc_package=CONFIG["System"]["Modules"]["gcc_package"],
                      nml_path=nml_location,
-                     output_directory=output_directory,
+                     output_dir=output_directory,
                      executable=CONFIG["System"]["Executables"][types["software"]["RAMSES"][nml_software]["exec"]]
                      )
 

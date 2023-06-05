@@ -1,12 +1,21 @@
 {
-  "info": [
-    "This file contains all of the simulation data accrued during the course of use."
-  ],
-  "sims": {
-    "Example_Simulation": {
-      "r_path": "/home/ediggins"
-    }
-  },
-  "ics": {
+  "test.g2": {
+    "information": "A simple test case to guide development use.",
+    "meta": {
+      "dateCreated": "01_01_2000-01:00:00",
+      "lastEdited": "01_01_2000-01:00:00"
+    },
+    "simulations": {
+      "test.nml": {
+        "information": "Simulation example entry.",
+        "action_log": {
+          "created": "date = something"
+        },
+        "meta": {},
+        "core": {},
+        "outputs": {}
+      }
+    },
+    "core": {}
   }
 }

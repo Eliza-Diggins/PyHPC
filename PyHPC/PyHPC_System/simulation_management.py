@@ -686,6 +686,9 @@ class InitCon:
         if auto_save:
             self.parent.save()
 
+    def save(self):
+        self.parent.save()
+
 
 class SimRec:
     """
@@ -884,6 +887,9 @@ class SimRec:
 
         if auto_save:
             self.parent.parent.save()
+
+    def save(self):
+        self.parent.parent.save()
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
