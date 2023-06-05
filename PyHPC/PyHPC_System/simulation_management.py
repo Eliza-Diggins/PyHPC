@@ -2,22 +2,20 @@
 Simulation management tools for the PyHPC system. The core object ``SimulationLog`` is used by the backend to
 store and manage simulations throughout the generation pipeline.
 """
+import builtins
+import json
+import operator
 import os
-import pathlib as pt
-import sys
-
-sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[2]))
-from PyHPC.PyHPC_Core.log import get_module_logger
-from PyHPC.PyHPC_Core.configuration import read_config
-from PyHPC.PyHPC_Core.errors import PyHPC_Error
 import pathlib as pt
 import threading as t
 import warnings
-import json
-import operator
-from functools import reduce
-import builtins
 from datetime import datetime
+from functools import reduce
+from inspect import getframeinfo, stack
+
+from PyHPC.PyHPC_Core.configuration import read_config
+from PyHPC.PyHPC_Core.errors import PyHPC_Error
+from PyHPC.PyHPC_Core.log import get_module_logger
 
 # generating screen locking #
 screen_lock = t.Semaphore(value=1)  # locks off multi-threaded screen.
@@ -264,16 +262,18 @@ class SimulationLog:
     def __missing__(self, key):
         return None
 
-    def get_simulation_records(self) -> list:
+    def get_simulation_records(self) -> dict:
         """
         Fetches all of the ``SimRec`` objects in the ``SimulationLog``.
+
         Returns
         -------
-        All of the ``SimRec``
+        dict
+            Dictionary of all of the ``SimRec`` objects in the format ``{name:SimRec}``.
         """
-        obs = []
+        obs = {}
         for ic in self.ics.values():
-            obs += ic.sims
+            obs = {**obs, **ic.sims}
 
         return obs
 
@@ -308,7 +308,7 @@ class SimulationLog:
 
         #  Grabbing necessary pieces of data.
         # ------------------------------------------------------------------------------------------------------------ #
-        search_group = self.ics if search_for == "ic" else self.get_simulation_records()
+        search_group = self.ics if search_for == "ic" else list(self.get_simulation_records().values())
         modlog.debug("Search for %s in %s has %s search items." % (search_kwargs, repr(self), len(search_group)))
 
         # Performing the group search
@@ -655,7 +655,7 @@ class InitCon:
                 new = data.copy()
 
                 # - Adding necessary headers -#
-                for header, obj in zip(["information", "meta", "simulations", "core"], ["", {}, {}, {}]):
+                for header, obj in zip(["information", "meta", "action_log", "core", "outputs"], ["", {}, {}, {}, {}]):
                     if header not in data:
                         new[header] = obj
 
@@ -685,8 +685,6 @@ class InitCon:
         # ------------------------------------------------------------------------------------------------------------ #
         if auto_save:
             self.parent.save()
-
-        print(get_dict_str(self.raw))
 
 
 class SimRec:
@@ -840,6 +838,53 @@ class SimRec:
     def __missing__(self, key):
         return None
 
+    def log(self, message, action, auto_save=True, **kwargs):
+        """
+        logs the ``message`` to the ``self.raw.action_log``. Additional entries in the record are specified with ``**kwargs``.
+
+        Parameters
+        ----------
+        message : str
+            The message to log with the entry.
+        action : str
+            The specific action being under-taken. These actions can be arbitrary, but should be consistent for
+            best impact.
+        auto_save : bool
+            ``True`` to automatically write all of the data to file.
+        kwargs : optional
+            Additional attributes to log with the message. All entries should be ``key="string"``. If entries overlap
+            with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.
+
+        Returns
+        -------
+        None
+
+        """
+        #  Managing the required kwargs
+        # ------------------------------------------------------------------------------------------------------------ #
+        caller = getframeinfo(stack()[1][0])  # -> grabbing frame info
+        req_entries = {  # These are the required keys that are always present in the entry.
+            "msg"   : message,
+            "act"   : action,
+            "lineno": caller.lineno,
+            "file"  : caller.filename,
+            "time"  : datetime.now().strftime('%m-%d-%Y_%H-%M-%S')
+
+        }
+
+        #  Managing additional entries
+        # ------------------------------------------------------------------------------------------------------------ #
+        entries = {**req_entries, **kwargs}
+
+        #  Logging
+        # ------------------------------------------------------------------------------------------------------------ #
+        log_time = datetime.now().strftime('%m-%d-%Y_%H-%M-%S')
+
+        self.raw["action_log"][log_time] = entries
+
+        if auto_save:
+            self.parent.parent.save()
+
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Sub Functions ====================================================================================================== #
@@ -883,22 +928,3 @@ def check_dictionary_structure(master: dict, base: dict) -> bool:
             else:
                 pass
     return result
-
-
-if __name__ == '__main__':
-    from PyHPC.PyHPC_Utils.text_display_utilities import get_dict_str
-
-    h = SimulationLog()
-    h[["test.g2"]].add({"sim1": {
-        "information": "str",
-        "action_log" : {
-        },
-        "meta"       : {
-        },
-        "core"       : {
-        },
-        "outputs"    : {
-        }
-    }}, auto_save=False)
-    print(get_dict_str(h.raw))
-    print("sim1" in h.get_simulation_records(), "test.nml" in h.get_simulation_records())

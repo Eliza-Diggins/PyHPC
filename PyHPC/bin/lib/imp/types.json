@@ -13,7 +13,8 @@
             "initfile(1)"
           ]
         ],
-        "exec_string": "ml purge\nml %(gcc_install)s\nml %(mpi_install)s\n\n something something"
+        "exec_string": ["bin","lib","templates","ramses_slurm.template"],
+        "exec": "ramses_executable"
       }
     }
   },

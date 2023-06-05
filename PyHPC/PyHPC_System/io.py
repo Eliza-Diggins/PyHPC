@@ -60,13 +60,33 @@ def write_command_string(command: str, *args, **kwargs) -> str:
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Batch Management ================================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
-def write_slurm_file(command_string, slurm_config=None, name=None):
+def write_slurm_file(command_string, slurm_config=None, name=None,**kwargs):
     """
-    Writes the ``command_string`` to a SLURM compatible form using the ``slurm_config``
-    :param command_string: The command string to add as the executable section of the .slurm file.
-    :param slurm_config: the configuration dictionary for slurm. Defaults to calling for a select settings dialog.
-    :param name: The name to give to the slurm executable.
-    :return: None
+    Writes a ``.slurm`` file corresponding to the provided ``command_string``.
+
+    Parameters
+    ----------
+    command_string : str
+        The command string to run from. This should be a string representation of one of the ``.template`` files at
+        ``/bin/lib/templates`` or can be hand built. These should be ``csh`` files with ``%(option)s`` inserts for
+        string formatting.
+
+        ..info::
+            The options left in the ``.template`` file or string must correspond to key-words in ``kwargs``.
+
+    slurm_config : dict
+        The ``slurm_config`` option should specify the settings corresponding to the ``slurm_settings``. If ``None``, then
+        the ``slurm_config`` will be obtained from the user.
+    name : str
+        The name of the ``.slurm`` file.
+
+    kwargs :
+        additional entry options to be passed through the ``command_string``.
+
+    Returns
+    -------
+    None
+
     """
     #  Intro Debugging
     # ----------------------------------------------------------------------------------------------------------------- #
@@ -104,8 +124,7 @@ def write_slurm_file(command_string, slurm_config=None, name=None):
     # ----------------------------------------------------------------------------------------------------------------- #
     date = datetime.now().strftime('%m-%d_%H-%M')
     filename = "%s_%s.SLURM" % (name, date)
-    slurm_script = "#!/bin/csh\n\n"  # predefined slurm script.
-
+    slurm_script = ""
     # - Adding the batch settings -#
     for setting, value in slurm_config["Settings"].items():
         slurm_script += "#SBATCH -%s %s\n" % (setting, value["v"])
@@ -115,7 +134,9 @@ def write_slurm_file(command_string, slurm_config=None, name=None):
                         slurm_config["files"]["format"]["v"] % {"name": name,
                                                                 "date": date})
     slurm_script += "#SBATCH -o %s.out\n" % path
-    slurm_script += "#SBATCH -e %s.err\n\n\n%s" % (path, command_string)
+    slurm_script += "#SBATCH -e %s.err" % path
+
+    command = command_string%{**kwargs,**{"batch_options":slurm_script}}
 
     modlog.debug("Successfully wrote the slurm script to a memory string.")
 
@@ -133,7 +154,7 @@ def write_slurm_file(command_string, slurm_config=None, name=None):
     #  Writing the file
     # ----------------------------------------------------------------------------------------------------------------- #
     with open(os.path.join(CONFIG["System"]["Directories"]["slurm_directory"], filename), "w+") as f:
-        f.write(slurm_script)
+        f.write(command)
 
     modlog.debug(
         "Completed writing slurm output to %s." % os.path.join(CONFIG["System"]["Directories"]["slurm_directory"]))

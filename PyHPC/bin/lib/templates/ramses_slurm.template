@@ -1,0 +1,37 @@
+#!/bin/csh
+#-------------------------------------------------------------------#
+# RAMSES runtime script --> SLURM                                   #
+#-------------------------------------------------------------------#
+%(batch_options)s
+
+#----------------------------------------------------#
+# Managing modules ==================================#
+#----------------------------------------------------#
+echo "Loading necessary packages..."
+ml purge #- Remove all loaded modules
+ml %(open_mpi_package)s #- loads the open mpi package.
+ml %(gcc_package)s #- loads the gcc compiler package
+echo "[FINISHED]"
+
+#----------------------------------------------------#
+# Managing output location ==========================#
+#----------------------------------------------------#
+setenv OUTPUT_DIR "%(output_dir)s"
+echo "Checking output directory $OUTPUT_DIR for viability..."
+
+if [ -d "$OUTPUT_DIR" ]; then
+  echo "    Failed to find $OUTPUT_DIR, attempting to generate it..."
+  mkdir --parents $OUTPUT_DIR
+  echo "    [FINISHED]"
+  echo "[FINISHED]"
+else
+  echo "[FINISHED]"
+endif
+
+cd $OUTPUT_DIR
+
+#------------------------------------------------------#
+# Execution ========================================== #
+#------------------------------------------------------#
+mpirun -np $SLURM_NTASKS '%(executable)s' '%(nml_path)s'
+
