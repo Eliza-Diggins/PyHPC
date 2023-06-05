@@ -79,5 +79,5 @@ printer.print("%sBeginning Execution:" % fdbg_string)
 # ----------------------------------------------------------------------------------------------------------------- #
 printer.print("%sGetting user inputs..." %fdbg_string,end="")
 
-# - Loading the defaults - #
+# - Loading the defaults -  #
 build_options(clustep_ini,"Select CLUSTEP runtime options")
