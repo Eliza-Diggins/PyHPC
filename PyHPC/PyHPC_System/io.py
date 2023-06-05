@@ -60,7 +60,7 @@ def write_command_string(command: str, *args, **kwargs) -> str:
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Batch Management ================================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
-def write_slurm_file(command_string, slurm_config=None, name=None,**kwargs):
+def write_slurm_file(command_string, slurm_config=None, name=None, **kwargs):
     """
     Writes a ``.slurm`` file corresponding to the provided ``command_string``.
 
@@ -136,7 +136,7 @@ def write_slurm_file(command_string, slurm_config=None, name=None,**kwargs):
     slurm_script += "#SBATCH -o %s.out\n" % path
     slurm_script += "#SBATCH -e %s.err" % path
 
-    command = command_string%{**kwargs,**{"batch_options":slurm_script}}
+    command = command_string % {**kwargs, **{"batch_options": slurm_script}}
 
     modlog.debug("Successfully wrote the slurm script to a memory string.")
 

@@ -456,6 +456,11 @@ class SimulationLog:
         """
         Writes the simulation log to a system of ``html`` files at the ``output`` location.
 
+        .. warning::
+            Incomplete
+
+        .. todo::
+            Finish this.
         Parameters
         ----------
         output: The ``path`` to the output directory.
@@ -480,7 +485,8 @@ class SimulationLog:
         # ------------------------------------------------------------------------------------------------------------ #
         table_data = {
             k: {
-                "Name"        : "<a href='%s'>%s</a>"%(os.path.join(output,"InitCons","%s.html"%k),pt.Path(k).name),
+                "Name"        : "<a href='%s'>%s</a>" % (
+                    os.path.join(output, "InitCons", "%s.html" % k), pt.Path(k).name),
                 "Date Created": v["meta"]["dateCreated"],
                 "Last Edited" : v["meta"]["lastEdited"],
                 "# of ICs"    : len(v["simulations"])
@@ -752,11 +758,11 @@ class InitCon:
 
         #  Managing the directory
         # ------------------------------------------------------------------------------------------------------------ #
-        if not os.path.exists(os.path.join(output,"InitCons")):
-            pt.Path(os.path.join(output,"InitCons")).mkdir(parents=True)
-            modlog.debug("Generated output directory %s." % os.path.join(output,"InitCons"))
+        if not os.path.exists(os.path.join(output, "InitCons")):
+            pt.Path(os.path.join(output, "InitCons")).mkdir(parents=True)
+            modlog.debug("Generated output directory %s." % os.path.join(output, "InitCons"))
         else:
-            modlog.debug("Found output directory %s." % os.path.join(output,"InitCons"))
+            modlog.debug("Found output directory %s." % os.path.join(output, "InitCons"))
 
         #  Generating the first table
         # ------------------------------------------------------------------------------------------------------------ #

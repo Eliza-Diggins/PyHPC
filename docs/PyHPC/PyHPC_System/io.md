@@ -31,9 +31,28 @@ Functions
     :return: True if pass, Fail if not.
 
     
-`write_slurm_file(command_string, slurm_config=None, name=None)`
-:   Writes the ``command_string`` to a SLURM compatible form using the ``slurm_config``
-    :param command_string: The command string to add as the executable section of the .slurm file.
-    :param slurm_config: the configuration dictionary for slurm. Defaults to calling for a select settings dialog.
-    :param name: The name to give to the slurm executable.
-    :return: None
+`write_slurm_file(command_string, slurm_config=None, name=None, **kwargs)`
+:   Writes a ``.slurm`` file corresponding to the provided ``command_string``.
+    
+    Parameters
+    ----------
+    command_string : str
+        The command string to run from. This should be a string representation of one of the ``.template`` files at
+        ``/bin/lib/templates`` or can be hand built. These should be ``csh`` files with ``%(option)s`` inserts for
+        string formatting.
+    
+        ..info::
+            The options left in the ``.template`` file or string must correspond to key-words in ``kwargs``.
+    
+    slurm_config : dict
+        The ``slurm_config`` option should specify the settings corresponding to the ``slurm_settings``. If ``None``, then
+        the ``slurm_config`` will be obtained from the user.
+    name : str
+        The name of the ``.slurm`` file.
+    
+    kwargs :
+        additional entry options to be passed through the ``command_string``.
+    
+    Returns
+    -------
+    None

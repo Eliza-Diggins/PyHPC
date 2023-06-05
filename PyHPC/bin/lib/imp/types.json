@@ -16,6 +16,11 @@
         "exec_string": ["bin","lib","templates","ramses_slurm.template"],
         "exec": "ramses_executable"
       }
+    },
+    "initial_conditions": {
+      "clustep": {
+        "path": ["Initial Conditions","run_clustep.py"]
+      }
     }
   },
   "extensions": {

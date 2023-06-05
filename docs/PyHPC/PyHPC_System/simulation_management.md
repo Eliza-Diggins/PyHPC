@@ -115,6 +115,20 @@ Classes
         -------
         None
 
+    `save(self)`
+    :
+
+    `to_html(self, output)`
+    :   Writes the init_log to a system of ``html`` files at the ``output`` location.
+        
+        Parameters
+        ----------
+        output: The ``path`` to the output directory.
+        
+        Returns
+        -------
+        None
+
 `SimRec(name, data, parent=None)`
 :   The ``SimRec`` class contains all of the information for a single simulation record in the ``SimulationLog`` system.
     This is the most granular view available in the ``SimulationLog`` hierarchy.
@@ -163,6 +177,31 @@ Classes
 
     `raw`
     :   ``self.raw`` contains all of the raw data provided in the ``SimRec`` object.
+
+    ### Methods
+
+    `log(self, message, action, auto_save=True, **kwargs)`
+    :   logs the ``message`` to the ``self.raw.action_log``. Additional entries in the record are specified with ``**kwargs``.
+        
+        Parameters
+        ----------
+        message : str
+            The message to log with the entry.
+        action : str
+            The specific action being under-taken. These actions can be arbitrary, but should be consistent for
+            best impact.
+        auto_save : bool
+            ``True`` to automatically write all of the data to file.
+        kwargs : optional
+            Additional attributes to log with the message. All entries should be ``key="string"``. If entries overlap
+            with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.
+        
+        Returns
+        -------
+        None
+
+    `save(self)`
+    :
 
 `SimulationLog(path=None)`
 :   ``SimulationLog`` class to manage the simulations stored on the drive.
@@ -332,11 +371,13 @@ Classes
         -------
         None
 
-    `get_simulation_records(self) ‑> list`
+    `get_simulation_records(self) ‑> dict`
     :   Fetches all of the ``SimRec`` objects in the ``SimulationLog``.
+        
         Returns
         -------
-        All of the ``SimRec``
+        dict
+            Dictionary of all of the ``SimRec`` objects in the format ``{name:SimRec}``.
 
     `save(self)`
     :   Saves the current simulation log.
@@ -364,3 +405,19 @@ Classes
         Returns
         -------
         Returns a list of matching objects.
+
+    `to_html(self, output)`
+    :   Writes the simulation log to a system of ``html`` files at the ``output`` location.
+        
+        .. warning::
+            Incomplete
+        
+        .. todo::
+            Finish this.
+        Parameters
+        ----------
+        output: The ``path`` to the output directory.
+        
+        Returns
+        -------
+        None

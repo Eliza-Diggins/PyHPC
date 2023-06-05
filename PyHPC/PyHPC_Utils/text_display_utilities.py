@@ -5,7 +5,7 @@ import os
 import pathlib as pt
 import sys
 
-sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
+sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[2]))
 
 from colorama import Fore, Back, Style
 import re
@@ -207,6 +207,21 @@ class KeyLogger:
                 stop_listening()
             if key == "d":
                 self.command = "default"
+                stop_listening()
+        except AttributeError as ex:
+            pass
+
+    def menu_keylog(self, key):
+        # Key logger for the options navigation #
+        try:
+            if key == "enter":
+                self.command = "enter"
+                stop_listening()
+            if key == "down":
+                self.location = (self.location + 1 if self.location != len(self.options) - 1 else 0)
+                stop_listening()
+            if key == "up":
+                self.location = (self.location - 1 if self.location != 0 else len(self.options) - 1)
                 stop_listening()
         except AttributeError as ex:
             pass
@@ -550,6 +565,133 @@ def get_options(option_dict, title):
     return settings
 
 
+def build_options(option_dict, title):
+    """
+    ``build_options`` is similar to ``PyHPC.PyHPC_Utils.text_display_utilities.get_options``; however, in this case,
+    the user can add and remove components from the dictionary as well.
+
+    Parameters
+    ----------
+    option_dict : dict
+        The base / default component settings.
+    title : str
+        The title to display
+
+    Returns
+    -------
+    dict
+        Selected options in a dictionary format.
+    """
+    #  Intro debug
+    # ----------------------------------------------------------------------------------------------------------------- #
+    modlog.debug("Selecting options with title %s." % title)
+
+    #  Printing the title
+    # ----------------------------------------------------------------------------------------------------------------- #
+    text_t = TerminalString()
+
+    #  Setup
+    # ----------------------------------------------------------------------------------------------------------------- #
+
+    # - Core printing utilities -#
+    header = "Select the option to edit..."
+    setting_commands = {
+        "n": "Exit/Finish - Move down a level.",
+        "e": "Edit - Move to.",
+        "d": "Reset option to default",
+    }
+
+    # startup copy and setting #
+    settings = deepcopy(option_dict)  # create the copy we are going to use for the setting storage.
+
+    klog = KeyLogger(position=["Component 1"],
+                     location=0,
+                     selected_key=None,
+                     sub_dict={"Component 1":option_dict.copy()},
+                     command=None,
+                     reset=True,
+                     reset_location=True)
+
+    #  Main Cycle
+    # ----------------------------------------------------------------------------------------------------------------- #
+    CHECK_DONE = False  # whole scope check for finish.
+
+    while not CHECK_DONE:  # we are still cycling'
+
+        ## Setting the title ##
+        text_t.print_title(title)
+
+        #  Locating
+        # ----------------------------------------------------------------------------------------------------------------- #
+
+        # -------------------------------------------------------------------------------------------------------------------- #
+        # Printing the options dictionary ==================================================================================== #
+        # -------------------------------------------------------------------------------------------------------------------- #
+        print_option_dict(klog.sub_dict, klog.position[-1], header=header)
+
+        # -------------------------------------------------------------------------------------------------------------------- #
+        #  Navigation ======================================================================================================== #
+        # -------------------------------------------------------------------------------------------------------------------- #
+        listen_keyboard(on_press=klog.nav_keylog)
+        # - Forcing location parity -#
+        klog.position[-1] = list(klog.sub_dict.keys())[klog.location]
+
+        if klog.command:  # we have a command to execute
+            if klog.command == "edit":
+
+                #  Editing the dictionary
+                # ----------------------------------------------------------------------------------------------------------------- #
+                if all(k in ["v", "d", "i"] for k in list(klog.sub_dict[klog.position[-1]].keys())):
+                    # This is an explicit value
+                    inp = input(
+                        "%sPlease enter a new value for %s. ['n' to return]:" % (
+                            "[" + Fore.RED + "INPUT" + Style.RESET_ALL + "]: ",
+                            klog.position[-1]))
+                    if inp != "n":
+                        setInDict(settings, klog.position + ["v"], inp)
+                        klog.sub_dict = getFromDict(settings, klog.position[:-1])
+
+
+                else:
+                    # We are not editing, we are entering.
+                    klog.sub_dict = getFromDict(settings, klog.position)
+                    klog.position += [list(klog.sub_dict.keys())[0]]
+                    klog.location = 0
+
+            elif klog.command == "back":
+
+                #  Moving backward
+                # ----------------------------------------------------------------------------------------------------------------- #
+                # We need to reduce a layer
+                if len(klog.position) > 1:
+                    # - We can actually move back -#
+                    klog.position = klog.position[:-1]
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
+
+                    klog.location = list(klog.sub_dict.keys()).index(klog.position[-1])
+                else:
+                    yn = get_yes_no("Exit the option selection?")
+
+                    if not yn:
+                        pass
+                    else:
+                        return settings
+            elif klog.command == "quit":
+                yn = get_yes_no("Exit the option selection?")
+
+                if yn != True:
+                    pass
+                else:
+                    return settings
+            elif klog.command == "default":
+                setInDict(settings, klog.position + ["v"], getFromDict(settings, klog.position + ["d"]))
+                klog.sub_dict = getFromDict(settings, klog.position[:-1])
+
+            klog.command = None
+        os.system('cls' if os.name == 'nt' else 'clear')
+    return settings
+
+
 def select_files(root_directories, max=None, condition=lambda x: True):
     """
     Allows the user to select files from the root directories, selecting a maximum of max subject to conditions.
@@ -731,6 +873,82 @@ def select_files_remote(root_directories, max=None, condition=lambda x: True):
         os.system('cls' if os.name == 'nt' else 'clear')
 
 
+def option_menu(options, desc=True, title=None):
+    """
+    Select from any of the options in the  ``options`` list.
+
+    Parameters
+    ----------
+    options : dict
+        ``dict`` of options (``dict``) of the form ``{"name 1":"desc"}``.
+    desc : bool
+        ``True`` to show descriptions in the selection process
+
+    title : str
+        The title to print at the head of the execution area.
+
+    Returns
+    -------
+    str
+        The selected option name from the list.
+
+    """
+    #  Logging
+    # ----------------------------------------------------------------------------------------------------------------- #
+    modlog.debug("Selecting options from %s." % options)
+
+    #  Managing structure
+    # ----------------------------------------------------------------------------------------------------------------- #
+    logger = KeyLogger(options=options, location=0, exit=False, command=None)
+
+    # - Generating the options dict - #
+    if desc:
+        options_dictionary = {
+            name: {
+                "v": "",
+                "d": "",
+                "i": value
+            }
+            for name, value in options.items()
+
+        }
+    else:
+        options_dictionary = {
+            name: {
+                "v": "",
+                "d": "",
+                "i": ""
+            }
+            for name, value in options.items()
+
+        }
+
+    # - Fetching terminal - #
+    keys = list(options_dictionary.keys())
+    terminal_string = TerminalString()
+
+    while not logger.exit:
+        #  Managing title printing
+        # ----------------------------------------------------------------------------------------------------------------- #
+        if title:
+            terminal_string.print_title(title)
+        else:
+            terminal_string.print_title(title)
+
+        print_option_dict(options_dictionary, location=keys[logger.location])
+
+        listen_keyboard(on_press=logger.menu_keylog)
+
+        #  Managing the commands
+        # ----------------------------------------------------------------------------------------------------------------- #
+        if logger.command:  # we have a command to execute
+            if logger.command == "enter":
+                return keys[logger.location]
+            logger.command = None
+
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+
 if __name__ == '__main__':
     text_t = TerminalString()
-    select_files_remote(["box:/PyCS"], max=3, condition=lambda x: (rclone_isdir(x) or x.suffix == ".mp4"))
+    option_menu({"Op1": "1", "Op2": "2"})

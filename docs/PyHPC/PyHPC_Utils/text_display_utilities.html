@@ -374,6 +374,62 @@ def print_directories_dict(directories, selected, location=None, smax=None):
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
+# Conversions ======================================================================================================== #
+# -------------------------------------------------------------------------------------------------------------------- #
+def dict_to_html(dictionary: dict, headers=None) -&gt; str:
+    &#34;&#34;&#34;
+    Converts a ``dict`` object to ``html``.
+
+    Parameters
+    ----------
+    dictionary : dict
+        The dictionary to convert.
+
+    headers : list, default=None
+        The columns to include in the table. If ``None``, simply includes all headers.
+
+    Returns
+    -------
+    str
+        The converted table in html code.
+
+    &#34;&#34;&#34;
+    #  Managing headers
+    # ----------------------------------------------------------------------------------------------------------------- #
+    if not headers:
+        all_headers = [list(entry.keys()) for entry in dictionary.values()]
+        headers = []
+        for val in all_headers:
+            headers += val
+
+        headers = list(set(list(headers)))
+        headers = [&#34; &#34;] + headers
+
+    #  Writing
+    # ----------------------------------------------------------------------------------------------------------------- #
+    html_string = &#34;&lt;table&gt;\n&#34;
+
+    # - Writing the header -#
+    html_string += &#34;\t&lt;tr&gt;\n&#34;
+
+    for head in headers:
+        html_string += &#34;\t\t&lt;th&gt;%s&lt;/th&gt;\n&#34; % head
+    html_string += &#34;\t&lt;/tr&gt;\n&#34;
+
+    # - Writing the table -#
+    for entry, value in dictionary.items():
+        html_string += &#34;\t&lt;tr&gt;\n&#34;
+
+        html_string += &#34;\t\t&lt;td&gt;%s&lt;/td&gt;\n&#34; % entry
+        for head in headers[1:]:
+            html_string += &#34;\t\t&lt;td&gt;%s&lt;/td&gt;\n&#34; % value[head]
+        html_string += &#34;\t&lt;/tr&gt;\n&#34;
+    html_string += &#34;&lt;/table&gt;&#34;
+
+    return html_string
+
+
+# -------------------------------------------------------------------------------------------------------------------- #
 #  Movement Related Behaviors ======================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
 def get_yes_no(header_message):
@@ -717,6 +773,80 @@ if __name__ == &#39;__main__&#39;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="PyHPC.PyHPC_Utils.text_display_utilities.dict_to_html"><code class="name flex">
+<span>def <span class="ident">dict_to_html</span></span>(<span>dictionary: dict, headers=None) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts a <code>dict</code> object to <code>html</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>dictionary</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The dictionary to convert.</dd>
+<dt><strong><code>headers</code></strong> :&ensp;<code>list</code>, default=<code>None</code></dt>
+<dd>The columns to include in the table. If <code>None</code>, simply includes all headers.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The converted table in html code.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dict_to_html(dictionary: dict, headers=None) -&gt; str:
+    &#34;&#34;&#34;
+    Converts a ``dict`` object to ``html``.
+
+    Parameters
+    ----------
+    dictionary : dict
+        The dictionary to convert.
+
+    headers : list, default=None
+        The columns to include in the table. If ``None``, simply includes all headers.
+
+    Returns
+    -------
+    str
+        The converted table in html code.
+
+    &#34;&#34;&#34;
+    #  Managing headers
+    # ----------------------------------------------------------------------------------------------------------------- #
+    if not headers:
+        all_headers = [list(entry.keys()) for entry in dictionary.values()]
+        headers = []
+        for val in all_headers:
+            headers += val
+
+        headers = list(set(list(headers)))
+        headers = [&#34; &#34;] + headers
+
+    #  Writing
+    # ----------------------------------------------------------------------------------------------------------------- #
+    html_string = &#34;&lt;table&gt;\n&#34;
+
+    # - Writing the header -#
+    html_string += &#34;\t&lt;tr&gt;\n&#34;
+
+    for head in headers:
+        html_string += &#34;\t\t&lt;th&gt;%s&lt;/th&gt;\n&#34; % head
+    html_string += &#34;\t&lt;/tr&gt;\n&#34;
+
+    # - Writing the table -#
+    for entry, value in dictionary.items():
+        html_string += &#34;\t&lt;tr&gt;\n&#34;
+
+        html_string += &#34;\t\t&lt;td&gt;%s&lt;/td&gt;\n&#34; % entry
+        for head in headers[1:]:
+            html_string += &#34;\t\t&lt;td&gt;%s&lt;/td&gt;\n&#34; % value[head]
+        html_string += &#34;\t&lt;/tr&gt;\n&#34;
+    html_string += &#34;&lt;/table&gt;&#34;
+
+    return html_string</code></pre>
+</details>
+</dd>
 <dt id="PyHPC.PyHPC_Utils.text_display_utilities.get_dict_str"><code class="name flex">
 <span>def <span class="ident">get_dict_str</span></span>(<span>di, tabs=0)</span>
 </code></dt>
@@ -1791,6 +1921,7 @@ Parameters</p>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.dict_to_html" href="#PyHPC.PyHPC_Utils.text_display_utilities.dict_to_html">dict_to_html</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.get_dict_str" href="#PyHPC.PyHPC_Utils.text_display_utilities.get_dict_str">get_dict_str</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.get_options" href="#PyHPC.PyHPC_Utils.text_display_utilities.get_options">get_options</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.get_yes_no" href="#PyHPC.PyHPC_Utils.text_display_utilities.get_yes_no">get_yes_no</a></code></li>

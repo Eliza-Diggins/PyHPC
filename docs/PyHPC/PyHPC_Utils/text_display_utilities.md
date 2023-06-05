@@ -6,6 +6,23 @@ Functions
 ---------
 
     
+`dict_to_html(dictionary: dict, headers=None) ‑> str`
+:   Converts a ``dict`` object to ``html``.
+    
+    Parameters
+    ----------
+    dictionary : dict
+        The dictionary to convert.
+    
+    headers : list, default=None
+        The columns to include in the table. If ``None``, simply includes all headers.
+    
+    Returns
+    -------
+    str
+        The converted table in html code.
+
+    
 `get_dict_str(di, tabs=0)`
 :   
 
