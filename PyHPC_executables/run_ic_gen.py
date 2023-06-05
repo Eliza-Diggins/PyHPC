@@ -65,11 +65,11 @@ if "-h" in arguments or "--help" in arguments:
 \n
 Below are the help information scripts for each of the available initial condition generators implemented:
 \n""")
-    for command in os.listdir(os.path.join(pt.Path(__file__).parents[0], "Initial Conditions")):
+    for command in os.listdir(os.path.join(pt.Path(__file__).parents[0], "initial_conditions")):
         print(Fore.GREEN + "python3 '%s' -h" % os.path.join(pt.Path(__file__).parents[1], "PyHPC_executables",
-                                                            "Initial Conditions", command) + Style.RESET_ALL)
+                                                            "initial_conditions", command) + Style.RESET_ALL)
         os.system(
-            "python3 '%s' -h" % os.path.join(pt.Path(__file__).parents[1], "PyHPC_executables", "Initial Conditions",
+            "python3 '%s' -h" % os.path.join(pt.Path(__file__).parents[1], "PyHPC_executables", "initial_conditions",
                                              command))
     exit()
 
