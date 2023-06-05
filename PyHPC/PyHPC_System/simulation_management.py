@@ -16,6 +16,7 @@ from inspect import getframeinfo, stack
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.errors import PyHPC_Error
 from PyHPC.PyHPC_Core.log import get_module_logger
+from PyHPC.PyHPC_Utils.text_display_utilities import dict_to_html
 
 # generating screen locking #
 screen_lock = t.Semaphore(value=1)  # locks off multi-threaded screen.
@@ -451,6 +452,50 @@ class SimulationLog:
         with open(self.path, "w+") as simlog_file:
             json.dump(self.raw, simlog_file)
 
+    def to_html(self, output):
+        """
+        Writes the simulation log to a system of ``html`` files at the ``output`` location.
+
+        Parameters
+        ----------
+        output: The ``path`` to the output directory.
+
+        Returns
+        -------
+        None
+        """
+        #  Debugging
+        # ------------------------------------------------------------------------------------------------------------ #
+        modlog.debug("Generating html output of %s." % self.__repr__())
+
+        #  Managing the directory
+        # ------------------------------------------------------------------------------------------------------------ #
+        if not os.path.exists(output):
+            pt.Path(output).mkdir(parents=True)
+            modlog.debug("Generated output directory %s." % output)
+        else:
+            modlog.debug("Found output directory %s." % output)
+
+        #  Generating the first table
+        # ------------------------------------------------------------------------------------------------------------ #
+        table_data = {
+            k: {
+                "Name"        : "<a href='%s'>%s</a>"%(os.path.join(output,"InitCons","%s.html"%k),pt.Path(k).name),
+                "Date Created": v["meta"]["dateCreated"],
+                "Last Edited" : v["meta"]["lastEdited"],
+                "# of ICs"    : len(v["simulations"])
+            }
+            for k, v in self.raw.items()
+        }
+        with open(os.path.join(output, "test.html"), "w") as f:
+            with open(os.path.join(pt.Path(__file__).parents[1], "bin", "lib", "templates", "simlog_html_1.html"),
+                      "r") as template:
+                f.write(template.read() % {"table": dict_to_html(table_data),
+                                           "path" : self.path})
+
+        for ic, v in self.ics.items():
+            v.to_html(output)
+
 
 class InitCon:
     """
@@ -688,6 +733,47 @@ class InitCon:
 
     def save(self):
         self.parent.save()
+
+    def to_html(self, output):
+        """
+        Writes the init_log to a system of ``html`` files at the ``output`` location.
+
+        Parameters
+        ----------
+        output: The ``path`` to the output directory.
+
+        Returns
+        -------
+        None
+        """
+        #  Debugging
+        # ------------------------------------------------------------------------------------------------------------ #
+        modlog.debug("Generating html output of %s." % self.__repr__())
+
+        #  Managing the directory
+        # ------------------------------------------------------------------------------------------------------------ #
+        if not os.path.exists(os.path.join(output,"InitCons")):
+            pt.Path(os.path.join(output,"InitCons")).mkdir(parents=True)
+            modlog.debug("Generated output directory %s." % os.path.join(output,"InitCons"))
+        else:
+            modlog.debug("Found output directory %s." % os.path.join(output,"InitCons"))
+
+        #  Generating the first table
+        # ------------------------------------------------------------------------------------------------------------ #
+        table_data = {
+            k: {
+                "Name"        : pt.Path(k).name,
+                "Date Created": v["meta"]["dateCreated"],
+                "Last Edited" : v["meta"]["lastEdited"],
+                "# of Sims"   : len(v["outputs"])
+            }
+            for k, v in self.raw["simulations"].items()
+        }
+        with open(pt.Path(os.path.join(output, "InitCons", "%s.html" % self.name)), "w") as f:
+            with open(os.path.join(pt.Path(__file__).parents[1], "bin", "lib", "templates", "simlog_html_1.html"),
+                      "r") as template:
+                f.write(template.read() % {"table": dict_to_html(table_data),
+                                           "path" : self.parent.path})
 
 
 class SimRec:
@@ -934,3 +1020,8 @@ def check_dictionary_structure(master: dict, base: dict) -> bool:
             else:
                 pass
     return result
+
+
+if __name__ == '__main__':
+    simlog = SimulationLog()
+    simlog.to_html("/home/ediggins/html_test")

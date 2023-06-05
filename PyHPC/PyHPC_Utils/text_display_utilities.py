@@ -344,6 +344,62 @@ def print_directories_dict(directories, selected, location=None, smax=None):
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
+# Conversions ======================================================================================================== #
+# -------------------------------------------------------------------------------------------------------------------- #
+def dict_to_html(dictionary: dict, headers=None) -> str:
+    """
+    Converts a ``dict`` object to ``html``.
+
+    Parameters
+    ----------
+    dictionary : dict
+        The dictionary to convert.
+
+    headers : list, default=None
+        The columns to include in the table. If ``None``, simply includes all headers.
+
+    Returns
+    -------
+    str
+        The converted table in html code.
+
+    """
+    #  Managing headers
+    # ----------------------------------------------------------------------------------------------------------------- #
+    if not headers:
+        all_headers = [list(entry.keys()) for entry in dictionary.values()]
+        headers = []
+        for val in all_headers:
+            headers += val
+
+        headers = list(set(list(headers)))
+        headers = [" "] + headers
+
+    #  Writing
+    # ----------------------------------------------------------------------------------------------------------------- #
+    html_string = "<table>\n"
+
+    # - Writing the header -#
+    html_string += "\t<tr>\n"
+
+    for head in headers:
+        html_string += "\t\t<th>%s</th>\n" % head
+    html_string += "\t</tr>\n"
+
+    # - Writing the table -#
+    for entry, value in dictionary.items():
+        html_string += "\t<tr>\n"
+
+        html_string += "\t\t<td>%s</td>\n" % entry
+        for head in headers[1:]:
+            html_string += "\t\t<td>%s</td>\n" % value[head]
+        html_string += "\t</tr>\n"
+    html_string += "</table>"
+
+    return html_string
+
+
+# -------------------------------------------------------------------------------------------------------------------- #
 #  Movement Related Behaviors ======================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
 def get_yes_no(header_message):
