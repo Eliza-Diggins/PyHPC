@@ -1,4 +1,4 @@
-#!/bin/csh
+#%(csh_interp)s
 #
 #   INFO:
 # $PYTHON_MODULE_LOAD -> This indicates if we need to load a separate module first.

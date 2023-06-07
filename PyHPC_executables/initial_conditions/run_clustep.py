@@ -297,7 +297,8 @@ if user_arguments.no_batch:
     with open(os.path.join(pt.Path(__file__).parents[2], "PyHPC", "bin", "lib", "templates", "clustep_exe.template"),
               "r") as template:
         with open(os.path.join(_temporary_directory,"exec.sh"),"w+") as writer:
-            writer.write(template.read%{
+            writer.write(template.read()%{
+                "csh_interp":CONFIG["System"]["Modules"]["csh_interp"],
                 "python_env_script":CONFIG["System"]["Modules"]["python_env_script"],
                 "python_exec":CONFIG["System"]["Modules"]["python_exec_name"],
                 "components":len(clustep_options),

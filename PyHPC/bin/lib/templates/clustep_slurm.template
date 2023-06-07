@@ -7,12 +7,12 @@
 #----------------------------------------------------#
 # Managing modules ==================================#
 #----------------------------------------------------#
-echo "\[\033[0;32m\]Loading necessary packages...\[\033[0m\]"
+echo "Loading necessary packages.."
 ml purge > & /dev/null #- Remove all loaded modules
 module use %(python3_package)s > & /dev/null
 ml %(python3_subpackage)s > &/dev/null
 ml parallel
-echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
+echo "[FINISHED]"
 
 
 #----------------------------------------------------#
@@ -36,15 +36,15 @@ endif
 #----------------------------------------------------#
 
 setenv OUTPUT_DIR "%(output_dir)s"
-echo "\[\033[0;32m\]Checking output directory $OUTPUT_DIR for viability...\[\033[0m\]"
+echo "Checking output directory $OUTPUT_DIR for viability..."
 
 if ( ! -d "$OUTPUT_DIR" ) then
-  echo "    \[\033[0;32m\]Failed to find $OUTPUT_DIR, attempting to generate it...\[\033[0m\]"
+  echo "    Failed to find $OUTPUT_DIR, attempting to generate it..."
   mkdir --parents $OUTPUT_DIR
-  echo "\[\033[0;36m\]    [FINISHED]\[\033[0m\]"
-  echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
+  echo "    [FINISHED]"
+  echo "[FINISHED]"
 else
-  echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
+  echo "[FINISHED]"
 endif
 
 #------------------------------------------------------#
