@@ -19,6 +19,7 @@ from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.log import get_module_logger
 from PyHPC.PyHPC_Utils.text_display_utilities import TerminalString, PrintRetainer, build_options, get_yes_no
 from PyHPC.PyHPC_System.simulation_management import SimulationLog
+from PyHPC.PyHPC_Core.utils import write_ini
 from PyHPC.PyHPC_System.io import write_slurm_file
 
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
@@ -283,7 +284,7 @@ for index,cluster in enumerate(tqdm(clustep_options),1):
     _ini_writable_dict = reduce_dict({k: v for k, v in clustep_options[cluster].items() if k not in ["tags", "position"]})
 
     with open(os.path.join(_temporary_directory,"Cluster%s.ini"%index),"w+") as ini_file:
-        toml.dump(_ini_writable_dict,ini_file)
+        write_ini(_ini_writable_dict,ini_file)
 
 simlog.ics[str(ic_name)].log("generated .ini files in %s."%(os.path.join(_temporary_directory,"Cluster%s.ini"%index)),
                                  "CREATE-INI")
@@ -298,15 +299,15 @@ if len(clustep_options) != 1:
             # Iterate through all of the clustep objects.
             if index == 1:
                 # This is the first line of the file #
-                line = "%s_%s_%s_%s_%s_%s_%s_%s_%s\n"%tuple(["Cluster1.dat",
-                                                           "Cluster2.dat",
-                                                           "temp.dat",
+                line = "%s+%s+%s+%s+%s+%s+%s+%s+%s\n"%tuple([os.path.join(_temporary_directory,"Cluster1.dat"),
+                                                           os.path.join(_temporary_directory,"Cluster2.dat"),
+                                                           os.path.join(_temporary_directory,"temp.dat"),
                                                            *clustep_options[list(clustep_options.keys())[index]]["position"]["position"]["v"],
                                                            *clustep_options[list(clustep_options.keys())[index]]["position"]["velocity"]["v"]])
             else:
-                line = "%s_%s_%s_%s_%s_%s_%s_%s_%s\n"%tuple(["temp.dat",
-                                                           "Cluster%s.dat"%(index+1),
-                                                           "temp.dat",
+                line = "%s+%s+%s+%s+%s+%s+%s+%s+%s\n"%tuple([os.path.join(_temporary_directory,"temp.dat"),
+                                                           os.path.join(_temporary_directory,"Cluster%s.dat"%(index+1)),
+                                                           os.path.join(_temporary_directory,"temp.dat"),
                                                            *clustep_options[list(clustep_options.keys())[index]]["position"]["position"]["v"],
                                                            *clustep_options[list(clustep_options.keys())[index]]["position"]["velocity"]["v"]])
             snapfile.write(line)
@@ -330,7 +331,7 @@ if user_arguments.no_batch:
                 "temp_dir":str(_temporary_directory),
                 "working_directory":CONFIG["System"]["Executables"]["clustep_executable_directory"],
                 "output_name":str(ic_name),
-                "snapgadget":os.path.join(CONFIG["System"]["Executables"]["snapgadget_dir"],"snapjoin.py")
+                "snapgadget":os.path.join(CONFIG["System"]["Modules"]["snapgadget_dir"],"snapjoin.py")
             })
 
     os.system("chmod 777 %s"%(os.path.join(_temporary_directory,"exec.sh")))

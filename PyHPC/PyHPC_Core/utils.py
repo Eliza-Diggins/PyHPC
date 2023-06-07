@@ -94,5 +94,34 @@ class NonStandardEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
+def write_ini(dictionary, file):
+    """
+    Writes a ``.ini`` file (``toml`` without the usual `"` marks around the strings). The ``dictionary`` should be a
+    standard ``toml`` formatted dictionary. ``file`` should be a readable.
+
+    Parameters
+    ----------
+    dictionary : dict
+        The dictionary to write to a .ini
+    file : writable
+        The file object to write the output to.
+
+    Returns
+    -------
+    None
+
+    """
+
+    def _recur(d, f):
+        for k, v in d.items():
+            if isinstance(v, dict):
+                f.write("[%s]\n" % k)
+                _recur(v, f)
+            else:
+                f.write("%s = %s\n" % (k, v))
+
+    _recur(dictionary, file)
+
+
 if __name__ == '__main__':
     get_system_info()

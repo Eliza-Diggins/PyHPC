@@ -71,11 +71,26 @@ echo "Finished"
 #------------------------------------------------------#
 # Managing the snapgadget region ===================== #
 #------------------------------------------------------#
-echo "Finished generating the necessary .dat files. Combining..."
+if ( $COMPONENTS == 1 ) then
+  mv "$SUB_OUTPUT_DIR/Cluster1.dat" "$OUTPUT_NAME"
+else
+    echo "Finished generating the necessary .dat files. Combining..."
 
-foreach v (`cat $TEMP_DIR/snapgadget_directive.txt`)
-  $PYTHON $SNAPGADGET `echo $v | sed 's|_| |g' `
-end
+  foreach v (`cat $TEMP_DIR/snapgadget_directive.txt`)
+    $PYTHON $SNAPGADGET `echo $v | sed 's|+| |g' `
+    echo $SNAPGADGET `echo $v | sed 's|+| |g' `
+  end
+
+  mv "$SUB_OUTPUT_DIR/temp.dat" "$OUTPUT_NAME"
+endif
+
+#------------------------------------------------------#
+# Clearing the temp file ============================= #
+#------------------------------------------------------#
+rm -r $TEMP_DIR
+
+
+
 
 
 
