@@ -273,8 +273,8 @@ simlog.add({str(ic_name): {
 # -------------------------------------------------------------------------------------------------------------------- #
 # Writing the .ini file ============================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
-_temporary_directory = os.path.join(pt.Path(__file__).parents[2], "PyHPC", "bin", ".tmp",datetime.now().strftime('%m-%d-%Y_%H-%M-%S'))
-
+_temporary_directory = os.path.join(pt.Path(__file__).parents[2].absolute(), "PyHPC", "bin", ".tmp",datetime.now().strftime('%m-%d-%Y_%H-%M-%S'))
+printer.print(_temporary_directory)
 if not os.path.exists(_temporary_directory):
     pt.Path(_temporary_directory).mkdir(parents=True)
 
@@ -287,6 +287,30 @@ for index,cluster in enumerate(tqdm(clustep_options),1):
 
 simlog.ics[str(ic_name)].log("generated .ini files in %s."%(os.path.join(_temporary_directory,"Cluster%s.ini"%index)),
                                  "CREATE-INI")
+
+# -------------------------------------------------------------------------------------------------------------------- #
+# Writing snapgadget exec     ======================================================================================== #
+# -------------------------------------------------------------------------------------------------------------------- #
+if len(clustep_options) != 1:
+    #! We need to generate a snapgadget directive because we are going to have to combine things.
+    with open(os.path.join(_temporary_directory,"snapgadget_directive.txt"),"w+") as snapfile:
+        for index in range(1,len(clustep_options)):
+            # Iterate through all of the clustep objects.
+            if index == 1:
+                # This is the first line of the file #
+                line = "%s_%s_%s_%s_%s_%s_%s_%s_%s\n"%tuple(["Cluster1.dat",
+                                                           "Cluster2.dat",
+                                                           "temp.dat",
+                                                           *clustep_options[list(clustep_options.keys())[index]]["position"]["position"]["v"],
+                                                           *clustep_options[list(clustep_options.keys())[index]]["position"]["velocity"]["v"]])
+            else:
+                line = "%s_%s_%s_%s_%s_%s_%s_%s_%s\n"%tuple(["temp.dat",
+                                                           "Cluster%s.dat"%(index+1),
+                                                           "temp.dat",
+                                                           *clustep_options[list(clustep_options.keys())[index]]["position"]["position"]["v"],
+                                                           *clustep_options[list(clustep_options.keys())[index]]["position"]["velocity"]["v"]])
+            snapfile.write(line)
+
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Writing the executable script ====================================================================================== #
@@ -304,8 +328,10 @@ if user_arguments.no_batch:
                 "components":len(clustep_options),
                 "output_dir":str(ic_name.parents[0]),
                 "temp_dir":str(_temporary_directory),
-                "working_directory":CONFIG["System"]["Executables"]["clustep_executable_directory"]
+                "working_directory":CONFIG["System"]["Executables"]["clustep_executable_directory"],
+                "output_name":str(ic_name),
+                "snapgadget":os.path.join(CONFIG["System"]["Executables"]["snapgadget_dir"],"snapjoin.py")
             })
 
-
+    os.system("chmod 777 %s"%(os.path.join(_temporary_directory,"exec.sh")))
 

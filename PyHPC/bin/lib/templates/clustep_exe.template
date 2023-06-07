@@ -14,6 +14,7 @@
 #----------------------------------------------------#
 setenv PYTHON_MODULE_SCRIPT %(python_env_script)s
 setenv PYTHON %(python_exec)s
+setenv SNAPGADGET %(snapgadget)s
 $PYTHON_MODULE_SCRIPT # Loading python if needed
 
 
@@ -23,41 +24,58 @@ $PYTHON_MODULE_SCRIPT # Loading python if needed
 setenv COMPONENTS %(components)d # Stores the number of components
 echo "Found $COMPONENTS components to generate..."
 
-if ( $COMPONENTS == 1 ) then
-  # There is only one component so we actually create the output
-  setenv SUB_OUTPUT_DIR "%(output_dir)s"
-  echo "sub_output_directory = $SUB_OUTPUT_DIR"
-else
-  # Multiple components
-  setenv SUB_OUTPUT_DIR "%(temp_dir)s"
-  echo "sub_output_directory = $SUB_OUTPUT_DIR"
-endif
+# Multiple components
+setenv SUB_OUTPUT_DIR "%(temp_dir)s"
+echo "sub_output_directory = $SUB_OUTPUT_DIR"
 
 #----------------------------------------------------#
 # Managing output location ==========================#
 #----------------------------------------------------#
 
 setenv OUTPUT_DIR "%(output_dir)s"
-echo "\[\033[0;32m\]Checking output directory $OUTPUT_DIR for viability...\[\033[0m\]"
+echo "Checking output directory $OUTPUT_DIR for viability..."
 
 if ( ! -d "$OUTPUT_DIR" ) then
-  echo "    \[\033[0;32m\]Failed to find $OUTPUT_DIR, attempting to generate it...\[\033[0m\]"
+  echo "    Failed to find $OUTPUT_DIR, attempting to generate it..."
   mkdir --parents $OUTPUT_DIR
-  echo "\[\033[0;36m\]    [FINISHED]\[\033[0m\]"
-  echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
+  echo "    [FINISHED]"
+  echo "[FINISHED]"
 else
-  echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
+  echo "[FINISHED]"
 endif
 
 #------------------------------------------------------#
 # Managing the working directory                       #
 #------------------------------------------------------#
+setenv TEMP_DIR "%(temp_dir)s"
 setenv WORK_DIR "%(working_directory)s"
+setenv OUTPUT_NAME "%(output_name)s"
 echo "working directory = $WORK_DIR"
 
 #------------------------------------------------------#
 # Creating the list of execution instruction ========= #
 #------------------------------------------------------#
-ls "$TEMP_DIR" > "$TEMP_DIR/exec.txt"
+
+ls "$TEMP_DIR" | grep ".ini" > "$TEMP_DIR/exec.txt"
+
+cd "$WORK_DIR"
+
+echo "Generating the components..."
+
+foreach v (`cat $TEMP_DIR/exec.txt`)
+  $PYTHON "clustep.py" -i "$TEMP_DIR/$v" -o "$SUB_OUTPUT_DIR/`echo $v | sed 's|.ini||g'`.dat"
+  echo "clustep.py" -i "$TEMP_DIR/$v" -o "$SUB_OUTPUT_DIR/`echo $v | sed 's|.ini||g'`.dat"
+end
+echo "Finished"
+
+#------------------------------------------------------#
+# Managing the snapgadget region ===================== #
+#------------------------------------------------------#
+echo "Finished generating the necessary .dat files. Combining..."
+
+foreach v (`cat $TEMP_DIR/snapgadget_directive.txt`)
+  $PYTHON $SNAPGADGET `echo $v | sed 's|_| |g' `
+end
+
 
 
