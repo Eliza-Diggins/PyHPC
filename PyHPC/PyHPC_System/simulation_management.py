@@ -16,6 +16,7 @@ from inspect import getframeinfo, stack
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.errors import PyHPC_Error
 from PyHPC.PyHPC_Core.log import get_module_logger
+from PyHPC.PyHPC_Core.utils import NonStandardEncoder
 from PyHPC.PyHPC_Utils.text_display_utilities import dict_to_html
 
 # generating screen locking #
@@ -76,7 +77,9 @@ class SimulationLog:
           }
         },
         "core": {
-        }
+        },
+        "action_log":{
+        },
       }
     }
     ```
@@ -95,11 +98,7 @@ class SimulationLog:
         },
         "simulations": {
         },
-        "core": {
-          "npart": {
-            "dm": "---",
-            "gas": "---"
-          }
+        "action_log":{
         }
       }
     }
@@ -404,7 +403,7 @@ class SimulationLog:
                 new = data.copy()
 
                 # - Adding necessary headers -#
-                for header, obj in zip(["information", "meta", "simulations", "core"], ["", {}, {}, {}]):
+                for header, obj in zip(["information", "meta", "simulations", "core","action_log"], ["", {}, {}, {},{}]):
                     if header not in data:
                         new[header] = obj
 
@@ -450,7 +449,7 @@ class SimulationLog:
         #  Saving
         # ------------------------------------------------------------------------------------------------------------ #
         with open(self.path, "w+") as simlog_file:
-            json.dump(self.raw, simlog_file)
+            json.dump(self.raw, simlog_file,cls=NonStandardEncoder)
 
     def to_html(self, output):
         """
@@ -781,7 +780,52 @@ class InitCon:
                 f.write(template.read() % {"table": dict_to_html(table_data),
                                            "path" : self.parent.path})
 
+    def log(self, message, action, auto_save=True, **kwargs):
+        """
+        logs the ``message`` to the ``self.raw.action_log``. Additional entries in the record are specified with ``**kwargs``.
 
+        Parameters
+        ----------
+        message : str
+            The message to log with the entry.
+        action : str
+            The specific action being under-taken. These actions can be arbitrary, but should be consistent for
+            best impact.
+        auto_save : bool
+            ``True`` to automatically write all of the data to file.
+        kwargs : optional
+            Additional attributes to log with the message. All entries should be ``key="string"``. If entries overlap
+            with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.
+
+        Returns
+        -------
+        None
+
+        """
+        #  Managing the required kwargs
+        # ------------------------------------------------------------------------------------------------------------ #
+        caller = getframeinfo(stack()[1][0])  # -> grabbing frame info
+        req_entries = {  # These are the required keys that are always present in the entry.
+            "msg"   : message,
+            "act"   : action,
+            "lineno": caller.lineno,
+            "file"  : caller.filename,
+            "time"  : datetime.now().strftime('%m-%d-%Y_%H-%M-%S')
+
+        }
+
+        #  Managing additional entries
+        # ------------------------------------------------------------------------------------------------------------ #
+        entries = {**req_entries, **kwargs}
+
+        #  Logging
+        # ------------------------------------------------------------------------------------------------------------ #
+        log_time = datetime.now().strftime('%m-%d-%Y_%H-%M-%S')
+
+        self.raw["action_log"][log_time] = entries
+
+        if auto_save:
+            self.parent.save()
 class SimRec:
     """
     The ``SimRec`` class contains all of the information for a single simulation record in the ``SimulationLog`` system.

@@ -1,0 +1,63 @@
+#!/bin/csh
+#
+#   INFO:
+# $PYTHON_MODULE_LOAD -> This indicates if we need to load a separate module first.
+#   $PYTHON_MODULE_SCRIPT -> This is then the script necessary to load the correct python modules.
+# $ PYTHON -> this is the name of the python executable once configured.
+# $ COMPONENTS -> The number of different components to generate.
+# $ WORK_DIR -> the clustep execution location
+# $ TEMP_DIR -> The relavent temp directory.
+# $ OUTPUT_DIR -> The correct output location for the final product.
+
+#----------------------------------------------------#
+# Managing modules ==================================#
+#----------------------------------------------------#
+setenv PYTHON_MODULE_SCRIPT %(python_env_script)s
+setenv PYTHON %(python_exec)s
+$PYTHON_MODULE_SCRIPT # Loading python if needed
+
+
+#----------------------------------------------------#
+# Managing Core variables ===========================#
+#----------------------------------------------------#
+setenv COMPONENTS %(components)d # Stores the number of components
+echo "Found $COMPONENTS components to generate..."
+
+if ( $COMPONENTS == 1 ) then
+  # There is only one component so we actually create the output
+  setenv SUB_OUTPUT_DIR "%(output_dir)s"
+  echo "sub_output_directory = $SUB_OUTPUT_DIR"
+else
+  # Multiple components
+  setenv SUB_OUTPUT_DIR "%(temp_dir)s"
+  echo "sub_output_directory = $SUB_OUTPUT_DIR"
+endif
+
+#----------------------------------------------------#
+# Managing output location ==========================#
+#----------------------------------------------------#
+
+setenv OUTPUT_DIR "%(output_dir)s"
+echo "\[\033[0;32m\]Checking output directory $OUTPUT_DIR for viability...\[\033[0m\]"
+
+if ( ! -d "$OUTPUT_DIR" ) then
+  echo "    \[\033[0;32m\]Failed to find $OUTPUT_DIR, attempting to generate it...\[\033[0m\]"
+  mkdir --parents $OUTPUT_DIR
+  echo "\[\033[0;36m\]    [FINISHED]\[\033[0m\]"
+  echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
+else
+  echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
+endif
+
+#------------------------------------------------------#
+# Managing the working directory                       #
+#------------------------------------------------------#
+setenv WORK_DIR "%(working_directory)s"
+echo "working directory = $WORK_DIR"
+
+#------------------------------------------------------#
+# Creating the list of execution instruction ========= #
+#------------------------------------------------------#
+ls "$TEMP_DIR" > "$TEMP_DIR/exec.txt"
+
+

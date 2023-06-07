@@ -1,0 +1,72 @@
+#!/bin/csh
+#-------------------------------------------------------------------#
+# RAMSES runtime script --> SLURM                                   #
+#-------------------------------------------------------------------#
+%(batch_options)s
+
+#----------------------------------------------------#
+# Managing modules ==================================#
+#----------------------------------------------------#
+echo "\[\033[0;32m\]Loading necessary packages...\[\033[0m\]"
+ml purge > & /dev/null #- Remove all loaded modules
+module use %(python3_package)s > & /dev/null
+ml %(python3_subpackage)s > &/dev/null
+ml parallel
+echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
+
+
+#----------------------------------------------------#
+# Managing Core variables ===========================#
+#----------------------------------------------------#
+setenv COMPONENTS %(components)d # Stores the number of components
+echo "Found $COMPONENTS components to generate..."
+
+if ( $COMPONENTS == 1 ) then
+  # There is only one component so we actually create the output
+  setenv SUB_OUTPUT_DIR "%(output_dir)s"
+  echo "sub_output_directory = $SUB_OUTPUT_DIR"
+else
+  # Multiple components
+  setenv SUB_OUTPUT_DIR "%(temp_dir)s"
+  echo "sub_output_directory = $SUB_OUTPUT_DIR"
+endif
+
+#----------------------------------------------------#
+# Managing output location ==========================#
+#----------------------------------------------------#
+
+setenv OUTPUT_DIR "%(output_dir)s"
+echo "\[\033[0;32m\]Checking output directory $OUTPUT_DIR for viability...\[\033[0m\]"
+
+if ( ! -d "$OUTPUT_DIR" ) then
+  echo "    \[\033[0;32m\]Failed to find $OUTPUT_DIR, attempting to generate it...\[\033[0m\]"
+  mkdir --parents $OUTPUT_DIR
+  echo "\[\033[0;36m\]    [FINISHED]\[\033[0m\]"
+  echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
+else
+  echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
+endif
+
+#------------------------------------------------------#
+# Managing the working directory                       #
+#------------------------------------------------------#
+setenv WORK_DIR "%(working_directory)s"
+echo "working directory = $WORK_DIR"
+
+#--------------------------------------------------------------------------------#
+# Parallelizing ================================================================ #
+#--------------------------------------------------------------------------------#
+# Managing parallelism
+#----------------------------------------------------#
+export OMP_NUM_THREADS=1
+
+setenv SRUN "srun --nodes 1 --ntasks 1"
+setenv PARALLEL "parallel --max-procs $SLURM_NTASKS --joblog %(joblog)s"
+
+#----------------------------------------------------#
+# Creating execution info ========================== #
+#----------------------------------------------------#
+echo "Generating the execution list at %(temp_dir)s..."
+ls "%(temp_dir)" > "%(temp_dir)/exec.txt"
+echo "Generated the execution list"
+
