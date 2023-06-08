@@ -1,19 +1,26 @@
-#!/bin/csh
+#%(csh_interp)s
 #-------------------------------------------------------------------#
 # RAMSES runtime script --> SLURM                                   #
 #-------------------------------------------------------------------#
 %(batch_options)s
+#
+#   INFO:
+# $PYTHON_MODULE_LOAD -> This indicates if we need to load a separate module first.
+#   $PYTHON_MODULE_SCRIPT -> This is then the script necessary to load the correct python modules.
+# $ PYTHON -> this is the name of the python executable once configured.
+# $ COMPONENTS -> The number of different components to generate.
+# $ WORK_DIR -> the clustep execution location
+# $ TEMP_DIR -> The relavent temp directory.
+# $ OUTPUT_DIR -> The correct output location for the final product.
 
 #----------------------------------------------------#
 # Managing modules ==================================#
 #----------------------------------------------------#
-echo "Loading necessary packages.."
-ml purge > & /dev/null #- Remove all loaded modules
-module use %(python3_package)s > & /dev/null
-ml %(python3_subpackage)s > &/dev/null
+setenv PYTHON_MODULE_SCRIPT %(python_env_script)s
+setenv PYTHON %(python_exec)s
+setenv SNAPGADGET %(snapgadget)s
+$PYTHON_MODULE_SCRIPT # Loading python if needed
 ml parallel
-echo "[FINISHED]"
-
 
 #----------------------------------------------------#
 # Managing Core variables ===========================#
@@ -21,15 +28,9 @@ echo "[FINISHED]"
 setenv COMPONENTS %(components)d # Stores the number of components
 echo "Found $COMPONENTS components to generate..."
 
-if ( $COMPONENTS == 1 ) then
-  # There is only one component so we actually create the output
-  setenv SUB_OUTPUT_DIR "%(output_dir)s"
-  echo "sub_output_directory = $SUB_OUTPUT_DIR"
-else
-  # Multiple components
-  setenv SUB_OUTPUT_DIR "%(temp_dir)s"
-  echo "sub_output_directory = $SUB_OUTPUT_DIR"
-endif
+# Multiple components
+setenv SUB_OUTPUT_DIR "%(temp_dir)s"
+echo "sub_output_directory = $SUB_OUTPUT_DIR"
 
 #----------------------------------------------------#
 # Managing output location ==========================#
@@ -50,23 +51,55 @@ endif
 #------------------------------------------------------#
 # Managing the working directory                       #
 #------------------------------------------------------#
+setenv TEMP_DIR "%(temp_dir)s"
 setenv WORK_DIR "%(working_directory)s"
+setenv OUTPUT_NAME "%(output_name)s"
 echo "working directory = $WORK_DIR"
 
-#--------------------------------------------------------------------------------#
-# Parallelizing ================================================================ #
-#--------------------------------------------------------------------------------#
-# Managing parallelism
-#----------------------------------------------------#
-export OMP_NUM_THREADS=1
+#------------------------------------------------------#
+# Creating the list of execution instruction ========= #
+#------------------------------------------------------#
 
+ls "$TEMP_DIR" | grep ".ini" > "$TEMP_DIR/exec.txt"
+
+cd "$WORK_DIR"
+
+echo "Generating the components..."
+
+#------------------------------------------------------#
+# Preparing to Parallelize =========================== #
+#------------------------------------------------------#
+setenv OMP_NUM_THREADS 1
 setenv SRUN "srun --nodes 1 --ntasks 1"
-setenv PARALLEL "parallel --max-procs $SLURM_NTASKS --joblog %(joblog)s"
+setenv PARALLEL "parallel --max-procs $SLURM_NTASKS --joblog 'parallel_'"$SLURM_OUTPUT"
 
-#----------------------------------------------------#
-# Creating execution info ========================== #
-#----------------------------------------------------#
-echo "Generating the execution list at %(temp_dir)s..."
-ls "%(temp_dir)" > "%(temp_dir)/exec.txt"
-echo "Generated the execution list"
+$PARALLEL $SRUN $PYTHON "clustep.py" -i "$TEMP_DIR/{1}" -o "$SUB_OUTPUT_DIR/`echo {1} | sed 's|.ini||g'`.dat" :::: $TEMP_DIR/exec.txt
+
+echo "Finished"
+
+#------------------------------------------------------#
+# Managing the snapgadget region ===================== #
+#------------------------------------------------------#
+if ( $COMPONENTS == 1 ) then
+  mv "$SUB_OUTPUT_DIR/Cluster1.dat" "$OUTPUT_NAME"
+else
+    echo "Finished generating the necessary .dat files. Combining..."
+
+  foreach v (`cat $TEMP_DIR/snapgadget_directive.txt`)
+    $PYTHON $SNAPGADGET `echo $v | sed 's|+| |g' `
+    echo $SNAPGADGET `echo $v | sed 's|+| |g' `
+  end
+
+  mv "$SUB_OUTPUT_DIR/temp.dat" "$OUTPUT_NAME"
+endif
+
+#------------------------------------------------------#
+# Clearing the temp file ============================= #
+#------------------------------------------------------#
+rm -r $TEMP_DIR
+
+
+
+
+
 

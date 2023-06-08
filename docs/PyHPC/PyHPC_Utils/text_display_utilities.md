@@ -6,6 +6,23 @@ Functions
 ---------
 
     
+`build_options(option_dict, title)`
+:   ``build_options`` is similar to ``PyHPC.PyHPC_Utils.text_display_utilities.get_options``; however, in this case,
+    the user can add and remove components from the dictionary as well.
+    
+    Parameters
+    ----------
+    option_dict : dict
+        The base / default component settings.
+    title : str
+        The title to display
+    
+    Returns
+    -------
+    dict
+        Selected options in a dictionary format.
+
+    
 `dict_to_html(dictionary: dict, headers=None) ‑> str`
 :   Converts a ``dict`` object to ``html``.
     
@@ -48,6 +65,25 @@ Functions
 :   Returns the length of the string without counting the color bytes.
     :param string: The string to analyze.
     :return:
+
+    
+`option_menu(options, desc=True, title=None)`
+:   Select from any of the options in the  ``options`` list.
+    
+    Parameters
+    ----------
+    options : dict
+        ``dict`` of options (``dict``) of the form ``{"name 1":"desc"}``.
+    desc : bool
+        ``True`` to show descriptions in the selection process
+    
+    title : str
+        The title to print at the head of the execution area.
+    
+    Returns
+    -------
+    str
+        The selected option name from the list.
 
     
 `print_directories_dict(directories, selected, location=None, smax=None)`
@@ -99,6 +135,12 @@ Classes
 
     `file_keylog(self, key)`
     :   keylogger for managing files.
+
+    `menu_keylog(self, key)`
+    :
+
+    `nav_build_keylog(self, key)`
+    :
 
     `nav_keylog(self, key)`
     :

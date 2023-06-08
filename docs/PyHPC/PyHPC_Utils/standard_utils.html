@@ -31,10 +31,13 @@
 <pre><code class="python">&#34;&#34;&#34;
 Standard utility functions for wide useage throughout the system.
 &#34;&#34;&#34;
+import json
 import operator
 import os
 import pathlib as pt
 from functools import reduce
+
+import numpy as np
 
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.log import get_module_logger
@@ -55,10 +58,40 @@ __GSV = {}  # -&gt; This global variable allows for communication between the li
 #  Functions    ====================================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
 def getFromDict(dataDict, mapList):
+    &#34;&#34;&#34;
+    Fetches the values from a nested ``dataDict``.
+    Parameters
+    ----------
+    dataDict: dict
+        The nested dictionary from which to pull the data.
+    mapList: list of str
+        The list of keys at which to locate the value.
+
+    Returns
+    -------
+    any
+        The value at ``dataDict[mapList[0]][mapList[...]][mapList[-1]]``.
+    &#34;&#34;&#34;
     return reduce(operator.getitem, mapList, dataDict)
 
 
 def setInDict(dataDict, mapList, value):
+    &#34;&#34;&#34;
+    Sets the value of ``dataDict`` at ``mapList`` to ``value``.
+    Parameters
+    ----------
+    dataDict : dict
+        The dictionary in which to set the data.
+    mapList : list of str
+        The sequence of keys to locate the entry to change.
+    value : any
+        The value to set.
+
+    Returns
+    -------
+    None
+
+    &#34;&#34;&#34;
     getFromDict(dataDict, mapList[:-1])[mapList[-1]] = value</code></pre>
 </details>
 </section>
@@ -73,12 +106,39 @@ def setInDict(dataDict, mapList, value):
 <span>def <span class="ident">getFromDict</span></span>(<span>dataDict, mapList)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Fetches the values from a nested <code>dataDict</code>.
+Parameters</p>
+<hr>
+<dl>
+<dt><strong><code>dataDict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The nested dictionary from which to pull the data.</dd>
+<dt><strong><code>mapList</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>The list of keys at which to locate the value.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>any</code></dt>
+<dd>The value at <code>dataDict[mapList[0]][mapList[...]][mapList[-1]]</code>.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def getFromDict(dataDict, mapList):
+    &#34;&#34;&#34;
+    Fetches the values from a nested ``dataDict``.
+    Parameters
+    ----------
+    dataDict: dict
+        The nested dictionary from which to pull the data.
+    mapList: list of str
+        The list of keys at which to locate the value.
+
+    Returns
+    -------
+    any
+        The value at ``dataDict[mapList[0]][mapList[...]][mapList[-1]]``.
+    &#34;&#34;&#34;
     return reduce(operator.getitem, mapList, dataDict)</code></pre>
 </details>
 </dd>
@@ -86,12 +146,43 @@ def setInDict(dataDict, mapList, value):
 <span>def <span class="ident">setInDict</span></span>(<span>dataDict, mapList, value)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Sets the value of <code>dataDict</code> at <code>mapList</code> to <code>value</code>.
+Parameters</p>
+<hr>
+<dl>
+<dt><strong><code>dataDict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The dictionary in which to set the data.</dd>
+<dt><strong><code>mapList</code></strong> :&ensp;<code>list</code> of <code>str</code></dt>
+<dd>The sequence of keys to locate the entry to change.</dd>
+<dt><strong><code>value</code></strong> :&ensp;<code>any</code></dt>
+<dd>The value to set.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def setInDict(dataDict, mapList, value):
+    &#34;&#34;&#34;
+    Sets the value of ``dataDict`` at ``mapList`` to ``value``.
+    Parameters
+    ----------
+    dataDict : dict
+        The dictionary in which to set the data.
+    mapList : list of str
+        The sequence of keys to locate the entry to change.
+    value : any
+        The value to set.
+
+    Returns
+    -------
+    None
+
+    &#34;&#34;&#34;
     getFromDict(dataDict, mapList[:-1])[mapList[-1]] = value</code></pre>
 </details>
 </dd>

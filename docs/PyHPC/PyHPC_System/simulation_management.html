@@ -48,6 +48,7 @@ from inspect import getframeinfo, stack
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.errors import PyHPC_Error
 from PyHPC.PyHPC_Core.log import get_module_logger
+from PyHPC.PyHPC_Core.utils import NonStandardEncoder
 from PyHPC.PyHPC_Utils.text_display_utilities import dict_to_html
 
 # generating screen locking #
@@ -108,7 +109,9 @@ class SimulationLog:
           }
         },
         &#34;core&#34;: {
-        }
+        },
+        &#34;action_log&#34;:{
+        },
       }
     }
     ```
@@ -127,11 +130,7 @@ class SimulationLog:
         },
         &#34;simulations&#34;: {
         },
-        &#34;core&#34;: {
-          &#34;npart&#34;: {
-            &#34;dm&#34;: &#34;---&#34;,
-            &#34;gas&#34;: &#34;---&#34;
-          }
+        &#34;action_log&#34;:{
         }
       }
     }
@@ -436,7 +435,7 @@ class SimulationLog:
                 new = data.copy()
 
                 # - Adding necessary headers -#
-                for header, obj in zip([&#34;information&#34;, &#34;meta&#34;, &#34;simulations&#34;, &#34;core&#34;], [&#34;&#34;, {}, {}, {}]):
+                for header, obj in zip([&#34;information&#34;, &#34;meta&#34;, &#34;simulations&#34;, &#34;core&#34;,&#34;action_log&#34;], [&#34;&#34;, {}, {}, {},{}]):
                     if header not in data:
                         new[header] = obj
 
@@ -482,7 +481,7 @@ class SimulationLog:
         #  Saving
         # ------------------------------------------------------------------------------------------------------------ #
         with open(self.path, &#34;w+&#34;) as simlog_file:
-            json.dump(self.raw, simlog_file)
+            json.dump(self.raw, simlog_file,cls=NonStandardEncoder)
 
     def to_html(self, output):
         &#34;&#34;&#34;
@@ -517,7 +516,8 @@ class SimulationLog:
         # ------------------------------------------------------------------------------------------------------------ #
         table_data = {
             k: {
-                &#34;Name&#34;        : &#34;&lt;a href=&#39;%s&#39;&gt;%s&lt;/a&gt;&#34;%(os.path.join(output,&#34;InitCons&#34;,&#34;%s.html&#34;%k),pt.Path(k).name),
+                &#34;Name&#34;        : &#34;&lt;a href=&#39;%s&#39;&gt;%s&lt;/a&gt;&#34; % (
+                    os.path.join(output, &#34;InitCons&#34;, &#34;%s.html&#34; % k), pt.Path(k).name),
                 &#34;Date Created&#34;: v[&#34;meta&#34;][&#34;dateCreated&#34;],
                 &#34;Last Edited&#34; : v[&#34;meta&#34;][&#34;lastEdited&#34;],
                 &#34;# of ICs&#34;    : len(v[&#34;simulations&#34;])
@@ -789,11 +789,11 @@ class InitCon:
 
         #  Managing the directory
         # ------------------------------------------------------------------------------------------------------------ #
-        if not os.path.exists(os.path.join(output,&#34;InitCons&#34;)):
-            pt.Path(os.path.join(output,&#34;InitCons&#34;)).mkdir(parents=True)
-            modlog.debug(&#34;Generated output directory %s.&#34; % os.path.join(output,&#34;InitCons&#34;))
+        if not os.path.exists(os.path.join(output, &#34;InitCons&#34;)):
+            pt.Path(os.path.join(output, &#34;InitCons&#34;)).mkdir(parents=True)
+            modlog.debug(&#34;Generated output directory %s.&#34; % os.path.join(output, &#34;InitCons&#34;))
         else:
-            modlog.debug(&#34;Found output directory %s.&#34; % os.path.join(output,&#34;InitCons&#34;))
+            modlog.debug(&#34;Found output directory %s.&#34; % os.path.join(output, &#34;InitCons&#34;))
 
         #  Generating the first table
         # ------------------------------------------------------------------------------------------------------------ #
@@ -812,7 +812,52 @@ class InitCon:
                 f.write(template.read() % {&#34;table&#34;: dict_to_html(table_data),
                                            &#34;path&#34; : self.parent.path})
 
+    def log(self, message, action, auto_save=True, **kwargs):
+        &#34;&#34;&#34;
+        logs the ``message`` to the ``self.raw.action_log``. Additional entries in the record are specified with ``**kwargs``.
 
+        Parameters
+        ----------
+        message : str
+            The message to log with the entry.
+        action : str
+            The specific action being under-taken. These actions can be arbitrary, but should be consistent for
+            best impact.
+        auto_save : bool
+            ``True`` to automatically write all of the data to file.
+        kwargs : optional
+            Additional attributes to log with the message. All entries should be ``key=&#34;string&#34;``. If entries overlap
+            with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.
+
+        Returns
+        -------
+        None
+
+        &#34;&#34;&#34;
+        #  Managing the required kwargs
+        # ------------------------------------------------------------------------------------------------------------ #
+        caller = getframeinfo(stack()[1][0])  # -&gt; grabbing frame info
+        req_entries = {  # These are the required keys that are always present in the entry.
+            &#34;msg&#34;   : message,
+            &#34;act&#34;   : action,
+            &#34;lineno&#34;: caller.lineno,
+            &#34;file&#34;  : caller.filename,
+            &#34;time&#34;  : datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+
+        }
+
+        #  Managing additional entries
+        # ------------------------------------------------------------------------------------------------------------ #
+        entries = {**req_entries, **kwargs}
+
+        #  Logging
+        # ------------------------------------------------------------------------------------------------------------ #
+        log_time = datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+
+        self.raw[&#34;action_log&#34;][log_time] = entries
+
+        if auto_save:
+            self.parent.save()
 class SimRec:
     &#34;&#34;&#34;
     The ``SimRec`` class contains all of the information for a single simulation record in the ``SimulationLog`` system.
@@ -1433,11 +1478,11 @@ the individual sub-units of the <code><a title="PyHPC.PyHPC_System.simulation_ma
 
         #  Managing the directory
         # ------------------------------------------------------------------------------------------------------------ #
-        if not os.path.exists(os.path.join(output,&#34;InitCons&#34;)):
-            pt.Path(os.path.join(output,&#34;InitCons&#34;)).mkdir(parents=True)
-            modlog.debug(&#34;Generated output directory %s.&#34; % os.path.join(output,&#34;InitCons&#34;))
+        if not os.path.exists(os.path.join(output, &#34;InitCons&#34;)):
+            pt.Path(os.path.join(output, &#34;InitCons&#34;)).mkdir(parents=True)
+            modlog.debug(&#34;Generated output directory %s.&#34; % os.path.join(output, &#34;InitCons&#34;))
         else:
-            modlog.debug(&#34;Found output directory %s.&#34; % os.path.join(output,&#34;InitCons&#34;))
+            modlog.debug(&#34;Found output directory %s.&#34; % os.path.join(output, &#34;InitCons&#34;))
 
         #  Generating the first table
         # ------------------------------------------------------------------------------------------------------------ #
@@ -1454,7 +1499,54 @@ the individual sub-units of the <code><a title="PyHPC.PyHPC_System.simulation_ma
             with open(os.path.join(pt.Path(__file__).parents[1], &#34;bin&#34;, &#34;lib&#34;, &#34;templates&#34;, &#34;simlog_html_1.html&#34;),
                       &#34;r&#34;) as template:
                 f.write(template.read() % {&#34;table&#34;: dict_to_html(table_data),
-                                           &#34;path&#34; : self.parent.path})</code></pre>
+                                           &#34;path&#34; : self.parent.path})
+
+    def log(self, message, action, auto_save=True, **kwargs):
+        &#34;&#34;&#34;
+        logs the ``message`` to the ``self.raw.action_log``. Additional entries in the record are specified with ``**kwargs``.
+
+        Parameters
+        ----------
+        message : str
+            The message to log with the entry.
+        action : str
+            The specific action being under-taken. These actions can be arbitrary, but should be consistent for
+            best impact.
+        auto_save : bool
+            ``True`` to automatically write all of the data to file.
+        kwargs : optional
+            Additional attributes to log with the message. All entries should be ``key=&#34;string&#34;``. If entries overlap
+            with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.
+
+        Returns
+        -------
+        None
+
+        &#34;&#34;&#34;
+        #  Managing the required kwargs
+        # ------------------------------------------------------------------------------------------------------------ #
+        caller = getframeinfo(stack()[1][0])  # -&gt; grabbing frame info
+        req_entries = {  # These are the required keys that are always present in the entry.
+            &#34;msg&#34;   : message,
+            &#34;act&#34;   : action,
+            &#34;lineno&#34;: caller.lineno,
+            &#34;file&#34;  : caller.filename,
+            &#34;time&#34;  : datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+
+        }
+
+        #  Managing additional entries
+        # ------------------------------------------------------------------------------------------------------------ #
+        entries = {**req_entries, **kwargs}
+
+        #  Logging
+        # ------------------------------------------------------------------------------------------------------------ #
+        log_time = datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+
+        self.raw[&#34;action_log&#34;][log_time] = entries
+
+        if auto_save:
+            self.parent.save()</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -1675,6 +1767,81 @@ of individual (<u>correctly formatted</u>) entries to add.</p>
         self.parent.save()</code></pre>
 </details>
 </dd>
+<dt id="PyHPC.PyHPC_System.simulation_management.InitCon.log"><code class="name flex">
+<span>def <span class="ident">log</span></span>(<span>self, message, action, auto_save=True, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>logs the <code>message</code> to the <code>self.raw.action_log</code>. Additional entries in the record are specified with <code>**kwargs</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
+<dd>The message to log with the entry.</dd>
+<dt><strong><code>action</code></strong> :&ensp;<code>str</code></dt>
+<dd>The specific action being under-taken. These actions can be arbitrary, but should be consistent for
+best impact.</dd>
+<dt><strong><code>auto_save</code></strong> :&ensp;<code>bool</code></dt>
+<dd><code>True</code> to automatically write all of the data to file.</dd>
+<dt><strong><code>kwargs</code></strong> :&ensp;<code>optional</code></dt>
+<dd>Additional attributes to log with the message. All entries should be <code>key="string"</code>. If entries overlap
+with required log elements <code>[msg,lineno,file,act,time]</code>, then they are overridden by the values given.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>None</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def log(self, message, action, auto_save=True, **kwargs):
+    &#34;&#34;&#34;
+    logs the ``message`` to the ``self.raw.action_log``. Additional entries in the record are specified with ``**kwargs``.
+
+    Parameters
+    ----------
+    message : str
+        The message to log with the entry.
+    action : str
+        The specific action being under-taken. These actions can be arbitrary, but should be consistent for
+        best impact.
+    auto_save : bool
+        ``True`` to automatically write all of the data to file.
+    kwargs : optional
+        Additional attributes to log with the message. All entries should be ``key=&#34;string&#34;``. If entries overlap
+        with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.
+
+    Returns
+    -------
+    None
+
+    &#34;&#34;&#34;
+    #  Managing the required kwargs
+    # ------------------------------------------------------------------------------------------------------------ #
+    caller = getframeinfo(stack()[1][0])  # -&gt; grabbing frame info
+    req_entries = {  # These are the required keys that are always present in the entry.
+        &#34;msg&#34;   : message,
+        &#34;act&#34;   : action,
+        &#34;lineno&#34;: caller.lineno,
+        &#34;file&#34;  : caller.filename,
+        &#34;time&#34;  : datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+
+    }
+
+    #  Managing additional entries
+    # ------------------------------------------------------------------------------------------------------------ #
+    entries = {**req_entries, **kwargs}
+
+    #  Logging
+    # ------------------------------------------------------------------------------------------------------------ #
+    log_time = datetime.now().strftime(&#39;%m-%d-%Y_%H-%M-%S&#39;)
+
+    self.raw[&#34;action_log&#34;][log_time] = entries
+
+    if auto_save:
+        self.parent.save()</code></pre>
+</details>
+</dd>
 <dt id="PyHPC.PyHPC_System.simulation_management.InitCon.save"><code class="name flex">
 <span>def <span class="ident">save</span></span>(<span>self)</span>
 </code></dt>
@@ -1722,11 +1889,11 @@ of individual (<u>correctly formatted</u>) entries to add.</p>
 
     #  Managing the directory
     # ------------------------------------------------------------------------------------------------------------ #
-    if not os.path.exists(os.path.join(output,&#34;InitCons&#34;)):
-        pt.Path(os.path.join(output,&#34;InitCons&#34;)).mkdir(parents=True)
-        modlog.debug(&#34;Generated output directory %s.&#34; % os.path.join(output,&#34;InitCons&#34;))
+    if not os.path.exists(os.path.join(output, &#34;InitCons&#34;)):
+        pt.Path(os.path.join(output, &#34;InitCons&#34;)).mkdir(parents=True)
+        modlog.debug(&#34;Generated output directory %s.&#34; % os.path.join(output, &#34;InitCons&#34;))
     else:
-        modlog.debug(&#34;Found output directory %s.&#34; % os.path.join(output,&#34;InitCons&#34;))
+        modlog.debug(&#34;Found output directory %s.&#34; % os.path.join(output, &#34;InitCons&#34;))
 
     #  Generating the first table
     # ------------------------------------------------------------------------------------------------------------ #
@@ -2187,7 +2354,9 @@ the formatting restrictions of <code>.json</code> type files.</li>
       }
     },
     &quot;core&quot;: {
-    }
+    },
+    &quot;action_log&quot;:{
+    },
   }
 }
 </code></pre>
@@ -2203,11 +2372,7 @@ of information required for every entry:</p>
     },
     &quot;simulations&quot;: {
     },
-    &quot;core&quot;: {
-      &quot;npart&quot;: {
-        &quot;dm&quot;: &quot;---&quot;,
-        &quot;gas&quot;: &quot;---&quot;
-      }
+    &quot;action_log&quot;:{
     }
   }
 }
@@ -2298,7 +2463,9 @@ being added to the simulation log might look like</p>
           }
         },
         &#34;core&#34;: {
-        }
+        },
+        &#34;action_log&#34;:{
+        },
       }
     }
     ```
@@ -2317,11 +2484,7 @@ being added to the simulation log might look like</p>
         },
         &#34;simulations&#34;: {
         },
-        &#34;core&#34;: {
-          &#34;npart&#34;: {
-            &#34;dm&#34;: &#34;---&#34;,
-            &#34;gas&#34;: &#34;---&#34;
-          }
+        &#34;action_log&#34;:{
         }
       }
     }
@@ -2626,7 +2789,7 @@ being added to the simulation log might look like</p>
                 new = data.copy()
 
                 # - Adding necessary headers -#
-                for header, obj in zip([&#34;information&#34;, &#34;meta&#34;, &#34;simulations&#34;, &#34;core&#34;], [&#34;&#34;, {}, {}, {}]):
+                for header, obj in zip([&#34;information&#34;, &#34;meta&#34;, &#34;simulations&#34;, &#34;core&#34;,&#34;action_log&#34;], [&#34;&#34;, {}, {}, {},{}]):
                     if header not in data:
                         new[header] = obj
 
@@ -2672,7 +2835,7 @@ being added to the simulation log might look like</p>
         #  Saving
         # ------------------------------------------------------------------------------------------------------------ #
         with open(self.path, &#34;w+&#34;) as simlog_file:
-            json.dump(self.raw, simlog_file)
+            json.dump(self.raw, simlog_file,cls=NonStandardEncoder)
 
     def to_html(self, output):
         &#34;&#34;&#34;
@@ -2707,7 +2870,8 @@ being added to the simulation log might look like</p>
         # ------------------------------------------------------------------------------------------------------------ #
         table_data = {
             k: {
-                &#34;Name&#34;        : &#34;&lt;a href=&#39;%s&#39;&gt;%s&lt;/a&gt;&#34;%(os.path.join(output,&#34;InitCons&#34;,&#34;%s.html&#34;%k),pt.Path(k).name),
+                &#34;Name&#34;        : &#34;&lt;a href=&#39;%s&#39;&gt;%s&lt;/a&gt;&#34; % (
+                    os.path.join(output, &#34;InitCons&#34;, &#34;%s.html&#34; % k), pt.Path(k).name),
                 &#34;Date Created&#34;: v[&#34;meta&#34;][&#34;dateCreated&#34;],
                 &#34;Last Edited&#34; : v[&#34;meta&#34;][&#34;lastEdited&#34;],
                 &#34;# of ICs&#34;    : len(v[&#34;simulations&#34;])
@@ -2872,7 +3036,7 @@ of individual (<u>correctly formatted</u>) entries to add.</p>
             new = data.copy()
 
             # - Adding necessary headers -#
-            for header, obj in zip([&#34;information&#34;, &#34;meta&#34;, &#34;simulations&#34;, &#34;core&#34;], [&#34;&#34;, {}, {}, {}]):
+            for header, obj in zip([&#34;information&#34;, &#34;meta&#34;, &#34;simulations&#34;, &#34;core&#34;,&#34;action_log&#34;], [&#34;&#34;, {}, {}, {},{}]):
                 if header not in data:
                     new[header] = obj
 
@@ -2963,7 +3127,7 @@ of individual (<u>correctly formatted</u>) entries to add.</p>
     #  Saving
     # ------------------------------------------------------------------------------------------------------------ #
     with open(self.path, &#34;w+&#34;) as simlog_file:
-        json.dump(self.raw, simlog_file)</code></pre>
+        json.dump(self.raw, simlog_file,cls=NonStandardEncoder)</code></pre>
 </details>
 </dd>
 <dt id="PyHPC.PyHPC_System.simulation_management.SimulationLog.search"><code class="name flex">
@@ -3103,7 +3267,8 @@ Individual entries in the <code>kwargs</code> are searched based on <code>AND</c
     # ------------------------------------------------------------------------------------------------------------ #
     table_data = {
         k: {
-            &#34;Name&#34;        : &#34;&lt;a href=&#39;%s&#39;&gt;%s&lt;/a&gt;&#34;%(os.path.join(output,&#34;InitCons&#34;,&#34;%s.html&#34;%k),pt.Path(k).name),
+            &#34;Name&#34;        : &#34;&lt;a href=&#39;%s&#39;&gt;%s&lt;/a&gt;&#34; % (
+                os.path.join(output, &#34;InitCons&#34;, &#34;%s.html&#34; % k), pt.Path(k).name),
             &#34;Date Created&#34;: v[&#34;meta&#34;][&#34;dateCreated&#34;],
             &#34;Last Edited&#34; : v[&#34;meta&#34;][&#34;lastEdited&#34;],
             &#34;# of ICs&#34;    : len(v[&#34;simulations&#34;])
@@ -3149,6 +3314,7 @@ Individual entries in the <code>kwargs</code> are searched based on <code>AND</c
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon.add" href="#PyHPC.PyHPC_System.simulation_management.InitCon.add">add</a></code></li>
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon.core" href="#PyHPC.PyHPC_System.simulation_management.InitCon.core">core</a></code></li>
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon.inf" href="#PyHPC.PyHPC_System.simulation_management.InitCon.inf">inf</a></code></li>
+<li><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon.log" href="#PyHPC.PyHPC_System.simulation_management.InitCon.log">log</a></code></li>
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon.meta" href="#PyHPC.PyHPC_System.simulation_management.InitCon.meta">meta</a></code></li>
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon.name" href="#PyHPC.PyHPC_System.simulation_management.InitCon.name">name</a></code></li>
 <li><code><a title="PyHPC.PyHPC_System.simulation_management.InitCon.parent" href="#PyHPC.PyHPC_System.simulation_management.InitCon.parent">parent</a></code></li>

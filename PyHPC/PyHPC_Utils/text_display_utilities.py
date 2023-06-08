@@ -701,8 +701,11 @@ def build_options(option_dict, title):
                 else:
                     return settings
             elif klog.command == "default":
-                setInDict(settings, klog.position + ["v"], getFromDict(settings, klog.position + ["d"]))
-                klog.sub_dict = getFromDict(settings, klog.position[:-1])
+                if len(klog.position) != 1:
+                    setInDict(settings, klog.position + ["v"], getFromDict(settings, klog.position + ["d"]))
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
+                else:
+                    pass
 
             elif klog.command == "add":
                 if len(klog.position) > 1:

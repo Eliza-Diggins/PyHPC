@@ -35,7 +35,7 @@ import os
 import pathlib as pt
 import sys
 
-sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
+sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[2]))
 
 from colorama import Fore, Back, Style
 import re
@@ -237,6 +237,50 @@ class KeyLogger:
                 stop_listening()
             if key == &#34;d&#34;:
                 self.command = &#34;default&#34;
+                stop_listening()
+        except AttributeError as ex:
+            pass
+
+    def nav_build_keylog(self, key):
+        # Key logger for the options navigation #
+        try:
+            if key == &#34;enter&#34;:
+                self.command = &#34;edit&#34;
+                stop_listening()
+            if key == &#34;down&#34;:
+                self.location = (self.location + 1 if self.location != len(self.sub_dict) - 1 else 0)
+                stop_listening()
+            if key == &#34;up&#34;:
+                self.location = (self.location - 1 if self.location != 0 else len(self.sub_dict) - 1)
+                stop_listening()
+            if key == &#34;backspace&#34;:
+                self.command = &#34;back&#34;
+                stop_listening()
+            if key == &#34;q&#34;:
+                self.command = &#34;quit&#34;
+                stop_listening()
+            if key == &#34;d&#34;:
+                self.command = &#34;default&#34;
+                stop_listening()
+            if key == &#34;a&#34;:
+                self.command = &#34;add&#34;
+                stop_listening()
+            if key == &#34;r&#34;:
+                self.command = &#34;remove&#34;
+                stop_listening()
+        except AttributeError as ex:
+            pass
+    def menu_keylog(self, key):
+        # Key logger for the options navigation #
+        try:
+            if key == &#34;enter&#34;:
+                self.command = &#34;enter&#34;
+                stop_listening()
+            if key == &#34;down&#34;:
+                self.location = (self.location + 1 if self.location != len(self.options) - 1 else 0)
+                stop_listening()
+            if key == &#34;up&#34;:
+                self.location = (self.location - 1 if self.location != 0 else len(self.options) - 1)
                 stop_listening()
         except AttributeError as ex:
             pass
@@ -481,11 +525,6 @@ def get_options(option_dict, title):
 
     # - Core printing utilities -#
     header = &#34;Select the option to edit...&#34;
-    setting_commands = {
-        &#34;n&#34;: &#34;Exit/Finish - Move down a level.&#34;,
-        &#34;e&#34;: &#34;Edit - Move to.&#34;,
-        &#34;d&#34;: &#34;Reset option to default&#34;,
-    }
 
     # startup copy and setting #
     settings = deepcopy(option_dict)  # create the copy we are going to use for the setting storage.
@@ -501,7 +540,6 @@ def get_options(option_dict, title):
     #  Main Cycle
     # ----------------------------------------------------------------------------------------------------------------- #
     CHECK_DONE = False  # whole scope check for finish.
-    new_calcs = True  # This flag lets us skip calculations if they aren&#39;t necessary.
 
     while not CHECK_DONE:  # we are still cycling&#39;
 
@@ -545,7 +583,6 @@ def get_options(option_dict, title):
                     klog.position += [list(klog.sub_dict.keys())[0]]
                     klog.location = 0
 
-
             elif klog.command == &#34;back&#34;:
 
                 #  Moving backward
@@ -575,6 +612,146 @@ def get_options(option_dict, title):
                 setInDict(settings, klog.position + [&#34;v&#34;], getFromDict(settings, klog.position + [&#34;d&#34;]))
                 klog.sub_dict = getFromDict(settings, klog.position[:-1])
 
+            klog.command = None
+        os.system(&#39;cls&#39; if os.name == &#39;nt&#39; else &#39;clear&#39;)
+    return settings
+
+
+def build_options(option_dict, title):
+    &#34;&#34;&#34;
+    ``build_options`` is similar to ``PyHPC.PyHPC_Utils.text_display_utilities.get_options``; however, in this case,
+    the user can add and remove components from the dictionary as well.
+
+    Parameters
+    ----------
+    option_dict : dict
+        The base / default component settings.
+    title : str
+        The title to display
+
+    Returns
+    -------
+    dict
+        Selected options in a dictionary format.
+    &#34;&#34;&#34;
+    #  Intro debug
+    # ----------------------------------------------------------------------------------------------------------------- #
+    modlog.debug(&#34;Selecting options with title %s.&#34; % title)
+
+    #  Printing the title
+    # ----------------------------------------------------------------------------------------------------------------- #
+    text_t = TerminalString()
+
+    #  Setup
+    # ----------------------------------------------------------------------------------------------------------------- #
+
+    # - Core printing utilities -#
+    header = &#34;Select the option to edit...&#34;
+
+    # startup copy and setting #
+    settings = {&#34;Component 1&#34;:deepcopy(option_dict)}  # create the copy we are going to use for the setting storage.
+
+
+    klog = KeyLogger(position=[&#34;Component 1&#34;],
+                     location=0,
+                     selected_key=None,
+                     sub_dict=settings,
+                     command=None,
+                     reset=True,
+                     reset_location=True)
+
+    #  Main Cycle
+    # ----------------------------------------------------------------------------------------------------------------- #
+    CHECK_DONE = False  # whole scope check for finish.
+
+    while not CHECK_DONE:  # we are still cycling&#39;
+
+        ## Setting the title ##
+        text_t.print_title(title)
+
+        #  Locating
+        # ----------------------------------------------------------------------------------------------------------------- #
+
+        # -------------------------------------------------------------------------------------------------------------------- #
+        # Printing the options dictionary ==================================================================================== #
+        # -------------------------------------------------------------------------------------------------------------------- #
+        print_option_dict(klog.sub_dict, klog.position[-1], header=header)
+        print(&#34;&#39;backspace&#39;: move up level\n&#39;enter&#39;: move down level / edit\n&#39;+&#39;: add component\n&#39;-&#39;: remove component\n&#39;d&#39;: reset&#34;)
+        # -------------------------------------------------------------------------------------------------------------------- #
+        #  Navigation ======================================================================================================== #
+        # -------------------------------------------------------------------------------------------------------------------- #
+        listen_keyboard(on_press=klog.nav_build_keylog)
+        # - Forcing location parity -#
+        klog.position[-1] = list(klog.sub_dict.keys())[klog.location]
+
+        if klog.command:  # we have a command to execute
+            if klog.command == &#34;edit&#34;:
+
+                #  Editing the dictionary
+                # ----------------------------------------------------------------------------------------------------------------- #
+                if all(k in [&#34;v&#34;, &#34;d&#34;, &#34;i&#34;] for k in list(klog.sub_dict[klog.position[-1]].keys())):
+                    # This is an explicit value
+                    inp = input(
+                        &#34;%sPlease enter a new value for %s. [&#39;n&#39; to return]:&#34; % (
+                            &#34;[&#34; + Fore.RED + &#34;INPUT&#34; + Style.RESET_ALL + &#34;]: &#34;,
+                            klog.position[-1]))
+                    if inp != &#34;n&#34;:
+                        setInDict(settings, klog.position + [&#34;v&#34;], inp)
+                        klog.sub_dict = getFromDict(settings, klog.position[:-1])
+
+                else:
+                    # We are not editing, we are entering.
+                    klog.sub_dict = getFromDict(settings, klog.position)
+                    klog.position += [list(klog.sub_dict.keys())[0]]
+                    klog.location = 0
+
+            elif klog.command == &#34;back&#34;:
+
+                #  Moving backward
+                # ----------------------------------------------------------------------------------------------------------------- #
+                # We need to reduce a layer
+                if len(klog.position) &gt; 1:
+                    # - We can actually move back -#
+                    klog.position = klog.position[:-1]
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
+
+                    klog.location = list(klog.sub_dict.keys()).index(klog.position[-1])
+                else:
+                    yn = get_yes_no(&#34;Exit the option selection?&#34;)
+
+                    if not yn:
+                        pass
+                    else:
+                        return settings
+            elif klog.command == &#34;quit&#34;:
+                yn = get_yes_no(&#34;Exit the option selection?&#34;)
+
+                if yn != True:
+                    pass
+                else:
+                    return settings
+            elif klog.command == &#34;default&#34;:
+                if len(klog.position) != 1:
+                    setInDict(settings, klog.position + [&#34;v&#34;], getFromDict(settings, klog.position + [&#34;d&#34;]))
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
+                else:
+                    pass
+
+            elif klog.command == &#34;add&#34;:
+                if len(klog.position) &gt; 1:
+                    pass
+                else:
+                    comps = [int(k.split(&#34; &#34;)[1]) for k in settings]
+                    settings = {**settings,&#34;Component %s&#34;%str(max(comps)+1):deepcopy(option_dict)}
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
+
+            elif klog.command == &#34;remove&#34;:
+                if len(klog.position) &gt; 1 or len(settings) &lt;=1:
+                    pass
+                else:
+                    settings ={k:v for k,v in settings.items() if k!=klog.position[-1]}
+                    klog.position = [&#34;Component 1&#34;]
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
             klog.command = None
         os.system(&#39;cls&#39; if os.name == &#39;nt&#39; else &#39;clear&#39;)
     return settings
@@ -761,9 +938,85 @@ def select_files_remote(root_directories, max=None, condition=lambda x: True):
         os.system(&#39;cls&#39; if os.name == &#39;nt&#39; else &#39;clear&#39;)
 
 
+def option_menu(options, desc=True, title=None):
+    &#34;&#34;&#34;
+    Select from any of the options in the  ``options`` list.
+
+    Parameters
+    ----------
+    options : dict
+        ``dict`` of options (``dict``) of the form ``{&#34;name 1&#34;:&#34;desc&#34;}``.
+    desc : bool
+        ``True`` to show descriptions in the selection process
+
+    title : str
+        The title to print at the head of the execution area.
+
+    Returns
+    -------
+    str
+        The selected option name from the list.
+
+    &#34;&#34;&#34;
+    #  Logging
+    # ----------------------------------------------------------------------------------------------------------------- #
+    modlog.debug(&#34;Selecting options from %s.&#34; % options)
+
+    #  Managing structure
+    # ----------------------------------------------------------------------------------------------------------------- #
+    logger = KeyLogger(options=options, location=0, exit=False, command=None)
+
+    # - Generating the options dict - #
+    if desc:
+        options_dictionary = {
+            name: {
+                &#34;v&#34;: &#34;&#34;,
+                &#34;d&#34;: &#34;&#34;,
+                &#34;i&#34;: value
+            }
+            for name, value in options.items()
+
+        }
+    else:
+        options_dictionary = {
+            name: {
+                &#34;v&#34;: &#34;&#34;,
+                &#34;d&#34;: &#34;&#34;,
+                &#34;i&#34;: &#34;&#34;
+            }
+            for name, value in options.items()
+
+        }
+
+    # - Fetching terminal - #
+    keys = list(options_dictionary.keys())
+    terminal_string = TerminalString()
+
+    while not logger.exit:
+        #  Managing title printing
+        # ----------------------------------------------------------------------------------------------------------------- #
+        if title:
+            terminal_string.print_title(title)
+        else:
+            terminal_string.print_title(title)
+
+        print_option_dict(options_dictionary, location=keys[logger.location])
+
+        listen_keyboard(on_press=logger.menu_keylog)
+
+        #  Managing the commands
+        # ----------------------------------------------------------------------------------------------------------------- #
+        if logger.command:  # we have a command to execute
+            if logger.command == &#34;enter&#34;:
+                return keys[logger.location]
+            logger.command = None
+
+        os.system(&#39;cls&#39; if os.name == &#39;nt&#39; else &#39;clear&#39;)
+
+
 if __name__ == &#39;__main__&#39;:
     text_t = TerminalString()
-    select_files_remote([&#34;box:/PyCS&#34;], max=3, condition=lambda x: (rclone_isdir(x) or x.suffix == &#34;.mp4&#34;))</code></pre>
+    option_menu({&#34;Op1&#34;: &#34;1&#34;, &#34;Op2&#34;: &#34;2&#34;})</code></pre>
 </details>
 </section>
 <section>
@@ -773,6 +1026,168 @@ if __name__ == &#39;__main__&#39;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="PyHPC.PyHPC_Utils.text_display_utilities.build_options"><code class="name flex">
+<span>def <span class="ident">build_options</span></span>(<span>option_dict, title)</span>
+</code></dt>
+<dd>
+<div class="desc"><p><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.build_options" href="#PyHPC.PyHPC_Utils.text_display_utilities.build_options">build_options()</a></code> is similar to <code><a title="PyHPC.PyHPC_Utils.text_display_utilities.get_options" href="#PyHPC.PyHPC_Utils.text_display_utilities.get_options">get_options()</a></code>; however, in this case,
+the user can add and remove components from the dictionary as well.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>option_dict</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The base / default component settings.</dd>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>The title to display</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>dict</code></dt>
+<dd>Selected options in a dictionary format.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_options(option_dict, title):
+    &#34;&#34;&#34;
+    ``build_options`` is similar to ``PyHPC.PyHPC_Utils.text_display_utilities.get_options``; however, in this case,
+    the user can add and remove components from the dictionary as well.
+
+    Parameters
+    ----------
+    option_dict : dict
+        The base / default component settings.
+    title : str
+        The title to display
+
+    Returns
+    -------
+    dict
+        Selected options in a dictionary format.
+    &#34;&#34;&#34;
+    #  Intro debug
+    # ----------------------------------------------------------------------------------------------------------------- #
+    modlog.debug(&#34;Selecting options with title %s.&#34; % title)
+
+    #  Printing the title
+    # ----------------------------------------------------------------------------------------------------------------- #
+    text_t = TerminalString()
+
+    #  Setup
+    # ----------------------------------------------------------------------------------------------------------------- #
+
+    # - Core printing utilities -#
+    header = &#34;Select the option to edit...&#34;
+
+    # startup copy and setting #
+    settings = {&#34;Component 1&#34;:deepcopy(option_dict)}  # create the copy we are going to use for the setting storage.
+
+
+    klog = KeyLogger(position=[&#34;Component 1&#34;],
+                     location=0,
+                     selected_key=None,
+                     sub_dict=settings,
+                     command=None,
+                     reset=True,
+                     reset_location=True)
+
+    #  Main Cycle
+    # ----------------------------------------------------------------------------------------------------------------- #
+    CHECK_DONE = False  # whole scope check for finish.
+
+    while not CHECK_DONE:  # we are still cycling&#39;
+
+        ## Setting the title ##
+        text_t.print_title(title)
+
+        #  Locating
+        # ----------------------------------------------------------------------------------------------------------------- #
+
+        # -------------------------------------------------------------------------------------------------------------------- #
+        # Printing the options dictionary ==================================================================================== #
+        # -------------------------------------------------------------------------------------------------------------------- #
+        print_option_dict(klog.sub_dict, klog.position[-1], header=header)
+        print(&#34;&#39;backspace&#39;: move up level\n&#39;enter&#39;: move down level / edit\n&#39;+&#39;: add component\n&#39;-&#39;: remove component\n&#39;d&#39;: reset&#34;)
+        # -------------------------------------------------------------------------------------------------------------------- #
+        #  Navigation ======================================================================================================== #
+        # -------------------------------------------------------------------------------------------------------------------- #
+        listen_keyboard(on_press=klog.nav_build_keylog)
+        # - Forcing location parity -#
+        klog.position[-1] = list(klog.sub_dict.keys())[klog.location]
+
+        if klog.command:  # we have a command to execute
+            if klog.command == &#34;edit&#34;:
+
+                #  Editing the dictionary
+                # ----------------------------------------------------------------------------------------------------------------- #
+                if all(k in [&#34;v&#34;, &#34;d&#34;, &#34;i&#34;] for k in list(klog.sub_dict[klog.position[-1]].keys())):
+                    # This is an explicit value
+                    inp = input(
+                        &#34;%sPlease enter a new value for %s. [&#39;n&#39; to return]:&#34; % (
+                            &#34;[&#34; + Fore.RED + &#34;INPUT&#34; + Style.RESET_ALL + &#34;]: &#34;,
+                            klog.position[-1]))
+                    if inp != &#34;n&#34;:
+                        setInDict(settings, klog.position + [&#34;v&#34;], inp)
+                        klog.sub_dict = getFromDict(settings, klog.position[:-1])
+
+                else:
+                    # We are not editing, we are entering.
+                    klog.sub_dict = getFromDict(settings, klog.position)
+                    klog.position += [list(klog.sub_dict.keys())[0]]
+                    klog.location = 0
+
+            elif klog.command == &#34;back&#34;:
+
+                #  Moving backward
+                # ----------------------------------------------------------------------------------------------------------------- #
+                # We need to reduce a layer
+                if len(klog.position) &gt; 1:
+                    # - We can actually move back -#
+                    klog.position = klog.position[:-1]
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
+
+                    klog.location = list(klog.sub_dict.keys()).index(klog.position[-1])
+                else:
+                    yn = get_yes_no(&#34;Exit the option selection?&#34;)
+
+                    if not yn:
+                        pass
+                    else:
+                        return settings
+            elif klog.command == &#34;quit&#34;:
+                yn = get_yes_no(&#34;Exit the option selection?&#34;)
+
+                if yn != True:
+                    pass
+                else:
+                    return settings
+            elif klog.command == &#34;default&#34;:
+                if len(klog.position) != 1:
+                    setInDict(settings, klog.position + [&#34;v&#34;], getFromDict(settings, klog.position + [&#34;d&#34;]))
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
+                else:
+                    pass
+
+            elif klog.command == &#34;add&#34;:
+                if len(klog.position) &gt; 1:
+                    pass
+                else:
+                    comps = [int(k.split(&#34; &#34;)[1]) for k in settings]
+                    settings = {**settings,&#34;Component %s&#34;%str(max(comps)+1):deepcopy(option_dict)}
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
+
+            elif klog.command == &#34;remove&#34;:
+                if len(klog.position) &gt; 1 or len(settings) &lt;=1:
+                    pass
+                else:
+                    settings ={k:v for k,v in settings.items() if k!=klog.position[-1]}
+                    klog.position = [&#34;Component 1&#34;]
+                    klog.sub_dict = getFromDict(settings, klog.position[:-1])
+            klog.command = None
+        os.system(&#39;cls&#39; if os.name == &#39;nt&#39; else &#39;clear&#39;)
+    return settings</code></pre>
+</details>
+</dd>
 <dt id="PyHPC.PyHPC_Utils.text_display_utilities.dict_to_html"><code class="name flex">
 <span>def <span class="ident">dict_to_html</span></span>(<span>dictionary: dict, headers=None) ‑> str</span>
 </code></dt>
@@ -901,11 +1316,6 @@ if __name__ == &#39;__main__&#39;:
 
     # - Core printing utilities -#
     header = &#34;Select the option to edit...&#34;
-    setting_commands = {
-        &#34;n&#34;: &#34;Exit/Finish - Move down a level.&#34;,
-        &#34;e&#34;: &#34;Edit - Move to.&#34;,
-        &#34;d&#34;: &#34;Reset option to default&#34;,
-    }
 
     # startup copy and setting #
     settings = deepcopy(option_dict)  # create the copy we are going to use for the setting storage.
@@ -921,7 +1331,6 @@ if __name__ == &#39;__main__&#39;:
     #  Main Cycle
     # ----------------------------------------------------------------------------------------------------------------- #
     CHECK_DONE = False  # whole scope check for finish.
-    new_calcs = True  # This flag lets us skip calculations if they aren&#39;t necessary.
 
     while not CHECK_DONE:  # we are still cycling&#39;
 
@@ -964,7 +1373,6 @@ if __name__ == &#39;__main__&#39;:
                     klog.sub_dict = getFromDict(settings, klog.position)
                     klog.position += [list(klog.sub_dict.keys())[0]]
                     klog.location = 0
-
 
             elif klog.command == &#34;back&#34;:
 
@@ -1060,6 +1468,106 @@ Parameters</p>
     :return:
     &#34;&#34;&#34;
     return len(strip_ANSI_escape_sequences_sub(&#34;&#34;, string))</code></pre>
+</details>
+</dd>
+<dt id="PyHPC.PyHPC_Utils.text_display_utilities.option_menu"><code class="name flex">
+<span>def <span class="ident">option_menu</span></span>(<span>options, desc=True, title=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Select from any of the options in the
+<code>options</code> list.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
+<dd><code>dict</code> of options (<code>dict</code>) of the form <code>{"name 1":"desc"}</code>.</dd>
+<dt><strong><code>desc</code></strong> :&ensp;<code>bool</code></dt>
+<dd><code>True</code> to show descriptions in the selection process</dd>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>The title to print at the head of the execution area.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The selected option name from the list.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def option_menu(options, desc=True, title=None):
+    &#34;&#34;&#34;
+    Select from any of the options in the  ``options`` list.
+
+    Parameters
+    ----------
+    options : dict
+        ``dict`` of options (``dict``) of the form ``{&#34;name 1&#34;:&#34;desc&#34;}``.
+    desc : bool
+        ``True`` to show descriptions in the selection process
+
+    title : str
+        The title to print at the head of the execution area.
+
+    Returns
+    -------
+    str
+        The selected option name from the list.
+
+    &#34;&#34;&#34;
+    #  Logging
+    # ----------------------------------------------------------------------------------------------------------------- #
+    modlog.debug(&#34;Selecting options from %s.&#34; % options)
+
+    #  Managing structure
+    # ----------------------------------------------------------------------------------------------------------------- #
+    logger = KeyLogger(options=options, location=0, exit=False, command=None)
+
+    # - Generating the options dict - #
+    if desc:
+        options_dictionary = {
+            name: {
+                &#34;v&#34;: &#34;&#34;,
+                &#34;d&#34;: &#34;&#34;,
+                &#34;i&#34;: value
+            }
+            for name, value in options.items()
+
+        }
+    else:
+        options_dictionary = {
+            name: {
+                &#34;v&#34;: &#34;&#34;,
+                &#34;d&#34;: &#34;&#34;,
+                &#34;i&#34;: &#34;&#34;
+            }
+            for name, value in options.items()
+
+        }
+
+    # - Fetching terminal - #
+    keys = list(options_dictionary.keys())
+    terminal_string = TerminalString()
+
+    while not logger.exit:
+        #  Managing title printing
+        # ----------------------------------------------------------------------------------------------------------------- #
+        if title:
+            terminal_string.print_title(title)
+        else:
+            terminal_string.print_title(title)
+
+        print_option_dict(options_dictionary, location=keys[logger.location])
+
+        listen_keyboard(on_press=logger.menu_keylog)
+
+        #  Managing the commands
+        # ----------------------------------------------------------------------------------------------------------------- #
+        if logger.command:  # we have a command to execute
+            if logger.command == &#34;enter&#34;:
+                return keys[logger.location]
+            logger.command = None
+
+        os.system(&#39;cls&#39; if os.name == &#39;nt&#39; else &#39;clear&#39;)</code></pre>
 </details>
 </dd>
 <dt id="PyHPC.PyHPC_Utils.text_display_utilities.print_directories_dict"><code class="name flex">
@@ -1450,6 +1958,50 @@ Parameters</p>
         except AttributeError as ex:
             pass
 
+    def nav_build_keylog(self, key):
+        # Key logger for the options navigation #
+        try:
+            if key == &#34;enter&#34;:
+                self.command = &#34;edit&#34;
+                stop_listening()
+            if key == &#34;down&#34;:
+                self.location = (self.location + 1 if self.location != len(self.sub_dict) - 1 else 0)
+                stop_listening()
+            if key == &#34;up&#34;:
+                self.location = (self.location - 1 if self.location != 0 else len(self.sub_dict) - 1)
+                stop_listening()
+            if key == &#34;backspace&#34;:
+                self.command = &#34;back&#34;
+                stop_listening()
+            if key == &#34;q&#34;:
+                self.command = &#34;quit&#34;
+                stop_listening()
+            if key == &#34;d&#34;:
+                self.command = &#34;default&#34;
+                stop_listening()
+            if key == &#34;a&#34;:
+                self.command = &#34;add&#34;
+                stop_listening()
+            if key == &#34;r&#34;:
+                self.command = &#34;remove&#34;
+                stop_listening()
+        except AttributeError as ex:
+            pass
+    def menu_keylog(self, key):
+        # Key logger for the options navigation #
+        try:
+            if key == &#34;enter&#34;:
+                self.command = &#34;enter&#34;
+                stop_listening()
+            if key == &#34;down&#34;:
+                self.location = (self.location + 1 if self.location != len(self.options) - 1 else 0)
+                stop_listening()
+            if key == &#34;up&#34;:
+                self.location = (self.location - 1 if self.location != 0 else len(self.options) - 1)
+                stop_listening()
+        except AttributeError as ex:
+            pass
+
     def file_keylog(self, key):
         &#34;keylogger for managing files.&#34;
         try:
@@ -1507,6 +2059,71 @@ Parameters</p>
             self.command = &#34;back&#34;
             stop_listening()
     except Exception:
+        pass</code></pre>
+</details>
+</dd>
+<dt id="PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.menu_keylog"><code class="name flex">
+<span>def <span class="ident">menu_keylog</span></span>(<span>self, key)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def menu_keylog(self, key):
+    # Key logger for the options navigation #
+    try:
+        if key == &#34;enter&#34;:
+            self.command = &#34;enter&#34;
+            stop_listening()
+        if key == &#34;down&#34;:
+            self.location = (self.location + 1 if self.location != len(self.options) - 1 else 0)
+            stop_listening()
+        if key == &#34;up&#34;:
+            self.location = (self.location - 1 if self.location != 0 else len(self.options) - 1)
+            stop_listening()
+    except AttributeError as ex:
+        pass</code></pre>
+</details>
+</dd>
+<dt id="PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.nav_build_keylog"><code class="name flex">
+<span>def <span class="ident">nav_build_keylog</span></span>(<span>self, key)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def nav_build_keylog(self, key):
+    # Key logger for the options navigation #
+    try:
+        if key == &#34;enter&#34;:
+            self.command = &#34;edit&#34;
+            stop_listening()
+        if key == &#34;down&#34;:
+            self.location = (self.location + 1 if self.location != len(self.sub_dict) - 1 else 0)
+            stop_listening()
+        if key == &#34;up&#34;:
+            self.location = (self.location - 1 if self.location != 0 else len(self.sub_dict) - 1)
+            stop_listening()
+        if key == &#34;backspace&#34;:
+            self.command = &#34;back&#34;
+            stop_listening()
+        if key == &#34;q&#34;:
+            self.command = &#34;quit&#34;
+            stop_listening()
+        if key == &#34;d&#34;:
+            self.command = &#34;default&#34;
+            stop_listening()
+        if key == &#34;a&#34;:
+            self.command = &#34;add&#34;
+            stop_listening()
+        if key == &#34;r&#34;:
+            self.command = &#34;remove&#34;
+            stop_listening()
+    except AttributeError as ex:
         pass</code></pre>
 </details>
 </dd>
@@ -1921,11 +2538,13 @@ Parameters</p>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.build_options" href="#PyHPC.PyHPC_Utils.text_display_utilities.build_options">build_options</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.dict_to_html" href="#PyHPC.PyHPC_Utils.text_display_utilities.dict_to_html">dict_to_html</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.get_dict_str" href="#PyHPC.PyHPC_Utils.text_display_utilities.get_dict_str">get_dict_str</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.get_options" href="#PyHPC.PyHPC_Utils.text_display_utilities.get_options">get_options</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.get_yes_no" href="#PyHPC.PyHPC_Utils.text_display_utilities.get_yes_no">get_yes_no</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.lenwc" href="#PyHPC.PyHPC_Utils.text_display_utilities.lenwc">lenwc</a></code></li>
+<li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.option_menu" href="#PyHPC.PyHPC_Utils.text_display_utilities.option_menu">option_menu</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.print_directories_dict" href="#PyHPC.PyHPC_Utils.text_display_utilities.print_directories_dict">print_directories_dict</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.print_option_dict" href="#PyHPC.PyHPC_Utils.text_display_utilities.print_option_dict">print_option_dict</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.print_title" href="#PyHPC.PyHPC_Utils.text_display_utilities.print_title">print_title</a></code></li>
@@ -1941,6 +2560,8 @@ Parameters</p>
 <h4><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger" href="#PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger">KeyLogger</a></code></h4>
 <ul class="">
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.file_keylog" href="#PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.file_keylog">file_keylog</a></code></li>
+<li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.menu_keylog" href="#PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.menu_keylog">menu_keylog</a></code></li>
+<li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.nav_build_keylog" href="#PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.nav_build_keylog">nav_build_keylog</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.nav_keylog" href="#PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.nav_keylog">nav_keylog</a></code></li>
 <li><code><a title="PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.yes_no_keylog" href="#PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.yes_no_keylog">yes_no_keylog</a></code></li>
 </ul>

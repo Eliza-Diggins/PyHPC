@@ -109,7 +109,7 @@ from types import SimpleNamespace
 import tomlkit as t
 from colorama import Fore, Style
 
-from PyHPC_Core.utils import get_system_info
+from PyHPC_Core.utils import get_system_info,NonStandardEncoder
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -383,7 +383,7 @@ if __name__ == &#39;__main__&#39;:
         }
 
         with open(os.path.join(__root_path, &#34;bin&#34;, &#34;local&#34;, &#34;install.tkc&#34;), &#34;w&#34;) as file:
-            json.dump(ticket_info, file,)
+            json.dump(ticket_info, file,cls=NonStandardEncoder)
         print(done_string)
 
         print(&#34;%sInstallation Succeeded.&#34; % fdbg_string)
@@ -472,7 +472,7 @@ if __name__ == &#39;__main__&#39;:
         }
 
         with open(os.path.join(__root_path, &#34;bin&#34;, &#34;local&#34;, &#34;install.tkc&#34;), &#34;w&#34;) as file:
-            json.dump(ticket_info, file)
+            json.dump(ticket_info, file,cls=NonStandardEncoder)
         print(done_string)
 
         print(&#34;%sInstallation Succeeded.&#34; % fdbg_string)

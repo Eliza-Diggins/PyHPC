@@ -115,6 +115,26 @@ Classes
         -------
         None
 
+    `log(self, message, action, auto_save=True, **kwargs)`
+    :   logs the ``message`` to the ``self.raw.action_log``. Additional entries in the record are specified with ``**kwargs``.
+        
+        Parameters
+        ----------
+        message : str
+            The message to log with the entry.
+        action : str
+            The specific action being under-taken. These actions can be arbitrary, but should be consistent for
+            best impact.
+        auto_save : bool
+            ``True`` to automatically write all of the data to file.
+        kwargs : optional
+            Additional attributes to log with the message. All entries should be ``key="string"``. If entries overlap
+            with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.
+        
+        Returns
+        -------
+        None
+
     `save(self)`
     :
 
@@ -240,7 +260,9 @@ Classes
           }
         },
         "core": {
-        }
+        },
+        "action_log":{
+        },
       }
     }
     ```
@@ -259,11 +281,7 @@ Classes
         },
         "simulations": {
         },
-        "core": {
-          "npart": {
-            "dm": "---",
-            "gas": "---"
-          }
+        "action_log":{
         }
       }
     }

@@ -90,7 +90,7 @@ def write_command_string(command: str, *args, **kwargs) -&gt; str:
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Batch Management ================================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
-def write_slurm_file(command_string, slurm_config=None, name=None,**kwargs):
+def write_slurm_file(command_string, slurm_config=None, name=None, **kwargs):
     &#34;&#34;&#34;
     Writes a ``.slurm`` file corresponding to the provided ``command_string``.
 
@@ -166,7 +166,7 @@ def write_slurm_file(command_string, slurm_config=None, name=None,**kwargs):
     slurm_script += &#34;#SBATCH -o %s.out\n&#34; % path
     slurm_script += &#34;#SBATCH -e %s.err&#34; % path
 
-    command = command_string%{**kwargs,**{&#34;batch_options&#34;:slurm_script}}
+    command = command_string % {**kwargs, **{&#34;batch_options&#34;: slurm_script}}
 
     modlog.debug(&#34;Successfully wrote the slurm script to a memory string.&#34;)
 
@@ -451,7 +451,7 @@ additional entry options to be passed through the <code>command_string</code>.</
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def write_slurm_file(command_string, slurm_config=None, name=None,**kwargs):
+<pre><code class="python">def write_slurm_file(command_string, slurm_config=None, name=None, **kwargs):
     &#34;&#34;&#34;
     Writes a ``.slurm`` file corresponding to the provided ``command_string``.
 
@@ -527,7 +527,7 @@ additional entry options to be passed through the <code>command_string</code>.</
     slurm_script += &#34;#SBATCH -o %s.out\n&#34; % path
     slurm_script += &#34;#SBATCH -e %s.err&#34; % path
 
-    command = command_string%{**kwargs,**{&#34;batch_options&#34;:slurm_script}}
+    command = command_string % {**kwargs, **{&#34;batch_options&#34;: slurm_script}}
 
     modlog.debug(&#34;Successfully wrote the slurm script to a memory string.&#34;)
 
