@@ -1,3 +1,7 @@
+"""
+Remote usage utilities for file transfer management and interaction with the RCLONE interface.
+
+"""
 import os
 import pathlib as pt
 import sys
@@ -28,9 +32,19 @@ if not CONFIG["System"]["Logging"]["warnings"]:
 # -------------------------------------------------------------------------------------------------------------------- #
 def rclone_listdir(directory) -> list:
     """
-    functions as list dir for rclone remote data.
-    :param directory: the directory to get the listdir for.
-    :return: List of the directory (tuple).
+    Functions as the equivalent to ``os.listdir`` in remote directories as configured by the RCLONE
+    settings in ``CONFIG.config``.
+
+    Parameters
+    ----------
+    directory : str
+        The directory path to list directories from. Must be a valid directory in the remote location.
+
+    Returns
+    -------
+    list
+        A list of the resulting objects.
+
     """
     #  Setup and Debug
     # ----------------------------------------------------------------------------------------------------------------- #
@@ -44,6 +58,19 @@ def rclone_listdir(directory) -> list:
 
 
 def rclone_isfile(directory) -> bool:
+    """
+    Checks if ``directory`` is a file on RCLONE.
+    Parameters
+    ----------
+    directory: str
+        The directory to check.
+
+    Returns
+    -------
+    bool
+        ``True`` if the object is a file, ``False`` otherwise.
+
+    """
     if pt.Path(directory).suffix == "":
         return False
     else:
@@ -51,6 +78,19 @@ def rclone_isfile(directory) -> bool:
 
 
 def rclone_isdir(directory) -> bool:
+    """
+    Checks if ``directory`` is a directory on RCLONE.
+    Parameters
+    ----------
+    directory: str
+        The directory to check.
+
+    Returns
+    -------
+    bool
+        ``True`` if the object is a directory, ``False`` otherwise.
+
+    """
     if pt.Path(directory).suffix == "":
         return True
     else:

@@ -1,3 +1,0 @@
-# PyHPC - Logging
-
----

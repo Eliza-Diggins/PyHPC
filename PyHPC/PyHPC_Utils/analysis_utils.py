@@ -1,8 +1,6 @@
 """
 Analysis utilities for use in various mathematical / analytic situations throughout the ``PyHPC`` framework.
 
-..author::
-    Eliza Diggins
 """
 import numpy as np
 
@@ -14,19 +12,18 @@ def recenter(positions, masses):
 
     **Theory**:
 
-    Consider a set of systems with positions \(\textbf{x}_0,\dots,\textbf{x}_n\) and each system must be located in
-    order relative to the COM. The first system \(S_0\) is centered at \((0,0,0)\) to start. This is reasonable because
+    Consider a set of systems with positions :math:`\textbf{x}_0,\dots,\textbf{x}_n` and each system must be located in
+    order relative to the COM. The first system :math:`S_0` is centered at :math:`(0,0,0)` to start. This is reasonable because
     we end up centered on COM anyways. Thus
-    <ul>
-    <li> $$\textbf{x}_0 \to 0 $$</li>
-    <li> \(\textbf{x}_1 \to \textbf{x}_1 \) because \(\textbf{R} = 0 \).
-    </ul>
+
 
     From here on out, things begin to change: each position needs to be written relative to the COM of the state
-    prior. As such, letting \(\textbf{x}_0 = \textbf{0}\), then relative to the \(j\)th COM, the positions of the particles
+    prior. As such, letting :math:`\textbf{x}_0 = \textbf{0}`, then relative to the :math:`j`th COM, the positions of the particles
     are
 
-    $$ \textbf{x}^j_i = \textbf{x}^0_i - \sum_{k=1}^{j-1} \frac{\sum_{l=0}^k \textbf{x}_l^k m_l}{\sum_{l=0}^k m_l} $$
+    .. math::
+
+     \textbf{x}^j_i = \textbf{x}^0_i - \sum_{k=1}^{j-1} \frac{\sum_{l=0}^k \textbf{x}_l^k m_l}{\sum_{l=0}^k m_l} 
 
 
 

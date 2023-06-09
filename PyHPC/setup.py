@@ -1,40 +1,46 @@
 """
 Installation script for the PyHPC system. This script will install the necessary configuration files and
 other critical resources for execution to the output location of your choice. If a ticket exists for your current
-installation, then an update will occur unless the ```-ri``` or ``--reinstall`` flag is used in the command line, in
+installation, then an update will occur unless the ``-ri`` or ``--reinstall`` flag is used in the command line, in
 which case a full reinstallation will occur.
 
 **Usage:**
 
-```commandline
-  _/_/_/_/_/_/                 _/          _/   _/_/_/_/_/_/       _/_/_/_/_/
-  _/         _/                _/          _/   _/         _/    _/
-  _/         _/  _/      _/    _/          _/   _/         _/   _/
-  _/_/_/_/_/_/   _/      _/    _/_/_/_/_/_/_/   _/_/_/_/_/_/    _/
-  _/              _/_/_/_/     _/          _/   _/              _/
-  _/                  _/       _/          _/   _/               _/
-  _/             _/_/_/        _/          _/   _/                 _/_/_/_/_/
-#-------------------------------------------------------------------------------#
-Written by Eliza C. Diggins, University of Utah Department of Physics and Astronomy
+.. code-block:: commandline
 
-Version = 0.2-Alpha
-#-----------#
+      _/_/_/_/_/_/                 _/          _/   _/_/_/_/_/_/       _/_/_/_/_/
+      _/         _/                _/          _/   _/         _/    _/
+      _/         _/  _/      _/    _/          _/   _/         _/   _/
+      _/_/_/_/_/_/   _/      _/    _/_/_/_/_/_/_/   _/_/_/_/_/_/    _/
+      _/              _/_/_/_/     _/          _/   _/              _/
+      _/                  _/       _/          _/   _/               _/
+      _/             _/_/_/        _/          _/   _/                 _/_/_/_/_/
+    #-------------------------------------------------------------------------------#
+    Written by Eliza C. Diggins, University of Utah Department of Physics and Astronomy
 
-Stable = False
-#------------#
+    Version = 0.2-Alpha
+    #-----------#
 
-PyHPC:setup: [INSTALL WIZARD]: Running setup.py...
-usage: setup.py [-h] [-ri] [-l LOCATION] [-v] [-g]
+    Stable = False
+    #------------#
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -ri, --reinstall      Flag to force a complete reinstallation.
-  -l LOCATION, --location LOCATION
-                        The location for the installation.
-  -v, --verbose         Enable verbose mode
-  -g, --git             Update from github.
-```
+    PyHPC:setup: [INSTALL WIZARD]: Running setup.py...
+    usage: setup.py [-h] [-ri] [-l LOCATION] [-v] [-g]
 
+    optional arguments:
+      -h, --help            show this help message and exit
+      -ri, --reinstall      Flag to force a complete reinstallation.
+      -l LOCATION, --location LOCATION
+                            The location for the installation.
+      -v, --verbose         Enable verbose mode
+      -g, --git             Update from github.
+
+
+.. attention::
+    For first time users, simply running ``python3 setup.py`` will install the package. Afterwards, users
+    have the option to run simply ``python3 setup.py`` to update **from local** if changes have been made by
+    the user. To update from the global repository, ``python3 setup.py --git`` is required. To install a completely
+    fresh case of the ``PyHPC`` system, one must use ``python3 setup.py -g -ri``.
 """
 import argparse
 import json

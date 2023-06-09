@@ -1,0 +1,33 @@
+﻿PyHPC
+=====
+
+.. automodule:: PyHPC
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Modules
+
+   .. autosummary::
+      :toctree:
+      :template: modules.rst
+      :recursive:
+   
+      PyHPC.PyHPC_Core
+      PyHPC.PyHPC_System
+      PyHPC.PyHPC_Utils
+      PyHPC.PyHPC_unittests
+      PyHPC.setup
+   
+   
+
+   
+   
+   
+
+   
+   
+   

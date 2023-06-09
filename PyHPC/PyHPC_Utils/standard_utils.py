@@ -30,6 +30,7 @@ __GSV = {}  # -> This global variable allows for communication between the liste
 def getFromDict(dataDict, mapList):
     """
     Fetches the values from a nested ``dataDict``.
+
     Parameters
     ----------
     dataDict: dict
@@ -39,7 +40,6 @@ def getFromDict(dataDict, mapList):
 
     Returns
     -------
-    any
         The value at ``dataDict[mapList[0]][mapList[...]][mapList[-1]]``.
     """
     return reduce(operator.getitem, mapList, dataDict)
@@ -47,19 +47,20 @@ def getFromDict(dataDict, mapList):
 
 def setInDict(dataDict, mapList, value):
     """
-    Sets the value of ``dataDict`` at ``mapList`` to ``value``.
+    sets the value located at ``mapList`` to ``value`` in ``dataDict``.
+
     Parameters
     ----------
     dataDict : dict
-        The dictionary in which to set the data.
-    mapList : list of str
-        The sequence of keys to locate the entry to change.
-    value : any
+        The dictionary in which to set the value.
+    mapList: list
+        The correct placement location.
+    value: any
         The value to set.
 
     Returns
     -------
-    None
+
 
     """
     getFromDict(dataDict, mapList[:-1])[mapList[-1]] = value
