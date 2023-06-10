@@ -1,8 +1,3 @@
-alabaster==0.7.13
-blockdiag==3.0.0
-myst-parser
-pydata-sphinx-theme
-pylint
 sphinx>=5.0
 sphinx-copybutton
 sphinx-prompt
@@ -12,3 +7,8 @@ sphinxcontrib-devhelp
 sphinxcontrib-htmlhelp
 sphinxcontrib-jsmath
 sphinxcontrib-mermaid
+alabaster==0.7.13
+blockdiag==3.0.0
+myst-parser
+pydata-sphinx-theme
+pylint
