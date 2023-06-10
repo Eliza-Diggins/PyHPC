@@ -14,7 +14,7 @@ jobs:
     - name: Build HTML
       uses: ammaraskar/sphinx-action@master
       with:
-        pre-build-command: "sudo apt-get update -y && sudo apt-get install -qq python3-dev python3-pip build-essential swig git libpulse-dev libasound2-dev"
+        pre-build-command: "sudo apt-get update -y && apt-get install -qq gcc python3-dev python3-pip build-essential swig git libpulse-dev libasound2-dev"
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
