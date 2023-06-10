@@ -26,7 +26,7 @@ myst-parser
 pydata-sphinx-theme
 Pygments==2.14.0
 PyJWT==1.7.1
-pylint==2.4.4
+pylint
 sphinx
 sphinx-copybutton
 sphinx-git
