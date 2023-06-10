@@ -14,7 +14,6 @@ pathlib==1.0.1
 pipreqs==0.4.13
 pynbody==1.2.3
 pynput==1.7.6
-requests==2.22.0
 scipy==1.9.2
 sshkeyboard==2.3.1
 sympy==1.11.1
