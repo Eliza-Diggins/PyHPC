@@ -38,4 +38,3 @@ sphinxcontrib-jsmath
 sphinxcontrib-mermaid
 sphinxcontrib-qthelp
 sphinxcontrib-serializinghtml
-sshkeyboard==2.3.1
