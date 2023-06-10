@@ -9,7 +9,7 @@ jobs:
     - uses: actions/checkout@v3
     - name: Install dependencies
       run: |
-        apt-get install gcc
+        sudo apt-get install gcc
         python -m pip install --upgrade pip
         pip install wheel
     - name: Build HTML
