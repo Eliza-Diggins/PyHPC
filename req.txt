@@ -23,7 +23,6 @@ tqdm==4.64.1
 yt==4.1.4
 alabaster==0.7.13
 blockdiag==3.0.0
-docutils==0.20.1
 myst-parser==1.0.0
 pydata-sphinx-theme==0.13.3
 Pygments==2.14.0
