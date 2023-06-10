@@ -1,11 +1,11 @@
-sphinx<7,>=5
-docutils==0.16
+sphinx==7
+docutils<0.20,>=0.18.1
+sphinxcontrib-htmlhelp>=2.0.0
 sphinx-copybutton
 sphinx-prompt
 sphinxcontrib-applehelp
 sphinxcontrib-blockdiag
 sphinxcontrib-devhelp
-sphinxcontrib-htmlhelp
 sphinxcontrib-jsmath
 sphinxcontrib-mermaid
 alabaster==0.7.13
