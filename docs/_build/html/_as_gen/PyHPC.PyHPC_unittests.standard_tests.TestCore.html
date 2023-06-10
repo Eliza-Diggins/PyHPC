@@ -1,0 +1,796 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PyHPC.PyHPC_unittests.standard_tests.TestCore &#8212; PyHPC 2023 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_as_gen/PyHPC.PyHPC_unittests.standard_tests.TestCore';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.__init__" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.__init__.html" />
+    <link rel="prev" title="PyHPC.PyHPC_unittests.standard_tests" href="PyHPC.PyHPC_unittests.standard_tests.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">PyHPC 2023 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../installation.html">
+                        <no title>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../software.html">
+                        Software
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../installation.html">
+                        <no title>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../software.html">
+                        Software
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="PyHPC.html">PyHPC</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.PyHPC_Core.html">PyHPC.PyHPC_Core</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_Core.configuration.html">PyHPC.PyHPC_Core.configuration</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.configuration.read_config.html">PyHPC.PyHPC_Core.configuration.read_config</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PyHPC.PyHPC_Core.errors.html">PyHPC.PyHPC_Core.errors</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_Core.log.html">PyHPC.PyHPC_Core.log</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.log.get_dict_str.html">PyHPC.PyHPC_Core.log.get_dict_str</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.log.get_module_logger.html">PyHPC.PyHPC_Core.log.get_module_logger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.log.getlogger.html">PyHPC.PyHPC_Core.log.getlogger</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_Core.utils.html">PyHPC.PyHPC_Core.utils</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.utils.get_system_info.html">PyHPC.PyHPC_Core.utils.get_system_info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.utils.time_function.html">PyHPC.PyHPC_Core.utils.time_function</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.utils.write_ini.html">PyHPC.PyHPC_Core.utils.write_ini</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.utils.NonStandardEncoder.html">PyHPC.PyHPC_Core.utils.NonStandardEncoder</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.PyHPC_System.html">PyHPC.PyHPC_System</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_System.file_management.html">PyHPC.PyHPC_System.file_management</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.file_management.get_all_files.html">PyHPC.PyHPC_System.file_management.get_all_files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.file_management.get_all_remote_files.html">PyHPC.PyHPC_System.file_management.get_all_remote_files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.file_management.get_item_from_rclone.html">PyHPC.PyHPC_System.file_management.get_item_from_rclone</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.file_management.get_local_location.html">PyHPC.PyHPC_System.file_management.get_local_location</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.file_management.get_remote_location.html">PyHPC.PyHPC_System.file_management.get_remote_location</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.file_management.mt_get_item_from_rclone.html">PyHPC.PyHPC_System.file_management.mt_get_item_from_rclone</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.file_management.mt_send_item_to_rclone.html">PyHPC.PyHPC_System.file_management.mt_send_item_to_rclone</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.file_management.send_item_to_rclone.html">PyHPC.PyHPC_System.file_management.send_item_to_rclone</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_System.io.html">PyHPC.PyHPC_System.io</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.io.write_command_string.html">PyHPC.PyHPC_System.io.write_command_string</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.io.write_ramses_nml.html">PyHPC.PyHPC_System.io.write_ramses_nml</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.io.write_slurm_file.html">PyHPC.PyHPC_System.io.write_slurm_file</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.html">PyHPC.PyHPC_System.simulation_management</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.check_dictionary_structure.html">PyHPC.PyHPC_System.simulation_management.check_dictionary_structure</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.html">PyHPC.PyHPC_System.simulation_management.InitCon</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.html">PyHPC.PyHPC_System.simulation_management.SimRec</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimulationLog.html">PyHPC.PyHPC_System.simulation_management.SimulationLog</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.PyHPC_Utils.html">PyHPC.PyHPC_Utils</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_Utils.analysis_utils.html">PyHPC.PyHPC_Utils.analysis_utils</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.analysis_utils.recenter.html">PyHPC.PyHPC_Utils.analysis_utils.recenter</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_Utils.remote_utils.html">PyHPC.PyHPC_Utils.remote_utils</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.remote_utils.rclone_isdir.html">PyHPC.PyHPC_Utils.remote_utils.rclone_isdir</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.remote_utils.rclone_isfile.html">PyHPC.PyHPC_Utils.remote_utils.rclone_isfile</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.remote_utils.rclone_listdir.html">PyHPC.PyHPC_Utils.remote_utils.rclone_listdir</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_Utils.standard_utils.html">PyHPC.PyHPC_Utils.standard_utils</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.standard_utils.getFromDict.html">PyHPC.PyHPC_Utils.standard_utils.getFromDict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.standard_utils.setInDict.html">PyHPC.PyHPC_Utils.standard_utils.setInDict</a></li>
+</ul>
+</li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.html">PyHPC.PyHPC_Utils.text_display_utilities</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.build_options.html">PyHPC.PyHPC_Utils.text_display_utilities.build_options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.dict_to_html.html">PyHPC.PyHPC_Utils.text_display_utilities.dict_to_html</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.get_dict_str.html">PyHPC.PyHPC_Utils.text_display_utilities.get_dict_str</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.get_options.html">PyHPC.PyHPC_Utils.text_display_utilities.get_options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.get_yes_no.html">PyHPC.PyHPC_Utils.text_display_utilities.get_yes_no</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.lenwc.html">PyHPC.PyHPC_Utils.text_display_utilities.lenwc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.option_menu.html">PyHPC.PyHPC_Utils.text_display_utilities.option_menu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.print_directories_dict.html">PyHPC.PyHPC_Utils.text_display_utilities.print_directories_dict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.print_option_dict.html">PyHPC.PyHPC_Utils.text_display_utilities.print_option_dict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.print_title.html">PyHPC.PyHPC_Utils.text_display_utilities.print_title</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.print_verbose.html">PyHPC.PyHPC_Utils.text_display_utilities.print_verbose</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.select_files.html">PyHPC.PyHPC_Utils.text_display_utilities.select_files</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.select_files_remote.html">PyHPC.PyHPC_Utils.text_display_utilities.select_files_remote</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.html">PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.PrintRetainer.html">PyHPC.PyHPC_Utils.text_display_utilities.PrintRetainer</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.TerminalString.html">PyHPC.PyHPC_Utils.text_display_utilities.TerminalString</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.PyHPC_Visualization.html">PyHPC.PyHPC_Visualization</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="PyHPC.PyHPC_Visualization.image.html">PyHPC.PyHPC_Visualization.image</a></li>
+</ul>
+</li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="PyHPC.PyHPC_unittests.html">PyHPC.PyHPC_unittests</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.html">PyHPC.PyHPC_unittests.standard_tests</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">PyHPC.PyHPC_unittests.standard_tests.TestCore</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.setup.html">PyHPC.setup</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.generate_directories.html">PyHPC.setup.generate_directories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.print_title.html">PyHPC.setup.print_title</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.print_verbose.html">PyHPC.setup.print_verbose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.rec_gen_dirs.html">PyHPC.setup.rec_gen_dirs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.set_directories_config_recur.html">PyHPC.setup.set_directories_config_recur</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.set_directories_in_config.html">PyHPC.setup.set_directories_in_config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.update_dict.html">PyHPC.setup.update_dict</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="PyHPC_executables.html">PyHPC_executables</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="PyHPC_executables.ic_report.html">PyHPC_executables.ic_report</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyHPC_executables.run_ic_gen.html">PyHPC_executables.run_ic_gen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyHPC_executables.run_ramses.html">PyHPC_executables.run_ramses</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api.html" class="nav-link">API</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="PyHPC.PyHPC_unittests.standard_tests.html" class="nav-link">PyHPC.PyHPC_unittests.standard_tests</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">PyHPC.PyHPC_unittests.standard_tests.TestCore</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section id="pyhpc-pyhpc-unittests-standard-tests-testcore">
+<h1>PyHPC.PyHPC_unittests.standard_tests.TestCore<a class="headerlink" href="#pyhpc-pyhpc-unittests-standard-tests-testcore" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="PyHPC.PyHPC_unittests.standard_tests.TestCore">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PyHPC.PyHPC_unittests.standard_tests.</span></span><span class="sig-name descname"><span class="pre">TestCore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyHPC/PyHPC_unittests/standard_tests.html#TestCore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyHPC.PyHPC_unittests.standard_tests.TestCore" title="Permalink to this definition">#</a></dt>
+<dd><p>Test the PyHPC_Core system.</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.__init__.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.__init__" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([methodName])</p></td>
+<td><p>Create an instance of the class that will use the named test method when executed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.addClassCleanup.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.addClassCleanup" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.addClassCleanup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addClassCleanup</span></code></a>(function, /, *args, **kwargs)</p></td>
+<td><p>Same as addCleanup, except the cleanup items are called even if setUpClass fails (unlike tearDownClass).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.addCleanup.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.addCleanup" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.addCleanup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addCleanup</span></code></a>(function, /, *args, **kwargs)</p></td>
+<td><p>Add a function, with arguments, to be called when the test is completed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.addTypeEqualityFunc.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.addTypeEqualityFunc" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.addTypeEqualityFunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addTypeEqualityFunc</span></code></a>(typeobj, function)</p></td>
+<td><p>Add a type specific assertEqual style function to compare a type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertAlmostEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertAlmostEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertAlmostEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertAlmostEqual</span></code></a>(first, second[, places, ...])</p></td>
+<td><p>Fail if the two objects are unequal as determined by their difference rounded to the given number of decimal places (default 7) and comparing to zero, or by comparing that the difference between the two objects is more than the given delta.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertAlmostEquals.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertAlmostEquals" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertAlmostEquals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertAlmostEquals</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertCountEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertCountEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertCountEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertCountEqual</span></code></a>(first, second[, msg])</p></td>
+<td><p>Asserts that two iterables have the same elements, the same number of times, without regard to order.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertDictContainsSubset.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertDictContainsSubset" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertDictContainsSubset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertDictContainsSubset</span></code></a>(subset, dictionary)</p></td>
+<td><p>Checks whether dictionary is a superset of subset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertDictEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertDictEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertDictEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertDictEqual</span></code></a>(d1, d2[, msg])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertEqual</span></code></a>(first, second[, msg])</p></td>
+<td><p>Fail if the two objects are unequal as determined by the '==' operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertEquals.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertEquals" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertEquals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertEquals</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertFalse.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertFalse" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertFalse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertFalse</span></code></a>(expr[, msg])</p></td>
+<td><p>Check that the expression is false.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertGreater.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertGreater" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertGreater"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertGreater</span></code></a>(a, b[, msg])</p></td>
+<td><p>Just like self.assertTrue(a &gt; b), but with a nicer default message.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertGreaterEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertGreaterEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertGreaterEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertGreaterEqual</span></code></a>(a, b[, msg])</p></td>
+<td><p>Just like self.assertTrue(a &gt;= b), but with a nicer default message.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIn.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIn" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertIn</span></code></a>(member, container[, msg])</p></td>
+<td><p>Just like self.assertTrue(a in b), but with a nicer default message.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIs.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIs" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertIs</span></code></a>(expr1, expr2[, msg])</p></td>
+<td><p>Just like self.assertTrue(a is b), but with a nicer default message.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsInstance.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsInstance" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertIsInstance</span></code></a>(obj, cls[, msg])</p></td>
+<td><p>Same as self.assertTrue(isinstance(obj, cls)), with a nicer default message.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsNone.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsNone" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsNone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertIsNone</span></code></a>(obj[, msg])</p></td>
+<td><p>Same as self.assertTrue(obj is None), with a nicer default message.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsNot.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsNot" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsNot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertIsNot</span></code></a>(expr1, expr2[, msg])</p></td>
+<td><p>Just like self.assertTrue(a is not b), but with a nicer default message.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsNotNone.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsNotNone" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertIsNotNone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertIsNotNone</span></code></a>(obj[, msg])</p></td>
+<td><p>Included for symmetry with assertIsNone.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertLess.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertLess" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertLess"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertLess</span></code></a>(a, b[, msg])</p></td>
+<td><p>Just like self.assertTrue(a &lt; b), but with a nicer default message.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertLessEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertLessEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertLessEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertLessEqual</span></code></a>(a, b[, msg])</p></td>
+<td><p>Just like self.assertTrue(a &lt;= b), but with a nicer default message.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertListEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertListEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertListEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertListEqual</span></code></a>(list1, list2[, msg])</p></td>
+<td><p>A list-specific equality assertion.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertLogs.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertLogs" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertLogs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertLogs</span></code></a>([logger, level])</p></td>
+<td><p>Fail unless a log message of level <em>level</em> or higher is emitted on <em>logger_name</em> or its children.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertMultiLineEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertMultiLineEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertMultiLineEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertMultiLineEqual</span></code></a>(first, second[, msg])</p></td>
+<td><p>Assert that two multi-line strings are equal.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotAlmostEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotAlmostEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotAlmostEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertNotAlmostEqual</span></code></a>(first, second[, ...])</p></td>
+<td><p>Fail if the two objects are equal as determined by their difference rounded to the given number of decimal places (default 7) and comparing to zero, or by comparing that the difference between the two objects is less than the given delta.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotAlmostEquals.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotAlmostEquals" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotAlmostEquals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertNotAlmostEquals</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertNotEqual</span></code></a>(first, second[, msg])</p></td>
+<td><p>Fail if the two objects are equal as determined by the '!=' operator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotEquals.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotEquals" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotEquals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertNotEquals</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotIn.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotIn" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotIn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertNotIn</span></code></a>(member, container[, msg])</p></td>
+<td><p>Just like self.assertTrue(a not in b), but with a nicer default message.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotIsInstance.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotIsInstance" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotIsInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertNotIsInstance</span></code></a>(obj, cls[, msg])</p></td>
+<td><p>Included for symmetry with assertIsInstance.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotRegex.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotRegex" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotRegex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertNotRegex</span></code></a>(text, unexpected_regex[, msg])</p></td>
+<td><p>Fail the test if the text matches the regular expression.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotRegexpMatches.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotRegexpMatches" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertNotRegexpMatches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertNotRegexpMatches</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRaises.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRaises" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRaises"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertRaises</span></code></a>(expected_exception, *args, **kwargs)</p></td>
+<td><p>Fail unless an exception of class expected_exception is raised by the callable when invoked with specified positional and keyword arguments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRaisesRegex.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRaisesRegex" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRaisesRegex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertRaisesRegex</span></code></a>(expected_exception, ...)</p></td>
+<td><p>Asserts that the message in a raised exception matches a regex.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRaisesRegexp.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRaisesRegexp" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRaisesRegexp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertRaisesRegexp</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRegex.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRegex" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRegex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertRegex</span></code></a>(text, expected_regex[, msg])</p></td>
+<td><p>Fail the test unless the text matches the regular expression.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRegexpMatches.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRegexpMatches" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertRegexpMatches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertRegexpMatches</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertSequenceEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertSequenceEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertSequenceEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertSequenceEqual</span></code></a>(seq1, seq2[, msg, seq_type])</p></td>
+<td><p>An equality assertion for ordered sequences (like lists and tuples).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertSetEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertSetEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertSetEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertSetEqual</span></code></a>(set1, set2[, msg])</p></td>
+<td><p>A set-specific equality assertion.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertTrue.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertTrue" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertTrue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertTrue</span></code></a>(expr[, msg])</p></td>
+<td><p>Check that the expression is true.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertTupleEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertTupleEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertTupleEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertTupleEqual</span></code></a>(tuple1, tuple2[, msg])</p></td>
+<td><p>A tuple-specific equality assertion.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertWarns.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertWarns" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertWarns"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertWarns</span></code></a>(expected_warning, *args, **kwargs)</p></td>
+<td><p>Fail unless a warning of class warnClass is triggered by the callable when invoked with specified positional and keyword arguments.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertWarnsRegex.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assertWarnsRegex" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assertWarnsRegex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assertWarnsRegex</span></code></a>(expected_warning, ...)</p></td>
+<td><p>Asserts that the message in a triggered warning matches a regexp.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.assert_.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.assert_" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.assert_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assert_</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.countTestCases.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.countTestCases" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.countTestCases"><code class="xref py py-obj docutils literal notranslate"><span class="pre">countTestCases</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.debug.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.debug" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.debug"><code class="xref py py-obj docutils literal notranslate"><span class="pre">debug</span></code></a>()</p></td>
+<td><p>Run the test without collecting errors in a TestResult</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.defaultTestResult.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.defaultTestResult" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.defaultTestResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">defaultTestResult</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.doClassCleanups.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.doClassCleanups" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.doClassCleanups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">doClassCleanups</span></code></a>()</p></td>
+<td><p>Execute all class cleanup functions.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.doCleanups.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.doCleanups" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.doCleanups"><code class="xref py py-obj docutils literal notranslate"><span class="pre">doCleanups</span></code></a>()</p></td>
+<td><p>Execute all cleanup functions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.fail.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.fail" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.fail"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fail</span></code></a>([msg])</p></td>
+<td><p>Fail immediately, with the given message.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.failIf.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.failIf" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.failIf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">failIf</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.failIfAlmostEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.failIfAlmostEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.failIfAlmostEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">failIfAlmostEqual</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.failIfEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.failIfEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.failIfEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">failIfEqual</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnless.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnless" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnless"><code class="xref py py-obj docutils literal notranslate"><span class="pre">failUnless</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnlessAlmostEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnlessAlmostEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnlessAlmostEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">failUnlessAlmostEqual</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnlessEqual.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnlessEqual" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnlessEqual"><code class="xref py py-obj docutils literal notranslate"><span class="pre">failUnlessEqual</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnlessRaises.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnlessRaises" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.failUnlessRaises"><code class="xref py py-obj docutils literal notranslate"><span class="pre">failUnlessRaises</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.id.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.id" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">id</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.run.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.run" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>([result])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.setUp.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.setUp" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.setUp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setUp</span></code></a>()</p></td>
+<td><p>Hook method for setting up the test fixture before exercising it.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.setUpClass.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.setUpClass" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.setUpClass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setUpClass</span></code></a>()</p></td>
+<td><p>Hook method for setting up class fixture before running tests in the class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.shortDescription.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.shortDescription" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.shortDescription"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shortDescription</span></code></a>()</p></td>
+<td><p>Returns a one-line description of the test, or None if no description has been provided.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.skipTest.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.skipTest" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.skipTest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">skipTest</span></code></a>(reason)</p></td>
+<td><p>Skip this test.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.subTest.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.subTest" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.subTest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subTest</span></code></a>([msg])</p></td>
+<td><p>Return a context manager that will return the enclosed block of code in a subtest identified by the optional message and keyword parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.tearDown.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.tearDown" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.tearDown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tearDown</span></code></a>()</p></td>
+<td><p>Hook method for deconstructing the test fixture after testing it.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.tearDownClass.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.tearDownClass" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.tearDownClass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tearDownClass</span></code></a>()</p></td>
+<td><p>Hook method for deconstructing the class fixture after running all tests in the class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.test_configuration.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.test_configuration" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.test_configuration"><code class="xref py py-obj docutils literal notranslate"><span class="pre">test_configuration</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.longMessage.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.longMessage" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.longMessage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">longMessage</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.maxDiff.html#PyHPC.PyHPC_unittests.standard_tests.TestCore.maxDiff" title="PyHPC.PyHPC_unittests.standard_tests.TestCore.maxDiff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">maxDiff</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="PyHPC.PyHPC_unittests.standard_tests.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">PyHPC.PyHPC_unittests.standard_tests</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="PyHPC.PyHPC_unittests.standard_tests.TestCore.__init__.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">PyHPC.PyHPC_unittests.standard_tests.TestCore.__init__</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#PyHPC.PyHPC_unittests.standard_tests.TestCore"><code class="docutils literal notranslate"><span class="pre">TestCore</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div class="tocsection sourcelink">
+    <a href="../_sources/_as_gen/PyHPC.PyHPC_unittests.standard_tests.TestCore.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Eliza C. Diggins.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

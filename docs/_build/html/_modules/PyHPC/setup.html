@@ -1,0 +1,813 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PyHPC.setup &#8212; PyHPC 2023 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/PyHPC/setup';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  <div class="navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">PyHPC 2023 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../installation.html">
+                        <no title>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../software.html">
+                        Software
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </button>
+`);
+</script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api.html">
+                        API
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../installation.html">
+                        <no title>
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../software.html">
+                        Software
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumbs">
+  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">PyHPC.setup</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for PyHPC.setup</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Installation script for the PyHPC system. This script will install the necessary configuration files and</span>
+<span class="sd">other critical resources for execution to the output location of your choice. If a ticket exists for your current</span>
+<span class="sd">installation, then an update will occur unless the ``-ri`` or ``--reinstall`` flag is used in the command line, in</span>
+<span class="sd">which case a full reinstallation will occur.</span>
+
+<span class="sd">**Usage:**</span>
+
+<span class="sd">.. code-block:: commandline</span>
+
+<span class="sd">      _/_/_/_/_/_/                 _/          _/   _/_/_/_/_/_/       _/_/_/_/_/</span>
+<span class="sd">      _/         _/                _/          _/   _/         _/    _/</span>
+<span class="sd">      _/         _/  _/      _/    _/          _/   _/         _/   _/</span>
+<span class="sd">      _/_/_/_/_/_/   _/      _/    _/_/_/_/_/_/_/   _/_/_/_/_/_/    _/</span>
+<span class="sd">      _/              _/_/_/_/     _/          _/   _/              _/</span>
+<span class="sd">      _/                  _/       _/          _/   _/               _/</span>
+<span class="sd">      _/             _/_/_/        _/          _/   _/                 _/_/_/_/_/</span>
+<span class="sd">    #-------------------------------------------------------------------------------#</span>
+<span class="sd">    Written by Eliza C. Diggins, University of Utah Department of Physics and Astronomy</span>
+
+<span class="sd">    Version = 0.2-Alpha</span>
+<span class="sd">    #-----------#</span>
+
+<span class="sd">    Stable = False</span>
+<span class="sd">    #------------#</span>
+
+<span class="sd">    PyHPC:setup: [INSTALL WIZARD]: Running setup.py...</span>
+<span class="sd">    usage: setup.py [-h] [-ri] [-l LOCATION] [-v] [-g]</span>
+
+<span class="sd">    optional arguments:</span>
+<span class="sd">      -h, --help            show this help message and exit</span>
+<span class="sd">      -ri, --reinstall      Flag to force a complete reinstallation.</span>
+<span class="sd">      -l LOCATION, --location LOCATION</span>
+<span class="sd">                            The location for the installation.</span>
+<span class="sd">      -v, --verbose         Enable verbose mode</span>
+<span class="sd">      -g, --git             Update from github.</span>
+
+
+<span class="sd">.. attention::</span>
+<span class="sd">    For first time users, simply running ``python3 setup.py`` will install the package. Afterwards, users</span>
+<span class="sd">    have the option to run simply ``python3 setup.py`` to update **from local** if changes have been made by</span>
+<span class="sd">    the user. To update from the global repository, ``python3 setup.py --git`` is required. To install a completely</span>
+<span class="sd">    fresh case of the ``PyHPC`` system, one must use ``python3 setup.py -g -ri``.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pathlib</span> <span class="k">as</span> <span class="nn">pt</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">SimpleNamespace</span>
+
+<span class="kn">import</span> <span class="nn">tomlkit</span> <span class="k">as</span> <span class="nn">t</span>
+<span class="kn">from</span> <span class="nn">colorama</span> <span class="kn">import</span> <span class="n">Fore</span><span class="p">,</span> <span class="n">Style</span>
+
+<span class="kn">from</span> <span class="nn">PyHPC_Core.utils</span> <span class="kn">import</span> <span class="n">get_system_info</span><span class="p">,</span><span class="n">NonStandardEncoder</span>
+
+
+<span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
+<span class="c1">#  Setup  ============================================================================================================ #</span>
+<span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
+<span class="n">_location</span> <span class="o">=</span> <span class="s2">&quot;PyHPC&quot;</span>
+<span class="n">_filename</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<span class="c1"># - Strings -#</span>
+<span class="n">__text_file_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">)</span>
+<span class="n">_dbg_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_location</span><span class="p">,</span> <span class="n">_filename</span><span class="p">)</span>
+<span class="n">fdbg_string</span> <span class="o">=</span> <span class="n">_dbg_string</span> <span class="o">+</span> <span class="s2">&quot; [&quot;</span> <span class="o">+</span> <span class="n">Fore</span><span class="o">.</span><span class="n">LIGHTGREEN_EX</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">BRIGHT</span> <span class="o">+</span> <span class="s2">&quot;INSTALL WIZARD&quot;</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span> <span class="o">+</span> <span class="s2">&quot;]: &quot;</span>
+<span class="n">done_string</span> <span class="o">=</span> <span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">BRIGHT</span> <span class="o">+</span> <span class="s2">&quot;DONE&quot;</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
+<span class="n">fail_string</span> <span class="o">=</span> <span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="n">Fore</span><span class="o">.</span><span class="n">RED</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">BRIGHT</span> <span class="o">+</span> <span class="s2">&quot;FAILED&quot;</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
+
+<span class="c1"># HARD CODED: the relative location of the install config file from which to generate the correct installation.</span>
+<span class="n">__root_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+
+
+<span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
+<span class="c1">#  Sub Functions ===================================================================================================== #</span>
+<span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
+<div class="viewcode-block" id="print_verbose"><a class="viewcode-back" href="../../_as_gen/PyHPC.setup.print_verbose.html#PyHPC.setup.print_verbose">[docs]</a><span class="k">def</span> <span class="nf">print_verbose</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="print_title"><a class="viewcode-back" href="../../_as_gen/PyHPC.setup.print_title.html#PyHPC.setup.print_title">[docs]</a><span class="k">def</span> <span class="nf">print_title</span><span class="p">():</span>
+    <span class="c1">#- Prints the title of the project -#</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__text_file_directory</span><span class="p">,</span><span class="s2">&quot;general&quot;</span><span class="p">,</span><span class="s2">&quot;title.txt&quot;</span><span class="p">),</span><span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;unicode_escape&quot;</span><span class="p">)</span><span class="o">%</span><span class="nb">tuple</span><span class="p">(</span><span class="n">get_system_info</span><span class="p">()</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span></div>
+<div class="viewcode-block" id="generate_directories"><a class="viewcode-back" href="../../_as_gen/PyHPC.setup.generate_directories.html#PyHPC.setup.generate_directories">[docs]</a><span class="k">def</span> <span class="nf">generate_directories</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="c1">### Generates the necessary directories for install from lib/struct/fstruct.json ###</span>
+
+    <span class="c1"># - Checking if location exists -#</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">location</span><span class="p">):</span>
+        <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s2">Generating </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fdbg_string</span><span class="p">,</span> <span class="n">location</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">location</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">print_verbose</span><span class="p">(</span><span class="n">done_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">print_verbose</span><span class="p">(</span><span class="n">fail_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Location </span><span class="si">%s</span><span class="s2"> could not be found or created.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fdbg_string</span><span class="p">,</span> <span class="n">location</span><span class="p">))</span>
+            <span class="n">exit</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># - Generating the necessary files -#</span>
+    <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s2">Attempting to load structure files...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;struct&quot;</span><span class="p">,</span> <span class="s2">&quot;fstruct.json&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file_structure</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="n">print_verbose</span><span class="p">(</span><span class="n">fail_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Failed to find </span><span class="si">%s</span><span class="s2">. Rebuild from github.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;struct&quot;</span><span class="p">,</span> <span class="s2">&quot;fstruct.json&quot;</span><span class="p">)))</span>
+        <span class="n">exit</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">print_verbose</span><span class="p">(</span><span class="n">fail_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">File </span><span class="si">%s</span><span class="s2"> had incorrect structure. Rebuild from github.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;struct&quot;</span><span class="p">,</span> <span class="s2">&quot;fstruct.json&quot;</span><span class="p">)))</span>
+        <span class="n">exit</span><span class="p">()</span>
+
+    <span class="n">print_verbose</span><span class="p">(</span><span class="n">done_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># - Creating the files -#</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s2">Generating files...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
+    <span class="n">rec_gen_dirs</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">file_structure</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">done_string</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rec_gen_dirs"><a class="viewcode-back" href="../../_as_gen/PyHPC.setup.rec_gen_dirs.html#PyHPC.setup.rec_gen_dirs">[docs]</a><span class="k">def</span> <span class="nf">rec_gen_dirs</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">dic</span><span class="p">,</span> <span class="n">ovr</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dic</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="c1"># - This is another layer -#</span>
+                <span class="n">rec_gen_dirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">loc</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]),</span> <span class="n">v</span><span class="p">,</span> <span class="n">ovr</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dic</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">Generating </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fdbg_string</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">loc</span><span class="p">)),</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">loc</span><span class="p">))</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileExistsError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">ovr</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">loc</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">loc</span><span class="p">))</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">print_verbose</span><span class="p">(</span><span class="n">fail_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Failed to generate </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fail_string</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">loc</span><span class="p">)))</span>
+            <span class="n">exit</span><span class="p">()</span>
+        <span class="n">print_verbose</span><span class="p">(</span><span class="n">done_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="set_directories_in_config"><a class="viewcode-back" href="../../_as_gen/PyHPC.setup.set_directories_in_config.html#PyHPC.setup.set_directories_in_config">[docs]</a><span class="k">def</span> <span class="nf">set_directories_in_config</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">cnfg</span><span class="p">):</span>
+    <span class="c1"># - Generating the necessary files -#</span>
+    <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">Attempting to re-load structure files...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;struct&quot;</span><span class="p">,</span> <span class="s2">&quot;fstruct.json&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file_structure</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="n">print_verbose</span><span class="p">(</span><span class="n">fail_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">Failed to find </span><span class="si">%s</span><span class="s2">. Rebuild from github.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;struct&quot;</span><span class="p">,</span> <span class="s2">&quot;fstruct.json&quot;</span><span class="p">)))</span>
+        <span class="n">exit</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">print_verbose</span><span class="p">(</span><span class="n">fail_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">File </span><span class="si">%s</span><span class="s2"> had incorrect structure. Rebuild from github.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;struct&quot;</span><span class="p">,</span> <span class="s2">&quot;fstruct.json&quot;</span><span class="p">)))</span>
+        <span class="n">exit</span><span class="p">()</span>
+
+    <span class="n">print_verbose</span><span class="p">(</span><span class="n">done_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">set_directories_config_recur</span><span class="p">(</span><span class="n">cnfg</span><span class="p">,</span> <span class="n">file_structure</span><span class="p">,</span> <span class="n">location</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="set_directories_config_recur"><a class="viewcode-back" href="../../_as_gen/PyHPC.setup.set_directories_config_recur.html#PyHPC.setup.set_directories_config_recur">[docs]</a><span class="k">def</span> <span class="nf">set_directories_config_recur</span><span class="p">(</span><span class="n">cnfg</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                    <span class="n">cnfg</span><span class="p">[</span><span class="s2">&quot;System&quot;</span><span class="p">][</span><span class="s2">&quot;Directories&quot;</span><span class="p">][</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;link&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;files&quot;</span><span class="p">],</span> <span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">cnfg</span> <span class="o">=</span> <span class="n">set_directories_config_recur</span><span class="p">(</span><span class="n">cnfg</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t\t</span><span class="si">%s</span><span class="s2">Failed to set directories at </span><span class="si">%s</span><span class="s2">. Message = </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fdbg_string</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">err</span><span class="p">)))</span>
+        <span class="n">exit</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">cnfg</span></div>
+
+
+<div class="viewcode-block" id="update_dict"><a class="viewcode-back" href="../../_as_gen/PyHPC.setup.update_dict.html#PyHPC.setup.update_dict">[docs]</a><span class="k">def</span> <span class="nf">update_dict</span><span class="p">(</span><span class="n">master</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">local</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Searches for updates to the local dictionary in master and applies them without lossing user entries in the local dict.</span>
+<span class="sd">    :param master: The master dict from which to find updates</span>
+<span class="sd">    :param local: The local dict with user settings.</span>
+<span class="sd">    :return: dict.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">master_keys</span><span class="p">,</span> <span class="n">local_keys</span> <span class="o">=</span> <span class="n">master</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">local</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>  <span class="c1"># grab all of the keys</span>
+
+    <span class="k">for</span> <span class="n">master_key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">master_keys</span><span class="p">):</span>  <span class="c1"># cycle through each of the master keys</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">master</span><span class="p">[</span><span class="n">master_key</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">master_key</span> <span class="ow">in</span> <span class="n">local</span><span class="p">:</span>
+            <span class="n">master</span><span class="p">[</span><span class="n">master_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">update_dict</span><span class="p">(</span><span class="n">master</span><span class="p">[</span><span class="n">master_key</span><span class="p">],</span> <span class="n">local</span><span class="p">[</span><span class="n">master_key</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">master</span><span class="p">[</span><span class="n">master_key</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">master_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">local</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">master_key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">local_keys</span><span class="p">)</span> <span class="ow">and</span> <span class="n">master_key</span> <span class="o">!=</span> <span class="s2">&quot;version&quot;</span><span class="p">:</span>
+                <span class="c1">### There is a local match ###</span>
+                <span class="n">master</span><span class="p">[</span><span class="n">master_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">local</span><span class="p">[</span><span class="n">master_key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">master</span></div>
+
+
+<span class="c1"># --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#</span>
+<span class="c1"># ------------------------------------------------------- Main ----------------------------------------------------------#</span>
+<span class="c1"># --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># - Printing the title -#</span>
+    <span class="n">print_title</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Running setup.py...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">)</span>
+    <span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
+    <span class="c1"># Arg-parsing ======================================================================================================== #</span>
+    <span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
+    <span class="n">argument_parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+
+    <span class="c1"># - Adding the necessary arguments -#</span>
+    <span class="n">argument_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-ri&quot;</span><span class="p">,</span> <span class="s2">&quot;--reinstall&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Flag to force a complete reinstallation.&quot;</span><span class="p">,</span>
+                                 <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+    <span class="n">argument_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-l&quot;</span><span class="p">,</span> <span class="s2">&quot;--location&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;The location for the installation.&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">argument_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-v&quot;</span><span class="p">,</span> <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Enable verbose mode&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+    <span class="n">argument_parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;-g&quot;</span><span class="p">,</span> <span class="s2">&quot;--git&quot;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Update from github.&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">)</span>
+
+    <span class="c1"># - Parsing -#</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">argument_parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="c1"># ---------------------------------------------------------------------------------------------------------------- #</span>
+    <span class="c1"># Checking for an existing installation ========================================================================== #</span>
+    <span class="c1"># ------------------------------------------------------------------------------------------------------------------#</span>
+    <span class="n">new_install</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">reinstall</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Searching for a valid installation history...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># - looking for an installation ticket -#</span>
+        <span class="n">__local_ticket</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;install.tkc&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">__local_ticket</span><span class="p">):</span>
+            <span class="n">new_install</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">fail_string</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s2">Found no prior installations. Attempting to produce a fresh installation...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Read the data #</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">__local_ticket</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ticket_file</span><span class="p">:</span>
+                    <span class="n">ticket_info</span> <span class="o">=</span> <span class="n">SimpleNamespace</span><span class="p">(</span><span class="o">**</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ticket_file</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">fail_string</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s2">The ticket is not correctly formatted or is corrupted.&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">)</span>
+                <span class="n">new_install</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">done_string</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_install</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># ---------------------------------------------------------------------------------------------------------------- #</span>
+    <span class="c1">#  Installing     ================================================================================================ #</span>
+    <span class="c1"># ---------------------------------------------------------------------------------------------------------------- #</span>
+    <span class="k">if</span> <span class="n">new_install</span><span class="p">:</span>
+        <span class="c1"># - checking for validity</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> -l flag necessary for new installation...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fdbg_string</span><span class="p">,</span> <span class="n">fail_string</span><span class="p">))</span>
+            <span class="n">exit</span><span class="p">()</span>
+
+        <span class="n">yn</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Create a new installation? This will wipe existing data. (Y/n): &quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">yn</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Creating a new installation instance...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Exiting...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">)</span>
+            <span class="n">exit</span><span class="p">()</span>
+
+        <span class="c1"># - Managing directories -#</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Generating the core directories...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="n">generate_directories</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">done_string</span><span class="p">)</span>
+
+        <span class="c1"># - Creating configuration file -#</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Generating the configuration files...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
+
+        <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s2">Generating the base config...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;inst&quot;</span><span class="p">,</span> <span class="s2">&quot;cnfg&quot;</span><span class="p">,</span> <span class="s2">&quot;install_CONFIG.config&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">base_config</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="c1"># - Changing necessary directories -#</span>
+        <span class="n">base_config</span> <span class="o">=</span> <span class="n">set_directories_in_config</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="n">base_config</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span> <span class="s2">&quot;CONFIG.config&quot;</span><span class="p">),</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">base_config</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+        <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">done_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s2">Copying remaining configuration files to path...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;inst&quot;</span><span class="p">,</span> <span class="s2">&quot;cnfg&quot;</span><span class="p">)):</span>
+            <span class="c1"># - is the file a file or a directory -#</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;inst&quot;</span><span class="p">,</span> <span class="s2">&quot;cnfg&quot;</span><span class="p">,</span>
+                                           <span class="n">file</span><span class="p">))</span> <span class="ow">and</span> <span class="s2">&quot;.config&quot;</span> <span class="ow">in</span> <span class="n">file</span> <span class="ow">and</span> <span class="n">file</span> <span class="o">!=</span> <span class="s2">&quot;install_CONFIG.config&quot;</span><span class="p">:</span>
+                <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">Located configuration file </span><span class="si">%s</span><span class="s2">. Transferring data...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fdbg_string</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span>
+                              <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;inst&quot;</span><span class="p">,</span> <span class="s2">&quot;cnfg&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span>
+                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">location</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;install_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)))</span>
+                <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">done_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">done_string</span><span class="p">)</span>
+
+        <span class="c1"># - Generating the ticket -#</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Generating ticket...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">ticket_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;version&quot;</span>              <span class="p">:</span> <span class="n">get_system_info</span><span class="p">()</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+            <span class="s2">&quot;stable&quot;</span>               <span class="p">:</span> <span class="n">get_system_info</span><span class="p">()</span><span class="o">.</span><span class="n">stable</span><span class="p">,</span>
+            <span class="s2">&quot;installation_date&quot;</span>    <span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m-</span><span class="si">%d</span><span class="s1">-%Y_%H-%M-%S&#39;</span><span class="p">),</span>
+            <span class="s2">&quot;installation_location&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">location</span>
+        <span class="p">}</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;install.tkc&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ticket_info</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span><span class="bp">cls</span><span class="o">=</span><span class="n">NonStandardEncoder</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">done_string</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Installation Succeeded.&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">()</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
+        <span class="c1">#  Updating     ============================================================================================== #</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Updating installation...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">git</span><span class="p">:</span>
+            <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s2">Fetching update from git.&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;git fetch --all&quot;</span><span class="p">)</span>  <span class="c1"># Fetch all the updates.</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;git reset --hard origin/master&quot;</span><span class="p">)</span>  <span class="c1"># Resetting the system</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">done_string</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s2">Updating from local. Use -g flag to update from remote repo.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fdbg_string</span><span class="p">),</span>
+                          <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">done_string</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Generating directories...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">)</span>
+        <span class="n">generate_directories</span><span class="p">(</span><span class="n">ticket_info</span><span class="o">.</span><span class="n">installation_location</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">done_string</span><span class="p">)</span>
+
+        <span class="c1"># - Updating Configuration files -#</span>
+        <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">%s</span><span class="s2">Generating the base config...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;inst&quot;</span><span class="p">,</span> <span class="s2">&quot;cnfg&quot;</span><span class="p">,</span> <span class="s2">&quot;install_CONFIG.config&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">base_config</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="c1"># - Changing necessary directories -#</span>
+        <span class="n">base_config</span> <span class="o">=</span> <span class="n">set_directories_in_config</span><span class="p">(</span><span class="n">ticket_info</span><span class="o">.</span><span class="n">installation_location</span><span class="p">,</span> <span class="n">base_config</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ticket_info</span><span class="o">.</span><span class="n">installation_location</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span> <span class="s2">&quot;CONFIG.config&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">local_config</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+            <span class="n">local_config_update</span> <span class="o">=</span> <span class="n">update_dict</span><span class="p">(</span><span class="n">base_config</span><span class="p">,</span> <span class="n">local_config</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ticket_info</span><span class="o">.</span><span class="n">installation_location</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span> <span class="s2">&quot;CONFIG.config&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">local_config_update</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+        <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">done_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;inst&quot;</span><span class="p">,</span> <span class="s2">&quot;cnfg&quot;</span><span class="p">)):</span>
+            <span class="c1"># - is the file a file or a directory -#</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;inst&quot;</span><span class="p">,</span> <span class="s2">&quot;cnfg&quot;</span><span class="p">,</span>
+                                           <span class="n">file</span><span class="p">))</span> <span class="ow">and</span> <span class="s2">&quot;.config&quot;</span> <span class="ow">in</span> <span class="n">file</span> <span class="ow">and</span> <span class="n">file</span> <span class="o">!=</span> <span class="s2">&quot;install_CONFIG.config&quot;</span><span class="p">:</span>
+                <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">Located configuration file </span><span class="si">%s</span><span class="s2">. Updating...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fdbg_string</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span>
+                              <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ticket_info</span><span class="o">.</span><span class="n">installation_location</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span>
+                                                   <span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;install_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))):</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;inst&quot;</span><span class="p">,</span> <span class="s2">&quot;cnfg&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span>
+                                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ticket_info</span><span class="o">.</span><span class="n">installation_location</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span>
+                                                 <span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;install_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># - the path does exist -#</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ticket_info</span><span class="o">.</span><span class="n">installation_location</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span>
+                                           <span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;install_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">local_dict</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;inst&quot;</span><span class="p">,</span> <span class="s2">&quot;cnfg&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">master_dict</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+                    <span class="n">updated_dict</span> <span class="o">=</span> <span class="n">update_dict</span><span class="p">(</span><span class="n">master_dict</span><span class="p">,</span> <span class="n">local_dict</span><span class="p">)</span>
+
+                    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ticket_info</span><span class="o">.</span><span class="n">installation_location</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span>
+                                           <span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;install_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)),</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="n">t</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">updated_dict</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+                <span class="n">print_verbose</span><span class="p">(</span><span class="n">done_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;inst&quot;</span><span class="p">,</span> <span class="s2">&quot;cnfg&quot;</span><span class="p">,</span>
+                                             <span class="n">file</span><span class="p">))</span> <span class="ow">and</span> <span class="s2">&quot;.json&quot;</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">print_verbose</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t\t</span><span class="si">%s</span><span class="s2">Copying </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">fdbg_string</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;inst&quot;</span><span class="p">,</span> <span class="s2">&quot;cnfg&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span>
+                                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ticket_info</span><span class="o">.</span><span class="n">installation_location</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span>
+                                             <span class="n">file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;install_&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)))</span>
+                <span class="n">print_verbose</span><span class="p">(</span><span class="n">done_string</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="c1"># - Generating the ticket -#</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Generating ticket...&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="n">ticket_info</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;version&quot;</span>              <span class="p">:</span> <span class="n">get_system_info</span><span class="p">()</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+            <span class="s2">&quot;stable&quot;</span>               <span class="p">:</span> <span class="n">get_system_info</span><span class="p">()</span><span class="o">.</span><span class="n">stable</span><span class="p">,</span>
+            <span class="s2">&quot;installation_date&quot;</span>    <span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m-</span><span class="si">%d</span><span class="s1">-%Y_%H-%M-%S&#39;</span><span class="p">),</span>
+            <span class="s2">&quot;installation_location&quot;</span><span class="p">:</span> <span class="n">ticket_info</span><span class="o">.</span><span class="n">installation_location</span>
+        <span class="p">}</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;install.tkc&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ticket_info</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span><span class="bp">cls</span><span class="o">=</span><span class="n">NonStandardEncoder</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">done_string</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">Installation Succeeded.&quot;</span> <span class="o">%</span> <span class="n">fdbg_string</span><span class="p">)</span>
+        <span class="n">exit</span><span class="p">()</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+                <footer class="bd-footer-article">
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div></div>
+  
+</div>
+
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Eliza C. Diggins.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.3.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
