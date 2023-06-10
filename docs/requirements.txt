@@ -3,6 +3,7 @@ docutils<0.20,>=0.18.1
 sphinxcontrib-htmlhelp>=2.0.0
 sphinx-copybutton
 sphinx-prompt
+sphinx-git
 sphinxcontrib-applehelp
 sphinxcontrib-blockdiag
 sphinxcontrib-devhelp
