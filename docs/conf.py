@@ -32,7 +32,6 @@ extensions = [
     "myst_parser",
     'sphinx.ext.mathjax',
     "sphinx_copybutton",
-    "sphinx-prompt",
     "sphinxcontrib.blockdiag",
     "sphinxcontrib.mermaid"
     ]
