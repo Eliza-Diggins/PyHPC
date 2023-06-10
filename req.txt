@@ -29,7 +29,6 @@ PyJWT==1.7.1
 pylint
 sphinx
 sphinx-copybutton
-sphinx-git
 sphinx-prompt
 sphinxcontrib-applehelp
 sphinxcontrib-blockdiag

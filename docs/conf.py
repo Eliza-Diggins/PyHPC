@@ -33,7 +33,6 @@ extensions = [
     'sphinx.ext.mathjax',
     "sphinx_copybutton",
     "sphinx-prompt",
-    "sphinx_git",
     "sphinxcontrib.blockdiag",
     "sphinxcontrib.mermaid"
     ]
