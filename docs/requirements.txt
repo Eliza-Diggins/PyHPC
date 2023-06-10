@@ -23,11 +23,11 @@ yt==4.1.4
 alabaster==0.7.13
 blockdiag==3.0.0
 myst-parser
-pydata-sphinx-theme==0.13.3
+pydata-sphinx-theme
 Pygments==2.14.0
 PyJWT==1.7.1
 pylint==2.4.4
-sphinx==7.0.1
+sphinx
 sphinx-copybutton
 sphinx-git
 sphinx-prompt
