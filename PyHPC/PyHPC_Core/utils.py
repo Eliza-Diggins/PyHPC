@@ -122,30 +122,6 @@ def write_ini(dictionary, file):
 
     _recur(dictionary, file)
 
-# -------------------------------------------------------------------------------------------------------------------- #
-# Analysis Directives ================================================================================================ #
-# -------------------------------------------------------------------------------------------------------------------- #
-def directive(function,directive):
-    """
-    Directive is a special function in ``PyHPC``, which is used to direct the code towards to correct version of a
-    command depending on the intended software to use. In this case, we use it to differentiate between ``pynbody`` usage
-    and ``yt`` usage. This allows us to develop software for both and easily tell the system which directive to use
-    at any given stage of the execution.
-
-    Parameters
-    ----------
-    function: callable
-        The function that needs to be redirected towards the correct
-    directive
-
-    Returns
-    -------
-
-    """
-    try:
-        return sys.modules[function.__module__].__dict__[function.__name__+"_"+directive]
-    except KeyError:
-        return function
 
 
 if __name__ == '__main__':

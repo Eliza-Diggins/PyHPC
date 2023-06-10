@@ -128,6 +128,31 @@ At this stage, the software will generate all of the necessary data to execute t
 selected to use slurm (by not using the ``-nb`` flag), then you will be directed to configure slurm as usual. Otherwise,
 execution will begin immediately.
 
+**Clustep Diagram**
+
+.. mermaid::
+
+    flowchart TD
+    A[Component Configuration] -- Add Components<br/>Change Settings --> A;
+    A --Setup Finished --> B[IC Report]
+    B --Particle mass normalization --> B
+    B --> C[Select IC Name]
+    C --> D[Add IC to Simulation Log]
+    D -- Already Exists --> E[Ask permission to overwrite]
+    D -- Doesn't exist --> F["Proceed to processing"]
+    E --> F
+    F -- ``-nb`` used --> G[.sh ccript written]
+    F -- ``-nb`` not used --> H[.slurm script written]
+    H -- ``-s`` used --> Z["Finish"]
+    H -- ``-s`` not used --> I[Add to queue.]
+    I --> Z
+    G -- Execute Script --> Z
+    J["Clustep Execution"] --> K[Count Components -C-]
+    K --> L[Generate Component initial condition <br/>in -temp_dir- as -Cluster_n.ini-.]
+    L -- Loop over all components --> L
+    L -- All components generated in temp file <br/>now preparing to conjoin them --> M[Compute necessary positions]
+    M -- Generate sequential final outputs --> N[Move final output to chosen directory] --> O["END"]
+
 """
 import json
 import os

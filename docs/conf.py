@@ -27,6 +27,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
     'sphinx.ext.viewcode',
+    'sphinx.ext.todo',
     'sphinx.ext.napoleon',
     "myst_parser",
     'sphinx.ext.mathjax',
@@ -34,6 +35,7 @@ extensions = [
     "sphinx-prompt",
     "sphinx_git",
     "sphinxcontrib.blockdiag",
+    "sphinxcontrib.mermaid"
     ]
 
 

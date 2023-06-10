@@ -16,6 +16,7 @@
       :template: modules.rst
       :recursive:
    
+      PyHPC_executables.ic_report
       PyHPC_executables.run_ic_gen
       PyHPC_executables.run_ramses
    

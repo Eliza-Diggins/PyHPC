@@ -1,6 +1,30 @@
 """
-Generates an initial conditions report for an initial condition that has been generated
-previously.
+=========================
+Initial Condition Reports
+=========================
+
+Once the initial conditions are generated, there are many cases in which it is prudent to obtain a report on the
+initial conditions to make sure that there have been no errors in the generation process and that your specifications
+are, in fact, those that suit your needs.
+
+To run an initial condition report, one simply needs to run
+
+>>> python3 ic-report
+    ic_report.py [-h] [-l {pynbody,yt}] [-o OUTPUT] [--simulation_log SIMULATION_LOG] ic
+    positional arguments:
+      ic                    Name of initial condition or path to the file.
+    optional arguments:
+      -h, --help            show this help message and exit
+      -o OUTPUT, --output OUTPUT
+                            The output location for the report.
+      --simulation_log SIMULATION_LOG
+                            A [PATH] to a simulation logger if desired.
+
+.. warning::
+    If the ``-o`` flag is not used, the report will appear in the current working directory.
+
+.. todo::
+    Not yet implemented.
 """
 
 import argparse
@@ -69,7 +93,6 @@ if __name__ == '__main__':
     # - Adding arguments to the argument parser
     argparser.add_argument("ic", type=str, help="Name of initial condition or path to the file.",
                            default=None)
-    argparser.add_argument("-l","--loader",type=str,help="The preferred loader and visualizer.",choices=["pynbody","yt"],default="pynbody")
     argparser.add_argument("-o","--output",type=str,help="The output location for the report.",default=None)
     argparser.add_argument("--simulation_log", type=str, help="A [PATH] to a simulation logger if desired.", default=None)
     # - parsing
@@ -129,6 +152,7 @@ if __name__ == '__main__':
 
     printer.print(done_string)
 
-# -------------------------------------------------------------------------------------------------------------------- #
-# Imaging ============================================================================================================ #
-# -------------------------------------------------------------------------------------------------------------------- #
+    # -------------------------------------------------------------------------------------------------------------------- #
+    # Imaging ============================================================================================================ #
+    # -------------------------------------------------------------------------------------------------------------------- #
+    pass

@@ -19,6 +19,7 @@
       PyHPC.PyHPC_Core
       PyHPC.PyHPC_System
       PyHPC.PyHPC_Utils
+      PyHPC.PyHPC_Visualization
       PyHPC.PyHPC_unittests
       PyHPC.setup
    

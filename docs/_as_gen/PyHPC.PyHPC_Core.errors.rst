@@ -1,4 +1,4 @@
-PyHPC.PyHPC_Core.errors
+﻿PyHPC.PyHPC_Core.errors
 =======================
 
 .. automodule:: PyHPC.PyHPC_Core.errors
@@ -21,6 +21,7 @@ PyHPC.PyHPC_Core.errors
 
    .. autosummary::
    
+      ExecutionError
       PyHPC_Error
       Text_Error
    

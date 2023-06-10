@@ -40,11 +40,13 @@
     <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/clipboard.min.js"></script>
     <script src="../_static/copybutton.js"></script>
+    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_as_gen/PyHPC_executables.run_ic_gen';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="PyHPC_executables.run_ramses" href="PyHPC_executables.run_ramses.html" />
-    <link rel="prev" title="PyHPC_executables" href="PyHPC_executables.html" />
+    <link rel="prev" title="PyHPC_executables.ic_report" href="PyHPC_executables.ic_report.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -358,14 +360,18 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.PyHPC_unittests.html">PyHPC.PyHPC_unittests</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.html">PyHPC.PyHPC_unittests.standard_tests</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.PyHPC_Visualization.html">PyHPC.PyHPC_Visualization</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="PyHPC.PyHPC_Visualization.image.html">PyHPC.PyHPC_Visualization.image</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.PyHPC_unittests.html">PyHPC.PyHPC_unittests</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.html">PyHPC.PyHPC_unittests.standard_tests</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.html">PyHPC.PyHPC_unittests.standard_tests.TestCore</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.setup.html">PyHPC.setup</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.setup.html">PyHPC.setup</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.generate_directories.html">PyHPC.setup.generate_directories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.print_title.html">PyHPC.setup.print_title</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.print_verbose.html">PyHPC.setup.print_verbose</a></li>
@@ -377,7 +383,8 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="PyHPC_executables.html">PyHPC_executables</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="PyHPC_executables.html">PyHPC_executables</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PyHPC_executables.ic_report.html">PyHPC_executables.ic_report</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">PyHPC_executables.run_ic_gen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PyHPC_executables.run_ramses.html">PyHPC_executables.run_ramses</a></li>
 </ul>
@@ -561,7 +568,29 @@ all components.</p>
 <p>At this stage, the software will generate all of the necessary data to execute the construction process. If you have
 selected to use slurm (by not using the <code class="docutils literal notranslate"><span class="pre">-nb</span></code> flag), then you will be directed to configure slurm as usual. Otherwise,
 execution will begin immediately.</p>
-</section>
+<p><strong>Clustep Diagram</strong></p>
+<div class="mermaid">
+            flowchart TD
+A[Component Configuration] -- Add Components&lt;br/&gt;Change Settings --&gt; A;
+A --Setup Finished --&gt; B[IC Report]
+B --Particle mass normalization --&gt; B
+B --&gt; C[Select IC Name]
+C --&gt; D[Add IC to Simulation Log]
+D -- Already Exists --&gt; E[Ask permission to overwrite]
+D -- Doesn't exist --&gt; F[&quot;Proceed to processing&quot;]
+E --&gt; F
+F -- ``-nb`` used --&gt; G[.sh ccript written]
+F -- ``-nb`` not used --&gt; H[.slurm script written]
+H -- ``-s`` used --&gt; Z[&quot;Finish&quot;]
+H -- ``-s`` not used --&gt; I[Add to queue.]
+I --&gt; Z
+G -- Execute Script --&gt; Z
+J[&quot;Clustep Execution&quot;] --&gt; K[Count Components -C-]
+K --&gt; L[Generate Component initial condition &lt;br/&gt;in -temp_dir- as -Cluster_n.ini-.]
+L -- Loop over all components --&gt; L
+L -- All components generated in temp file &lt;br/&gt;now preparing to conjoin them --&gt; M[Compute necessary positions]
+M -- Generate sequential final outputs --&gt; N[Move final output to chosen directory] --&gt; O[&quot;END&quot;]
+        </div></section>
 </section>
 </section>
 
@@ -577,12 +606,12 @@ execution will begin immediately.</p>
     <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="PyHPC_executables.html"
+       href="PyHPC_executables.ic_report.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">PyHPC_executables</p>
+        <p class="prev-next-title">PyHPC_executables.ic_report</p>
       </div>
     </a>
     <a class="right-next"
