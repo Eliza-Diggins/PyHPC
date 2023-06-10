@@ -1,5 +1,4 @@
 # Project exclude paths
 /PyHPC/bin/local/
 /PyHPC/bin/.tmp/
-/docs/_as_gen/
 /docs/_build/
