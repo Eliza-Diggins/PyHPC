@@ -18,7 +18,7 @@ setenv MSG "%(fdbg)s"
 
 setenv PYTHON %(python_exec)s
 setenv SNAPGADGET %(snapgadget)s
-$PYTHON_MODULE_SCRIPT # Loading python if needed
+
 
 
 #----------------------------------------------------#
