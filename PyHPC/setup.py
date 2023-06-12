@@ -52,7 +52,7 @@ from types import SimpleNamespace
 
 import tomlkit as t
 from colorama import Fore, Style
-
+import pathlib as pt
 from PyHPC_Core.utils import get_system_info,NonStandardEncoder
 
 
@@ -325,6 +325,9 @@ if __name__ == '__main__':
             "installation_date"    : datetime.now().strftime('%m-%d-%Y_%H-%M-%S'),
             "installation_location": args.location
         }
+
+        if not os.path.exists(os.path.join(__root_path,"bin","local")):
+            pt.Path(os.path.join(__root_path,"bin","local")).mkdir(parents=True)
 
         with open(os.path.join(__root_path, "bin", "local", "install.tkc"), "w") as file:
             json.dump(ticket_info, file,cls=NonStandardEncoder)

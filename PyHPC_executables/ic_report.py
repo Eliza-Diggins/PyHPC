@@ -22,9 +22,6 @@ To run an initial condition report, one simply needs to run
 
 .. warning::
     If the ``-o`` flag is not used, the report will appear in the current working directory.
-
-.. todo::
-    Not yet implemented.
 """
 
 import argparse
@@ -35,6 +32,8 @@ import sys
 import warnings
 from datetime import datetime
 from time import sleep
+import yt
+import matplotlib.pyplot as plt
 
 import toml
 from colorama import Fore, Style
@@ -94,6 +93,7 @@ if __name__ == '__main__':
     argparser.add_argument("ic", type=str, help="Name of initial condition or path to the file.",
                            default=None)
     argparser.add_argument("-o","--output",type=str,help="The output location for the report.",default=None)
+    argparser.add_argument("-c","--cmap",type=str,help="The colormap to use in the output plot.",default="inferno")
     argparser.add_argument("--simulation_log", type=str, help="A [PATH] to a simulation logger if desired.", default=None)
     # - parsing
     user_arguments = argparser.parse_args()
@@ -142,7 +142,7 @@ if __name__ == '__main__':
     # ----------------------------------------------------------------------------------------------------------------- #
     printer.print("%sGenerating the output directories..."%fdbg_string,end="")
     if not user_arguments.output:
-        output_directory = pt.Path(os.path.join(os.getcwd(),"Report_%s_%s"%(user_arguments.ic,datetime.now().strftime('%m-%d-%Y_%H-%M-%S'))))
+        output_directory = pt.Path(os.path.join(os.getcwd(),"Report_%s_%s"%(pt.Path(user_arguments.ic).name,datetime.now().strftime('%m-%d-%Y_%H-%M-%S'))))
     else:
         output_directory = pt.Path(user_arguments.output)
 
@@ -155,4 +155,13 @@ if __name__ == '__main__':
     # -------------------------------------------------------------------------------------------------------------------- #
     # Imaging ============================================================================================================ #
     # -------------------------------------------------------------------------------------------------------------------- #
-    pass
+    printer.print("%sGenerating the primary image..."%fdbg_string)
+
+    ds = yt.load(user_arguments.ic)
+    ds.index
+    ad = ds.all_data()
+
+    pz = yt.ParticlePlot(ds,("all","particle_position_x"),("all","particle_position_y"),("all","particle_mass"),depth=(1000,"kpc"))
+    pz.set_cmap("all",user_arguments.cmap)
+    pz.save(os.path.join(output_directory,"image.png"))
+
