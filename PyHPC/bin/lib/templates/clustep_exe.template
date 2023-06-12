@@ -13,7 +13,9 @@
 # Managing modules ==================================#
 #----------------------------------------------------#
 setenv MSG "%(fdbg)s"
-setenv PYTHON_MODULE_SCRIPT %(python_env_script)s
+
+%(python_env_script)s
+
 setenv PYTHON %(python_exec)s
 setenv SNAPGADGET %(snapgadget)s
 $PYTHON_MODULE_SCRIPT # Loading python if needed

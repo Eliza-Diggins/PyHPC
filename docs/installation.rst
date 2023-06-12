@@ -22,6 +22,7 @@ Installation
 Once the source code is obtained, setup is quite simple. From within the ``./PyHPC`` directory
 of the source code, run the following command:
 
->>> python3 setup.py
+>>> python3 setup.py -l <user_directory>
 
+where ``user_directory`` is the directory in which all of the datasets will be kept.
 This will initialize the startup system. You may follow the prompts to successfully complete the setup process.
