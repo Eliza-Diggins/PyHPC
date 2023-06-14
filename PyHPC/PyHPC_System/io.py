@@ -122,7 +122,8 @@ def write_slurm_file(command_string, slurm_config=None, name=None, **kwargs):
 
     #  Writing the slurm file
     # ----------------------------------------------------------------------------------------------------------------- #
-    filename = "%s.SLURM" % name
+    date = datetime.now().strftime('%m-%d_%H-%M')
+    filename = "%s.SLURM" % (name)
     slurm_script = ""
     # - Adding the batch settings -#
     for setting, value in slurm_config["Settings"].items():
