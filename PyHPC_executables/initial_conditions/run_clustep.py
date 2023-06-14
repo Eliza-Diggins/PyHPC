@@ -343,7 +343,7 @@ if __name__ == '__main__':
 
         os.system('cls' if os.name == 'nt' else 'clear')
         printer.reprint()
-        os.system((os.path.join(_temporary_directory, "exec.sh")))
+        os.system((os.path.join(_temporary_directory, "exec.sh"))+" &")
 
         simlog.ics[str(ic_name)].log(
             "ran exec.sh in %s." % (os.path.join(_temporary_directory)),
