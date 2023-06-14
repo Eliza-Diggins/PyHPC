@@ -16,10 +16,13 @@
 #----------------------------------------------------#
 # Managing modules ==================================#
 #----------------------------------------------------#
-setenv PYTHON_MODULE_SCRIPT %(python_env_script)s
+
+$(python_env_script)s
+
+
 setenv PYTHON %(python_exec)s
 setenv SNAPGADGET %(snapgadget)s
-$PYTHON_MODULE_SCRIPT # Loading python if needed
+
 ml parallel
 
 #----------------------------------------------------#
@@ -71,11 +74,11 @@ echo "Generating the components..."
 #------------------------------------------------------#
 setenv OMP_NUM_THREADS 1
 setenv SRUN "srun --nodes 1 --ntasks 1"
-setenv PARALLEL "parallel --max-procs $SLURM_NTASKS --joblog 'parallel_'"$SLURM_OUTPUT"
+setenv PARALLEL "parallel --max-procs $SLURM_NTASKS --joblog 'parallel_'$SLURM_OUTPUT"
 
 $PARALLEL $SRUN $PYTHON "clustep.py" -i "$TEMP_DIR/{1}" -o "$SUB_OUTPUT_DIR/`echo {1} | sed 's|.ini||g'`.dat" :::: $TEMP_DIR/exec.txt
 
-echo "Finished"
+echo "[Finished]"
 
 #------------------------------------------------------#
 # Managing the snapgadget region ===================== #
@@ -96,7 +99,11 @@ endif
 #------------------------------------------------------#
 # Clearing the temp file ============================= #
 #------------------------------------------------------#
-rm -r $TEMP_DIR
+echo "$MSG Deleting temporary files..."
+cd $TEMP_DIR
+cd ../..
+./clear_temp.sh $TEMP_DIR &
+echo "$MSG[FINISHED]"
 
 
 

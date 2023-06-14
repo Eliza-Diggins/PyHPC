@@ -93,7 +93,7 @@ endif
 echo "$MSG Deleting temporary files..."
 cd $TEMP_DIR
 cd ../..
-./clear_temp.sh &
+./clear_temp.sh $TEMP_DIR &
 echo "$MSG[FINISHED]"
 
 
