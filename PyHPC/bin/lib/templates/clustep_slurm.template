@@ -65,7 +65,7 @@ echo "working directory = $WORK_DIR"
 #------------------------------------------------------#
 
 ls "$TEMP_DIR" | grep ".ini" > "$TEMP_DIR/exec.txt"
-
+sed s'|.ini|.dat|g' "$TEMP_DIR/exec.txt" > "$TEMP_DIR/exec2.txt"
 cd "$WORK_DIR"
 
 echo "Generating the components..."
@@ -76,7 +76,9 @@ echo "Generating the components..."
 setenv OMP_NUM_THREADS 1
 setenv SRUN "srun --exclusive --ntasks 1"
 
-parallel --max-procs "$SLURM_NTASKS" --joblog "$SLURM_OUTPUT" "$SRUN $PYTHON clustep.py -i $TEMP_DIR/{} -o $SUB_OUTPUT_DIR/`echo {} | sed 's|.ini||g'`.dat" :::: $TEMP_DIR/exec.txt
+echo "Generating the executable"
+
+parallel --link --max-procs "$SLURM_NTASKS" --joblog "$SLURM_OUTPUT"  "$SRUN $PYTHON clustep.py -i $TEMP_DIR/{1} -o $SUB_OUTPUT_DIR/{2}" :::: $TEMP_DIR/exec.txt :::: $TEMP_DIR/exec2.txt
 
 echo "[Finished]"
 
