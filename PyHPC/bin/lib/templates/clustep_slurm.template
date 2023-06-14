@@ -74,10 +74,9 @@ echo "Generating the components..."
 # Preparing to Parallelize =========================== #
 #------------------------------------------------------#
 setenv OMP_NUM_THREADS 1
-setenv SRUN "srun --nodes 1 --ntasks 1"
-setenv PARALLEL "parallel --max-procs $SLURM_NTASKS --joblog $SLURM_OUTPUT"
+setenv SRUN "srun --exclusive --ntasks 1"
 
-$PARALLEL $SRUN $PYTHON "clustep.py" -i "$TEMP_DIR/{1}" -o "$SUB_OUTPUT_DIR/`echo {1} | sed 's|.ini||g'`.dat" :::: $TEMP_DIR/exec.txt
+parallel --max-procs "$SLURM_NTASKS" --joblog "$SLURM_OUTPUT" "$SRUN $PYTHON clustep.py -i $TEMP_DIR/{1} -o $SUB_OUTPUT_DIR/`echo {1} | sed 's|.ini||g'`.dat" :::: $TEMP_DIR/exec.txt
 
 echo "[Finished]"
 
