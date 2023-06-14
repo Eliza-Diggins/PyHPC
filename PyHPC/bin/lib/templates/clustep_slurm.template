@@ -57,6 +57,7 @@ endif
 setenv TEMP_DIR "%(temp_dir)s"
 setenv WORK_DIR "%(working_directory)s"
 setenv OUTPUT_NAME "%(output_name)s"
+setenv SLURM_OUTPUT "%(slurm_out)s"
 echo "working directory = $WORK_DIR"
 
 #------------------------------------------------------#
@@ -74,7 +75,7 @@ echo "Generating the components..."
 #------------------------------------------------------#
 setenv OMP_NUM_THREADS 1
 setenv SRUN "srun --nodes 1 --ntasks 1"
-setenv PARALLEL "parallel --max-procs $SLURM_NTASKS --joblog 'parallel_'$SLURM_OUTPUT"
+setenv PARALLEL "parallel --max-procs $SLURM_NTASKS --joblog $SLURM_OUTPUT"
 
 $PARALLEL $SRUN $PYTHON "clustep.py" -i "$TEMP_DIR/{1}" -o "$SUB_OUTPUT_DIR/`echo {1} | sed 's|.ini||g'`.dat" :::: $TEMP_DIR/exec.txt
 
