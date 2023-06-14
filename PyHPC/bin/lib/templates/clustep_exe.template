@@ -90,8 +90,7 @@ endif
 #------------------------------------------------------#
 # Clearing the temp file ============================= #
 #------------------------------------------------------#
-rm -rf $TEMP_DIR/*
-rm -r $TEMP_DIR
+$PYTHON -c "import shutil; shutil.rmtree('$TEMP_DIR')"
 echo "$MSG[FINISHED]"
 
 
