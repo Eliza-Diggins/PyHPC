@@ -363,7 +363,7 @@ if __name__ == '__main__':
                 "temp_dir"         : str(_temporary_directory),
                 "working_directory": CONFIG["System"]["Executables"]["clustep_executable_directory"],
                 "output_name"      : str(ic_name),
-                "slurm_out"        : os.path.join(CONFIG["System"]["Directories"]["reports_directory"]["slurm_outputs"],slurm_output,"parallel.log"),
+                "slurm_out"        : os.path.join(CONFIG["System"]["Directories"]["reports_directory"],"slurm_outputs",slurm_output,"parallel.log"),
                 "snapgadget"       : os.path.join(CONFIG["System"]["Modules"]["snapgadget_dir"], "snapjoin.py")
             })
         printer.print(done_string)
