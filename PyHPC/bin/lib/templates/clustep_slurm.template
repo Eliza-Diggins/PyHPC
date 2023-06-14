@@ -98,7 +98,7 @@ endif
 #------------------------------------------------------#
 # Clearing the temp file ============================= #
 #------------------------------------------------------#
-echo "$MSG Deleting temporary files..."
+echo "Deleting temporary files..."
 cd $TEMP_DIR
 cd ../..
 ./clear_temp.sh $TEMP_DIR &
