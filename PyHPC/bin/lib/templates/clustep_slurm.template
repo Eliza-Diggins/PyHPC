@@ -91,7 +91,7 @@ else
     echo "Finished generating the necessary .dat files. Combining..."
 
   foreach v (`cat $TEMP_DIR/snapgadget_directive.txt`)
-    $PYTHON "$SNAPGADGET `echo $v | sed 's|+| |g' `"
+    $PYTHON "$SNAPGADGET" `echo $v | sed 's|+| |g' `
   end
 
   mv "$SUB_OUTPUT_DIR/temp.dat" "$OUTPUT_NAME"
