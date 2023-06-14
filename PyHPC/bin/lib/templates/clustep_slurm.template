@@ -17,7 +17,7 @@
 # Managing modules ==================================#
 #----------------------------------------------------#
 
-$(python_env_script)s
+%(python_env_script)s
 
 
 setenv PYTHON %(python_exec)s

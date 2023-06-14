@@ -378,7 +378,7 @@ if __name__ == '__main__':
 
         if not user_arguments.stop:
             printer.print("%sAdding the job to the SLURM queue..." % fdbg_string, end="")
-            os.system("sbatch %s" % slurm_path)
+            os.system("sbatch %s" % slurm_path+".SLURM")
             simlog.ics[str(ic_name)].log(
                 "ran %s" % slurm_path,
                 "RAN-SLURM", slurm=True)
