@@ -76,7 +76,7 @@ echo "Generating the components..."
 setenv OMP_NUM_THREADS 1
 setenv SRUN "srun --exclusive --ntasks 1"
 
-parallel --max-procs "$SLURM_NTASKS" --joblog "$SLURM_OUTPUT" "$SRUN $PYTHON clustep.py -i $TEMP_DIR/{1} -o $SUB_OUTPUT_DIR/`echo {1} | sed 's|.ini||g'`.dat" :::: $TEMP_DIR/exec.txt
+parallel --max-procs "$SLURM_NTASKS" --joblog "$SLURM_OUTPUT" "$SRUN $PYTHON clustep.py -i $TEMP_DIR/{} -o $SUB_OUTPUT_DIR/`echo {} | sed 's|.ini||g'`.dat" :::: $TEMP_DIR/exec.txt
 
 echo "[Finished]"
 
