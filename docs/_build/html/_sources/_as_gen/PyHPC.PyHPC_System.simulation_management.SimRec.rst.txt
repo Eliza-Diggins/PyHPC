@@ -1,4 +1,4 @@
-PyHPC.PyHPC_System.simulation_management.SimRec
+﻿PyHPC.PyHPC_System.simulation_management.SimRec
 ===============================================
 
 .. currentmodule:: PyHPC.PyHPC_System.simulation_management
@@ -15,6 +15,7 @@ PyHPC.PyHPC_System.simulation_management.SimRec
       :recursive:
    
       ~SimRec.__init__
+      ~SimRec.add
       ~SimRec.log
       ~SimRec.save
    

@@ -134,7 +134,7 @@
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../installation.html">
-                        <no title>
+                        PyHPC Installation
                       </a>
                     </li>
                 
@@ -227,7 +227,7 @@ document.write(`
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../installation.html">
-                        <no title>
+                        PyHPC Installation
                       </a>
                     </li>
                 
@@ -369,7 +369,7 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">tomlkit</span> <span class="k">as</span> <span class="nn">t</span>
 <span class="kn">from</span> <span class="nn">colorama</span> <span class="kn">import</span> <span class="n">Fore</span><span class="p">,</span> <span class="n">Style</span>
-
+<span class="kn">import</span> <span class="nn">pathlib</span> <span class="k">as</span> <span class="nn">pt</span>
 <span class="kn">from</span> <span class="nn">PyHPC_Core.utils</span> <span class="kn">import</span> <span class="n">get_system_info</span><span class="p">,</span><span class="n">NonStandardEncoder</span>
 
 
@@ -642,6 +642,9 @@ document.write(`
             <span class="s2">&quot;installation_date&quot;</span>    <span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m-</span><span class="si">%d</span><span class="s1">-%Y_%H-%M-%S&#39;</span><span class="p">),</span>
             <span class="s2">&quot;installation_location&quot;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">location</span>
         <span class="p">}</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span><span class="s2">&quot;bin&quot;</span><span class="p">,</span><span class="s2">&quot;local&quot;</span><span class="p">)):</span>
+            <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span><span class="s2">&quot;bin&quot;</span><span class="p">,</span><span class="s2">&quot;local&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">__root_path</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="s2">&quot;install.tkc&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">ticket_info</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span><span class="bp">cls</span><span class="o">=</span><span class="n">NonStandardEncoder</span><span class="p">)</span>

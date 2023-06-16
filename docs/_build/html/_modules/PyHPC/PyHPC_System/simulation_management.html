@@ -134,7 +134,7 @@
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../installation.html">
-                        <no title>
+                        PyHPC Installation
                       </a>
                     </li>
                 
@@ -227,7 +227,7 @@ document.write(`
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../installation.html">
-                        <no title>
+                        PyHPC Installation
                       </a>
                     </li>
                 
@@ -1342,8 +1342,99 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SimRec.save"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.save.html#PyHPC.PyHPC_System.simulation_management.SimRec.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="SimRec.add"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.add.html#PyHPC.PyHPC_System.simulation_management.SimRec.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds the data contained in ``entries`` to the ``SimRec`` object&#39;s ``outputs`` dictionary.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        entries : list of dict</span>
+<span class="sd">            The entries to add to the ``SimRec``. These should have the following format:</span>
+
+<span class="sd">            .. code-block:: json</span>
+<span class="sd">                {</span>
+<span class="sd">                &quot;&lt;Output Directory 1&gt; : {</span>
+<span class="sd">                    &quot;information&quot;: &quot;&lt;some information&gt;&quot;,</span>
+<span class="sd">                    &quot;meta&quot;: {</span>
+<span class="sd">                        &quot;dateCreated&quot; : &quot;&quot;,</span>
+<span class="sd">                        &quot;hasRun&quot; : true,</span>
+<span class="sd">                        }</span>
+<span class="sd">                    }</span>
+<span class="sd">                }</span>
+
+<span class="sd">        auto_save : bool</span>
+<span class="sd">            ``True`` will cause the object to autosave.</span>
+<span class="sd">        force : bool</span>
+<span class="sd">            If ``True``, will force the addition even if it comes back with an addition structure failure.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#  Debugging</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
+        <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">entries</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
+
+        <span class="c1">#  Checking structure</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
+
+            <span class="c1"># - Loading the structure information -#</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">_structure_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">struc_file</span><span class="p">:</span>
+                    <span class="n">_struct</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">struc_file</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                <span class="n">modlog</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to locate the simulation log structure file at </span><span class="si">%s</span><span class="s2">. Check installation.&quot;</span> <span class="o">%</span> <span class="n">_structure_file</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">PyHPC_Error</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to locate the simulation log structure file at </span><span class="si">%s</span><span class="s2">. Check installation.&quot;</span> <span class="o">%</span> <span class="n">_structure_file</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecoder</span><span class="p">:</span>
+                <span class="n">modlog</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to parse the simulation log structure file at </span><span class="si">%s</span><span class="s2">. Check installation.&quot;</span> <span class="o">%</span> <span class="n">_structure_file</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">PyHPC_Error</span><span class="p">(</span>
+                    <span class="s2">&quot;Failed to parse the simulation log structure file at </span><span class="si">%s</span><span class="s2">. Check installation.&quot;</span> <span class="o">%</span> <span class="n">_structure_file</span><span class="p">)</span>
+
+            <span class="c1">#  Cleaning up the structure</span>
+            <span class="c1"># -------------------------------------------------------------------------------------------------------- #</span>
+            <span class="c1">##- Trying to add any issues -##</span>
+            <span class="n">generation_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m-</span><span class="si">%d</span><span class="s1">-%Y_%H-%M-%S&#39;</span><span class="p">)</span>
+            <span class="n">new_entries</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">entries</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">new</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+                <span class="c1"># - Adding necessary headers -#</span>
+                <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;information&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{}]):</span>
+                    <span class="k">if</span> <span class="n">header</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                        <span class="n">new</span><span class="p">[</span><span class="n">header</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
+
+                <span class="c1"># - Dealing with specialized items -#</span>
+                <span class="k">if</span> <span class="s2">&quot;dateCreated&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
+                    <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;dateCreated&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generation_time</span>
+                <span class="k">if</span> <span class="s2">&quot;isRun&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
+                    <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;isRun&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="n">new_entries</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span>
+            <span class="n">entries</span> <span class="o">=</span> <span class="n">new_entries</span>
+
+            <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">entries</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">check_dictionary_structure</span><span class="p">(</span><span class="n">_struct</span><span class="p">[</span><span class="s2">&quot;SimRec&quot;</span><span class="p">][</span><span class="s2">&quot;format&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span>
+                        <span class="s2">&quot;InitCon </span><span class="si">%s</span><span class="s2"> failed to add entry </span><span class="si">%s</span><span class="s2"> due to item </span><span class="si">%s</span><span class="s2"> which failed to match structure.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                            <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">entries</span><span class="p">,</span> <span class="n">item</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">modlog</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;parameter ``force`` was specified in execution of InitCon.add on </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
+
+        <span class="c1">#  Adding</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">entries</span><span class="p">}</span>
+
+        <span class="c1">#  Managing Saves</span>
+        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
+        <span class="k">if</span> <span class="n">auto_save</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div></div>
 
 <span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
 <span class="c1"># Sub Functions ====================================================================================================== #</span>

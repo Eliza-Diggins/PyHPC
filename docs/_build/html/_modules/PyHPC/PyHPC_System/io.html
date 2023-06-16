@@ -134,7 +134,7 @@
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../installation.html">
-                        <no title>
+                        PyHPC Installation
                       </a>
                     </li>
                 
@@ -227,7 +227,7 @@ document.write(`
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../installation.html">
-                        <no title>
+                        PyHPC Installation
                       </a>
                     </li>
                 
@@ -440,7 +440,7 @@ document.write(`
     <span class="c1">#  Writing the slurm file</span>
     <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
     <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m-</span><span class="si">%d</span><span class="s1">_%H-%M&#39;</span><span class="p">)</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">_</span><span class="si">%s</span><span class="s2">.SLURM&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.SLURM&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="n">slurm_script</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="c1"># - Adding the batch settings -#</span>
     <span class="k">for</span> <span class="n">setting</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">slurm_config</span><span class="p">[</span><span class="s2">&quot;Settings&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
