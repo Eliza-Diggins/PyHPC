@@ -7,10 +7,10 @@
 #----------------------------------------------------#
 # Managing modules ==================================#
 #----------------------------------------------------#
-echo "\[\033[0;32m\]Loading necessary packages...\[\033[0m\]"
+echo "\[\033[0;32m\]Loading necessary packages...\[\033[0m\] "
 ml purge > & /dev/null #- Remove all loaded modules
-ml %(open_mpi_package)s > & /dev/null #- loads the open mpi package.
 ml %(gcc_package)s > & /dev/null #- loads the gcc compiler package
+ml %(open_mpi_package)s > & /dev/null #- loads the open mpi package.
 echo "\[\033[0;36m\][FINISHED]\[\033[0m\]"
 
 #----------------------------------------------------#
