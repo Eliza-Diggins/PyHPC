@@ -18,17 +18,29 @@
       }
     }
   },
-  "InitCon": {
+  "InitCon" : {
     "format": {
-              "information": "str",
-              "action_log": {
-              },
-              "meta": {
-              },
-              "core": {
-              },
-              "outputs": {
-              }
-            }
+        "information": "str",
+        "meta": {
+          "dateCreated": "str",
+          "software": "str"
+        },
+        "outputs": {
+        },
+        "action_log":{
+        },
+      "core": {
+
+      }
+      }
+    },
+  "SimRec": {
+    "format" : {
+      "information": "str",
+      "meta": {
+        "dateCreated": "str",
+        "isRun": "bool"
+      }
+    }
   }
 }

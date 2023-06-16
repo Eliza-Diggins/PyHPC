@@ -1027,6 +1027,97 @@ class SimRec:
     def save(self):
         self.parent.parent.save()
 
+    def add(self, entries, auto_save=True, force=False):
+        """
+        Adds the data contained in ``entries`` to the ``SimRec`` object's ``outputs`` dictionary.
+
+        Parameters
+        ----------
+        entries : list of dict
+            The entries to add to the ``SimRec``. These should have the following format:
+
+            .. code-block:: json
+                {
+                "<Output Directory 1> : {
+                    "information": "<some information>",
+                    "meta": {
+                        "dateCreated" : "",
+                        "hasRun" : true,
+                        }
+                    }
+                }
+
+        auto_save : bool
+            ``True`` will cause the object to autosave.
+        force : bool
+            If ``True``, will force the addition even if it comes back with an addition structure failure.
+
+        Returns
+        -------
+        None
+        """
+        #  Debugging
+        # ------------------------------------------------------------------------------------------------------------ #
+        modlog.debug("Adding %s to %s" % (entries, repr(self)))
+
+        #  Checking structure
+        # ------------------------------------------------------------------------------------------------------------ #
+        if not force:
+
+            # - Loading the structure information -#
+            try:
+                with open(_structure_file, "r") as struc_file:
+                    _struct = json.load(struc_file)
+            except FileNotFoundError:
+                modlog.exception(
+                    "Failed to locate the simulation log structure file at %s. Check installation." % _structure_file)
+                raise PyHPC_Error(
+                    "Failed to locate the simulation log structure file at %s. Check installation." % _structure_file)
+            except json.JSONDecoder:
+                modlog.exception(
+                    "Failed to parse the simulation log structure file at %s. Check installation." % _structure_file)
+                raise PyHPC_Error(
+                    "Failed to parse the simulation log structure file at %s. Check installation." % _structure_file)
+
+            #  Cleaning up the structure
+            # -------------------------------------------------------------------------------------------------------- #
+            ##- Trying to add any issues -##
+            generation_time = datetime.now().strftime('%m-%d-%Y_%H-%M-%S')
+            new_entries = {}
+            for item, data in entries.items():
+                new = data.copy()
+
+                # - Adding necessary headers -#
+                for header, obj in zip(["information", "meta"], ["", {}]):
+                    if header not in data:
+                        new[header] = obj
+
+                # - Dealing with specialized items -#
+                if "dateCreated" not in new["meta"]:
+                    new["meta"]["dateCreated"] = generation_time
+                if "isRun" not in new["meta"]:
+                    new["meta"]["isRun"] = False
+
+                new_entries[item] = new
+            entries = new_entries
+
+            for item, data in entries.items():
+                if not check_dictionary_structure(_struct["SimRec"]["format"], data):
+                    raise SyntaxError(
+                        "InitCon %s failed to add entry %s due to item %s which failed to match structure." % (
+                            repr(self), entries, item))
+
+        else:
+            modlog.warning("parameter ``force`` was specified in execution of InitCon.add on %s." % (repr(self)))
+
+        #  Adding
+        # ------------------------------------------------------------------------------------------------------------ #
+        self.raw["simulations"] = {**self.raw["simulations"], **entries}
+
+        #  Managing Saves
+        # ------------------------------------------------------------------------------------------------------------ #
+        if auto_save:
+            self.parent.save()
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Sub Functions ====================================================================================================== #
