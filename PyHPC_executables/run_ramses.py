@@ -19,6 +19,7 @@ sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.errors import *
 import logging
+from PyHPC.PyHPC_Core.log import configure_logging
 from PyHPC.PyHPC_System.io import write_ramses_nml, write_slurm_file
 from PyHPC.PyHPC_System.simulation_management import SimulationLog
 from PyHPC.PyHPC_Utils.text_display_utilities import print_title, TerminalString, select_files, PrintRetainer, \
@@ -55,6 +56,7 @@ if __name__ == '__main__':
 
     #  Printing Introduction, etc.
     # ----------------------------------------------------------------------------------------------------------------- #
+    configure_logging(__file__)
     term_string = TerminalString()  # Loading a terminal string
     print_title(func=printer.print)  # Printing the title
     printer.print(term_string.str_in_grid(""))
@@ -339,7 +341,7 @@ if __name__ == '__main__':
 
     if not user_arguments.stop:
         printer.print("%sAdding the job to the SLURM queue..." % fdbg_string, end="")
-        os.system("sbatch %s" % slurm_path)
+        os.system("sbatch %s.SLURM" % slurm_path)
         nml_log.log("Ran slurm file for %s" % str(output_directory), "RAN_SLURM", output=str(output_directory))
 
         printer.print(done_string)
