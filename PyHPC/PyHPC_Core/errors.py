@@ -1,7 +1,9 @@
 """
-
-Error Classes
-
+================
+PyHPC Errors
+================
+The classes included in this area of the module for a core set of specialized error codes which are called
+throughout the ``PyHPC`` system in different contexts.
 """
 import sys
 

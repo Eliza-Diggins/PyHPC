@@ -15,7 +15,7 @@ from inspect import getframeinfo, stack
 
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.errors import PyHPC_Error
-from PyHPC.PyHPC_Core.log import get_module_logger
+import logging
 from PyHPC.PyHPC_Core.utils import NonStandardEncoder
 from PyHPC.PyHPC_Utils.text_display_utilities import dict_to_html
 
@@ -28,7 +28,7 @@ _location = "PyHPC_System"
 _filename = pt.Path(__file__).name.replace(".py", "")
 _dbg_string = "%s:%s:" % (_location, _filename)
 CONFIG = read_config()
-modlog = get_module_logger(_location, _filename)
+modlog = logging.getLogger(__name__)
 _structure_file = os.path.join(pt.Path(os.path.realpath(__file__)).parents[1], "bin", "lib", "struct",
                                "simlog_struct.json")
 # - managing warnings -#
@@ -1046,12 +1046,12 @@ class SimRec:
                         }
                     }
                 }
-
+        
         auto_save : bool
             ``True`` will cause the object to autosave.
         force : bool
             If ``True``, will force the addition even if it comes back with an addition structure failure.
-
+            
         Returns
         -------
         None

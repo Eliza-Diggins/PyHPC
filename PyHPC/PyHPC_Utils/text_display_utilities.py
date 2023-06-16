@@ -11,7 +11,7 @@ from colorama import Fore, Back, Style
 import re
 from PyHPC.PyHPC_Core.utils import get_system_info
 from PyHPC.PyHPC_Utils.standard_utils import getFromDict, setInDict
-from PyHPC.PyHPC_Core.log import get_module_logger
+import logging
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Utils.remote_utils import rclone_listdir, rclone_isdir
 import json
@@ -26,7 +26,7 @@ _location = "PyHPC:PyHPC_Utils"
 _filename = pt.Path(__file__).name.replace(".py", "")
 _dbg_string = "%s:%s:" % (_location, _filename)
 _text_file_directory = os.path.join(pt.Path(__file__).parents[1], "bin", "str")
-modlog = get_module_logger(_location, _filename)
+modlog = logging.getLogger(__name__)
 CONFIG = read_config()
 _GSV = {}  # -> This global variable allows for communication between the listener and the function
 strip_ANSI_escape_sequences_sub = re.compile(r"\x1b\[[;\d]*[A-Za-z]", re.VERBOSE).sub  # Function to remove color.

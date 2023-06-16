@@ -164,7 +164,8 @@ from colorama import Fore, Style
 
 sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
 from PyHPC.PyHPC_Core.configuration import read_config
-from PyHPC.PyHPC_Core.log import get_module_logger
+import logging
+from PyHPC.PyHPC_Core.log import configure_logging
 from PyHPC.PyHPC_Utils.text_display_utilities import print_title, TerminalString, PrintRetainer, option_menu
 
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
@@ -175,7 +176,7 @@ _filename = pt.Path(__file__).name.replace(".py", "")
 _dbg_string = "%s:%s:" % (_location, _filename)
 fdbg_string = "%s [%s]: " % (_dbg_string, Fore.GREEN + "Execution Wizard" + Style.RESET_ALL)
 CONFIG = read_config()
-modlog = get_module_logger(_location, _filename)
+modlog = logging.getLogger(__name__)
 
 printer = PrintRetainer()
 # - managing warnings -#
@@ -192,6 +193,8 @@ if __name__ == '__main__':
     # - Grabbing type information -#
     with open(os.path.join(pt.Path(__file__).parents[1], "PyHPC", "bin", "lib", "imp", "types.json"), "r") as type_file:
         types = json.load(type_file)
+
+    configure_logging(_location)
 
     # -------------------------------------------------------------------------------------------------------------------- #
     # Core Execution   =================================================================================================== #

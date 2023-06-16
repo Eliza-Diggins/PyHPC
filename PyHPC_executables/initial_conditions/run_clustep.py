@@ -17,7 +17,7 @@ from tqdm import tqdm
 
 sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[2]))
 from PyHPC.PyHPC_Core.configuration import read_config
-from PyHPC.PyHPC_Core.log import get_module_logger
+import logging
 from PyHPC.PyHPC_Utils.text_display_utilities import TerminalString, PrintRetainer, build_options, get_yes_no
 from PyHPC.PyHPC_System.simulation_management import SimulationLog
 from PyHPC.PyHPC_Utils.analysis_utils import recenter
@@ -32,7 +32,7 @@ _filename = pt.Path(__file__).name.replace(".py", "")
 _dbg_string = "%s:%s:" % (_location, _filename)
 fdbg_string = "%s [%s]: " % (_dbg_string, Fore.GREEN + "Execution Wizard" + Style.RESET_ALL)
 CONFIG = read_config()
-modlog = get_module_logger(_location, _filename)
+modlog = logging.getLogger(__name__)
 
 printer = PrintRetainer()
 # - managing warnings -#

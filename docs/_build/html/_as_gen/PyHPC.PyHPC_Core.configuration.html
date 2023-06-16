@@ -135,7 +135,7 @@
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../installation.html">
-                        <no title>
+                        PyHPC Installation
                       </a>
                     </li>
                 
@@ -143,6 +143,13 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../software.html">
                         Software
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../Configuration.html">
+                        Configuration
                       </a>
                     </li>
                 
@@ -232,7 +239,7 @@ document.write(`
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../installation.html">
-                        <no title>
+                        PyHPC Installation
                       </a>
                     </li>
                 
@@ -240,6 +247,13 @@ document.write(`
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../software.html">
                         Software
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../Configuration.html">
+                        Configuration
                       </a>
                     </li>
                 
@@ -454,16 +468,21 @@ document.write(`
                   
   <section id="module-PyHPC.PyHPC_Core.configuration">
 <span id="pyhpc-pyhpc-core-configuration"></span><h1>PyHPC.PyHPC_Core.configuration<a class="headerlink" href="#module-PyHPC.PyHPC_Core.configuration" title="Permalink to this heading">#</a></h1>
-<dl class="simple">
-<dt>Configuration Management for PyCS Project</dt><dd><p>Written by: Eliza Diggins
-– Last Check: 12/16 –</p>
-</dd>
-</dl>
+<section id="configuration-in-pyhpc">
+<h2>Configuration In PyHPC<a class="headerlink" href="#configuration-in-pyhpc" title="Permalink to this heading">#</a></h2>
+<p>The configuration management in PyHPC is housed within the <code class="docutils literal notranslate"><span class="pre">PyHPC.PyHPC_Core.configuration</span></code> module. This manages all
+of the configuration files located in the <code class="docutils literal notranslate"><span class="pre">/bin/configs</span></code> folder of the user installation.</p>
+<section id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h3>
+<p>There are several different configuration files in the <code class="docutils literal notranslate"><span class="pre">/bin/configs</span></code> folder each with a different purpose. To read more
+about the core configuration systems included in the <code class="docutils literal notranslate"><span class="pre">PyHPC</span></code> runtime environment, read <a class="reference external" href="../Configuration.html">here</a>.</p>
+</section>
+</section>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_Core.configuration.read_config.html#PyHPC.PyHPC_Core.configuration.read_config" title="PyHPC.PyHPC_Core.configuration.read_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_config</span></code></a>()</p></td>
-<td><p>Grabbing the configuration system from the configuration file path.</p></td>
+<td><p>Reads the configuration file. Returns dict     The configuration data. -------.</p></td>
 </tr>
 </tbody>
 </table>
@@ -509,6 +528,19 @@ document.write(`
             
               
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-in-pyhpc">Configuration In PyHPC</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setup">Setup</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
 
   <div class="sidebar-secondary-item">
   <div class="tocsection sourcelink">

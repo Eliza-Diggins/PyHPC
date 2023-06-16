@@ -1,64 +1,34 @@
-# Log Configuration for PyHPC - Eliza Diggins
 version: 1
 
 handlers:
-  msg_channel:
-    class: logging.StreamHandler
+  root:
     level: DEBUG
-    formatter: console_standard
-    stream: ext://sys.stdout
-  err_channel:
-    class: logging.StreamHandler
-    level: DEBUG
-    formatter: console_standard
-    stream: ext://sys.stderr
-  root_file:
+    filename: os.path.join("%(log_dir)s","%(loc)s","%(time)s","root.log")
     class: logging.FileHandler
-    level: DEBUG
-    formatter: file_standard
-    filename: "root.log"
-  meta_file:
-    class: logging.FileHandler
-    level: INFO
-    formatter: file_meta
-    filename: "meta.log"
-  term_file:
-    class: logging.FileHandler
-    level: DEBUG
-    formatter: file_meta
-    filename: "term.log"
-  time_file:
-    class: logging.FileHandler
-    level: INFO
-    formatter: file_time
-    filename: "time.log"
-
-#----------------------------------------------------------------------------------------------------------------------#
-# FORMATTERS:
-#   1. file_standard: This format is the standard file output format.
-#
-#----------------------------------------------------------------------------------------------------------------------#
-loggers:
+    formatter: fileFormatter
   meta:
-    level: INFO
-    handlers: [ meta_file ]
-    propagate: no
-  message:
     level: DEBUG
-    handlers: [ msg_channel ]
-  time:
+    filename: os.path.join("%(log_dir)s","%(loc)s","%(time)s","meta.log")
+    class: logging.FileHandler
+    formatter: metaFormatter
+  console_err:
+    level: CRITICAL
+    class: logging.StreamHandler
+    formatter: consoleFormatter
+  console_out:
+    level: 90
+    class: logging.StreamHandler
+    formatter: consoleFormatter
+    stream: ext://sys.stdout
+loggers:
+  root:
     level: DEBUG
-    handlers: [ time_file ]
-    propagate: no
-  term:
+    handlers: [root, console_err]
+  console:
+    level: 90
+    handlers: [console_out]
+    propogate: false
+  meta:
     level: DEBUG
-    handlers: [ term_file ]
-    propagate: no
-#----------------------------------------------------------------------------------------------------------------------#
-# Root:
-#   1. file_standard: This format is the standard file output format.
-#
-#----------------------------------------------------------------------------------------------------------------------#
-root:
-  level: DEBUG
-  handlers: [ root_file ]
+    handlers: [meta]
+    propogate: false

@@ -13,6 +13,7 @@ Welcome to PyHPC's documentation!
    api
    installation
    software
+   Configuration
 
 Indices and tables
 ==================

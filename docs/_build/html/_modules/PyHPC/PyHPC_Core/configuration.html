@@ -134,7 +134,7 @@
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../installation.html">
-                        <no title>
+                        PyHPC Installation
                       </a>
                     </li>
                 
@@ -142,6 +142,13 @@
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../software.html">
                         Software
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../Configuration.html">
+                        Configuration
                       </a>
                     </li>
                 
@@ -227,7 +234,7 @@ document.write(`
 
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../installation.html">
-                        <no title>
+                        PyHPC Installation
                       </a>
                     </li>
                 
@@ -235,6 +242,13 @@ document.write(`
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../software.html">
                         Software
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../Configuration.html">
+                        Configuration
                       </a>
                     </li>
                 
@@ -316,9 +330,17 @@ document.write(`
                   
   <h1>Source code for PyHPC.PyHPC_Core.configuration</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Configuration Management for PyCS Project</span>
-<span class="sd">                Written by: Eliza Diggins</span>
-<span class="sd">                -- Last Check: 12/16 --</span>
+<span class="sd">========================</span>
+<span class="sd">Configuration In PyHPC</span>
+<span class="sd">========================</span>
+<span class="sd">The configuration management in PyHPC is housed within the ``PyHPC.PyHPC_Core.configuration`` module. This manages all</span>
+<span class="sd">of the configuration files located in the ``/bin/configs`` folder of the user installation.</span>
+
+<span class="sd">Setup</span>
+<span class="sd">-----</span>
+<span class="sd">There are several different configuration files in the ``/bin/configs`` folder each with a different purpose. To read more</span>
+<span class="sd">about the core configuration systems included in the ``PyHPC`` runtime environment, read `here &lt;../Configuration.html&gt;`_.</span>
+
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
@@ -347,8 +369,12 @@ document.write(`
 <span class="c1"># --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#</span>
 <div class="viewcode-block" id="read_config"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Core.configuration.read_config.html#PyHPC.PyHPC_Core.configuration.read_config">[docs]</a><span class="k">def</span> <span class="nf">read_config</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Grabbing the configuration system from the configuration file path.</span>
-<span class="sd">    :return: The configuration dictionary</span>
+<span class="sd">    Reads the configuration file.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    dict</span>
+<span class="sd">        The configuration data.</span>
+<span class="sd">    -------</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">### reading the TOML string ###</span>
     <span class="n">config_dict</span> <span class="o">=</span> <span class="n">tml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ticket_info</span><span class="o">.</span><span class="n">installation_location</span><span class="p">,</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span> <span class="s2">&quot;CONFIG.config&quot;</span><span class="p">))</span>

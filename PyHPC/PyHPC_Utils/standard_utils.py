@@ -10,7 +10,7 @@ from functools import reduce
 import numpy as np
 
 from PyHPC.PyHPC_Core.configuration import read_config
-from PyHPC.PyHPC_Core.log import get_module_logger
+import logging
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Setup  ============================================================================================================ #
@@ -19,7 +19,7 @@ _location = "PyHPC:PyHPC_Utils"
 _filename = pt.Path(__file__).name.replace(".py", "")
 _dbg_string = "%s:%s:" % (_location, _filename)
 __text_file_directory = os.path.join(pt.Path(__file__).parents[1], "bin", "str")
-modlog = get_module_logger(_location, _filename)
+modlog = logging.getLogger(__name__)
 CONFIG = read_config()
 __GSV = {}  # -> This global variable allows for communication between the listener and the function
 

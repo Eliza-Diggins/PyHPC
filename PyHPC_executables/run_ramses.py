@@ -18,7 +18,7 @@ from colorama import Fore, Style
 sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.errors import *
-from PyHPC.PyHPC_Core.log import get_module_logger
+import logging
 from PyHPC.PyHPC_System.io import write_ramses_nml, write_slurm_file
 from PyHPC.PyHPC_System.simulation_management import SimulationLog
 from PyHPC.PyHPC_Utils.text_display_utilities import print_title, TerminalString, select_files, PrintRetainer, \
@@ -32,7 +32,7 @@ _filename = pt.Path(__file__).name.replace(".py", "")
 _dbg_string = "%s:%s:" % (_location, _filename)
 fdbg_string = "%s [%s]: " % (_dbg_string, Fore.GREEN + "Execution Wizard" + Style.RESET_ALL)
 CONFIG = read_config()
-modlog = get_module_logger(_location, _filename)
+modlog = logging.getLogger(__name__)
 printer = PrintRetainer()
 # - managing warnings -#
 if not CONFIG["System"]["Logging"]["warnings"]:

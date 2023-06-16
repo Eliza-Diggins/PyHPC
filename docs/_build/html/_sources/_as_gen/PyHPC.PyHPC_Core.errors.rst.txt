@@ -1,4 +1,4 @@
-﻿PyHPC.PyHPC_Core.errors
+PyHPC.PyHPC_Core.errors
 =======================
 
 .. automodule:: PyHPC.PyHPC_Core.errors

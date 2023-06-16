@@ -1,7 +1,15 @@
 """
-        Configuration Management for PyCS Project
-                Written by: Eliza Diggins
-                -- Last Check: 12/16 --
+========================
+Configuration In PyHPC
+========================
+The configuration management in PyHPC is housed within the ``PyHPC.PyHPC_Core.configuration`` module. This manages all
+of the configuration files located in the ``/bin/configs`` folder of the user installation.
+
+Setup
+-----
+There are several different configuration files in the ``/bin/configs`` folder each with a different purpose. To read more
+about the core configuration systems included in the ``PyHPC`` runtime environment, read `here <../Configuration.html>`_.
+
 """
 import json
 import os
@@ -30,8 +38,12 @@ _dbg_string = "%s:%s" % (_location, _filename)
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
 def read_config() -> dict:
     """
-    Grabbing the configuration system from the configuration file path.
-    :return: The configuration dictionary
+    Reads the configuration file.
+    Returns
+    dict
+        The configuration data.
+    -------
+
     """
     ### reading the TOML string ###
     config_dict = tml.load(os.path.join(ticket_info.installation_location, "bin", "configs", "CONFIG.config"))

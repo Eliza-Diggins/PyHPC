@@ -1,9 +1,40 @@
+"""
+==============
+PyHPC Logging
+==============
+The ``PyHPC`` system uses a sophisticated set of logging methodologies to produce comprehensive communicative methods
+for users. Generally speaking, the configuration information for logging is stored in the ``CONFIG.config`` file;
+which is where most user level options are stored and in the ``/bin/inst/log/logcon.yaml`` file, which holds most of
+the backend for the logging system.
+
+Overview
+--------
+The logging information from any given execution of PyHPC code is found in the ``/logging/`` directory filed under
+first the top level executable that was running and then by the date. In each directory there will be several directories
+of different log files organized as follows:
+
+- **Top Level Loggers**
+    - ``root``: The ``root`` logger is the base logger for the system. By default, ``root`` logging messages are passed
+    to ``/<logging file>/root.log`` which collects *all of the logging messages through any logger*. Additionally,
+    if a message of level ``CRITICAL`` arises it will be logged to the ``crit.log`` file.
+    - ``time``: The ``time`` module is mostly used for development debugging. This keeps track of the fine details of
+    all of the functions and methods run during execution and their timing.
+    - ``meta``: The ``meta`` logger is used only in the ``log.py`` module and is specifically used to log information
+    about the logging system during execution.
+    - ``console``: The console logger is the ``PyHPC`` equivalent of ``print()``. This will print a message with a configurable
+    output to the stdout stream.
+
+- **Sub Loggers**
+    - Each module and submodule gets its own logger named ``PyHPC.<>.<>...`` which logs to a file specific to its name.
+    Each of these loggers is also inherited and therefore passes up the ladder of logs.
+"""
 import logging
 import logging.config
 import os
 import pathlib as pt
 import sys
 from datetime import datetime
+import pkgutil
 
 import yaml
 
@@ -16,13 +47,23 @@ _location = "PyHPC_Core"
 _filename = pt.Path(__file__).name.replace(".py", "")
 _dbg_string = "%s:%s" % (_location, _filename)
 CONFIG = read_config()
+__logtime = datetime.now().strftime('%m-%d-%Y_%H-%M-%S')
 __logging_data = {"dir"  : os.path.join(CONFIG["System"]["Directories"]["log_directory"],
                                         str(pt.Path(sys.modules["__main__"].__file__).name if hasattr(
-                                            sys.modules["__main__"], "__file__") else "console"),
-                                        datetime.now().strftime('%m-%d-%Y_%H-%M-%S')),
+                                            sys.modules["__main__"], "__file__") else "console")),
                   "files": CONFIG["System"]["Logging"]["output_to_file"]}
 
+print(__logging_data)
 
+with open(os.path.join(pt.Path(__file__).parents[1], "bin", "inst", "log", "logcon.yaml"), "r") as f:
+    log_config_dict = yaml.load(f, Loader=yaml.FullLoader)
+
+# Formatters
+# ------------------------------------------------------------------------------------------------------------------#
+
+#: ``log_config_dict["formatters"]`` contains the data from ``CONFIG["System"]["Logging"]["formats"]``, which the
+#: user can configure to customize the logging output for different modules.
+log_config_dict["formatters"] = CONFIG["System"]["Logging"]["formats"]
 # -------------------------------------------------------------------------------------------------------------------- #
 # Utility Functions ================================================================================================== #
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -39,104 +80,68 @@ def get_dict_str(di, tabs=0):
     return str
 
 
-# ------------------------------------------------------------------------------------------------------------------#
-# Managing files ================================================================================================= #
-# ------------------------------------------------------------------------------------------------------------------#
+def _get_modules(path, mod_name=""):
+    out = []
+    for mod in pkgutil.iter_modules([path]):
+        out.append(mod_name + mod.name)
+        out += _get_modules(os.path.join(path, mod.name), mod_name=mod_name + mod.name + ".")
+
+    return out
 
 
-# - do we need to manage files at all? -#
-if CONFIG["System"]["Logging"]["output_to_file"]:
-    pt.Path(__logging_data["dir"]).mkdir(parents=True)
-else:
-    pass
+def configure_logging(location):
+    """
+    The ``configure_logging`` function forms the basis of the logging in ``H20``. This should always be called
+    anytime the system is
+    Returns
+    -------
+    None
 
-# ---------------------------------------------------------------------------------------------------------------- #
-#  Loading the .yaml file ======================================================================================== #
-# ---------------------------------------------------------------------------------------------------------------- #
-with open(os.path.join(pt.Path(__file__).parents[1], "bin", "inst", "log", "logcon.yaml"), "r") as f:
-    log_config_dict = yaml.load(f, Loader=yaml.FullLoader)
+    """
+    # Managing Filenames
+    # ------------------------------------------------------------------------------------------------------------ #
+    for k, v in log_config_dict["handlers"].items():
+        if "filename" in v:
+            exec('log_config_dict["handlers"][k]["filename"] = %s' % str(
+                v["filename"] % {"log_dir": __logging_data["dir"],
+                                 "time"   : __logtime,
+                                 "loc"    : pt.Path(location).name.replace(pt.Path(location).suffix, "")}))
+            if not os.path.exists(pt.Path(log_config_dict["handlers"][k]["filename"]).parents[0]):
+                pt.Path(log_config_dict["handlers"][k]["filename"]).parents[0].mkdir(parents=True)
 
-# ---------------------------------------------------------------------------------------------------------------- #
-# Managing Alterations =========================================================================================== #
-# ---------------------------------------------------------------------------------------------------------------- #
-# Formatters
-# ------------------------------------------------------------------------------------------------------------------#
-log_config_dict["formatters"] = CONFIG["System"]["Logging"]["formats"]
-# File output management
-# ------------------------------------------------------------------------------------------------------------------#
-file_handlers = [handler for handler in log_config_dict["handlers"] if "file" in handler]
-if not CONFIG["System"]["Logging"]["output_to_file"]:
-    # We need to remove all of the file based handlers #
+            print(v["filename"] % {"log_dir": __logging_data["dir"],
+                                     "time"   : __logtime,
+                                     "loc"    : pt.Path(location).name.replace(pt.Path(location).suffix, "")})
+    # Generating modules
+    # ------------------------------------------------------------------------------------------------------------ #
+    for mod in _get_modules(str(pt.Path(__file__).parents[2])):
+        log_config_dict["loggers"][mod] = {"level"    : "DEBUG",
+                                  "handlers" : ["%s_handler" % mod],
+                                  "propogate": True}
+        log_config_dict["handlers"]["%s_handler" % mod] = {
+            "level"    : "DEBUG",
+            "filename" : os.path.join(__logging_data["dir"],
+                                      pt.Path(location).name.replace(pt.Path(location).suffix, ""),__logtime,
+                                      *mod.split("."), "log.log"),
+            "class"    : "logging.FileHandler",
+            "formatter": "fileFormatter"
+        }
+        print(os.path.join(__logging_data["dir"],
+                                      pt.Path(location).name.replace(pt.Path(location).suffix, ""),
+                                      *mod.split("."), "log.log"))
+        if not os.path.exists(pt.Path(log_config_dict["handlers"]["%s_handler" % mod]["filename"]).parents[0]):
+            pt.Path(log_config_dict["handlers"]["%s_handler" % mod]["filename"]).parents[0].mkdir(parents=True)
 
-    log_config_dict["handlers"] = {k: v for k, v in log_config_dict["handlers"].items() if k not in file_handlers}
+    logging.config.dictConfig(log_config_dict)
 
-    for logger in log_config_dict["loggers"]:
-        log_config_dict["loggers"][logger]["handlers"] = [hand for hand in
-                                                          log_config_dict["loggers"][logger]["handlers"] if
-                                                          hand not in file_handlers]
-
-    # - root -#
-    log_config_dict["root"]["handlers"] = [hand for hand in log_config_dict["root"]["handlers"] if
-                                           hand not in file_handlers]
-else:
-    # Managing the file handler locations
-    for handler in file_handlers:
-        log_config_dict["handlers"][handler]["filename"] = os.path.join(__logging_data["dir"],
-                                                                        log_config_dict["handlers"][handler][
-                                                                            "filename"])
-
-# Levels
-# ------------------------------------------------------------------------------------------------------------------#
-log_config_dict["root"]["level"] = CONFIG["System"]["Logging"]["default_root_level"]
-
-# ---------------------------------------------------------------------------------------------------------------- #
-# Generating the loggers   ======================================================================================= #
-# ---------------------------------------------------------------------------------------------------------------- #
-logging.config.dictConfig(log_config_dict)
-
-# ---------------------------------------------------------------------------------------------------------------- #
-# Debriefing ===================================================================================================== #
-# ---------------------------------------------------------------------------------------------------------------- #
-meta_logger = logging.getLogger("meta")
-meta_logger.info("Completed log setup with settings \n%s." % get_dict_str(log_config_dict))
-
-
-# -------------------------------------------------------------------------------------------------------------------- #
-#   Functions   ====================================================================================================== #
-# -------------------------------------------------------------------------------------------------------------------- #
-def get_module_logger(group,
-                      module,
-                      level=CONFIG["System"]["Logging"]["default_root_level"],
-                      frmt=CONFIG["System"]["Logging"]["formats"]["file_module"]["format"]):
-    global __logging_data
-
-    # Grabbing the logger
-    # ------------------------------------------------------------------------------------------------------------------#
-    logger = logging.getLogger("%s.%s" % (group, module))
-    logger.setLevel(level)
-
-    # Creating the handlers
-    # ------------------------------------------------------------------------------------------------------------------#
-    if __logging_data["files"]:
-        file = os.path.join(__logging_data["dir"], group)
-
-        if not os.path.exists(file):
-            pt.Path(file).mkdir(parents=True)
-        else:
-            pass
-
-        handler = logging.FileHandler(
-            filename=os.path.join(file, "%s.log" % module),
-        )
-        handler.setFormatter(logging.Formatter(frmt))
-        logger.addHandler(handler)
-
-    return logger
-
-
-def getlogger(name):
-    return logging.getLogger(name)
+    metalog = logging.getLogger("meta")
+    metalog.debug(log_config_dict)
+    # Custom modules
+    # ------------------------------------------------------------------------------------------------------------ #
 
 
 if __name__ == '__main__':
-    pass
+    logger = logging.getLogger("root")
+    configure_logging(__file__)
+    logger.debug("heres something!")
+    logging.warning("Something bad is happening")
