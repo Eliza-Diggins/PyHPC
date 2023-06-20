@@ -7,12 +7,7 @@
           "MOND_PARAMS": false,
           "DICE_PARAMS": true
         },
-        "ic_headers": [
-          [
-            "INIT_PARAMS",
-            "initfile(1)"
-          ]
-        ],
+        "ic_exec": "settings['INIT_PARAMS']['initfile(1)']['v'] = \"'%s'\"%str(pt.Path(ic_file).parents[0]); settings['DICE_PARAMS']['ic_file']['v'] = \"'%s'\"%str(pt.Path(ic_file).name)",
         "exec_string": ["bin","lib","templates","ramses_slurm.template"],
         "exec": "ramses_executable"
       }

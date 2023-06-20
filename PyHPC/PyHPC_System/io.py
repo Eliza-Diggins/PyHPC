@@ -190,13 +190,14 @@ def write_ramses_nml(settings: dict, output_location: str) -> bool:
     # ----------------------------------------------------------------------------------------------------------------- #
     software, ic_file, mem_mode = settings["META"]["software"]["v"], settings["META"]["ic_file"]["v"], \
                                   settings["META"]["Memory"]["mode"]["v"]
-
+    print(ic_file)
     modlog.debug("software=%s, ic_file=%s, mem_mode=%s." % (software, ic_file, mem_mode))
 
     with open(os.path.join(pt.Path(__file__).parents[1], "bin", "lib", "imp", "types.json"), "r") as type_file:
         types = json.load(type_file)
 
-    # - Checking the software is actually implemented
+    #  Software system work
+    # ----------------------------------------------------------------------------------------------------------------- #
     if software not in types["software"]["RAMSES"]:
         raise ValueError("The software %s does not match any of the implemented softwares!" % software)
 
@@ -206,9 +207,7 @@ def write_ramses_nml(settings: dict, output_location: str) -> bool:
         modlog.debug("Enabled %s" % k if v else "Disabled %s" % k)
 
     # - managing the IC location -#
-    for loc in types["software"]["RAMSES"][software]["ic_headers"]:
-        setInDict(settings, loc + ["v"], ic_file)
-        modlog.debug("Setting %s to the ic_file %s." % (loc, ic_file))
+    exec(types["software"]["RAMSES"][software]["ic_exec"])
 
     # - managing the memory type -#
     for setting in ["ngrid", "npart"]:

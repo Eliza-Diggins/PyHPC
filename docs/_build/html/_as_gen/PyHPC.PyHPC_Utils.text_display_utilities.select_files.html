@@ -146,6 +146,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../Configuration.html">
+                        Configuration
+                      </a>
+                    </li>
+                
   </ul>
 </nav></div>
       
@@ -243,6 +250,13 @@ document.write(`
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../Configuration.html">
+                        Configuration
+                      </a>
+                    </li>
+                
   </ul>
 </nav></div>
         
@@ -280,9 +294,8 @@ document.write(`
 </li>
 <li class="toctree-l3"><a class="reference internal" href="PyHPC.PyHPC_Core.errors.html">PyHPC.PyHPC_Core.errors</a></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_Core.log.html">PyHPC.PyHPC_Core.log</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.log.configure_logging.html">PyHPC.PyHPC_Core.log.configure_logging</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.log.get_dict_str.html">PyHPC.PyHPC_Core.log.get_dict_str</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.log.get_module_logger.html">PyHPC.PyHPC_Core.log.get_module_logger</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Core.log.getlogger.html">PyHPC.PyHPC_Core.log.getlogger</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_Core.utils.html">PyHPC.PyHPC_Core.utils</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
@@ -457,11 +470,24 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="PyHPC.PyHPC_Utils.text_display_utilities.select_files">
 <span class="sig-prename descclassname"><span class="pre">PyHPC.PyHPC_Utils.text_display_utilities.</span></span><span class="sig-name descname"><span class="pre">select_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_directories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">condition=&lt;function</span> <span class="pre">&lt;lambda&gt;&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyHPC/PyHPC_Utils/text_display_utilities.html#select_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyHPC.PyHPC_Utils.text_display_utilities.select_files" title="Permalink to this definition">#</a></dt>
-<dd><p>Allows the user to select files from the root directories, selecting a maximum of max subject to conditions.
-:param root_directories: The root directories to search from
-:param max: The maximum number of selectable items
-:param condition: Conditions by which to sort.
-:return:</p>
+<dd><p>Allows the user to select up to <code class="docutils literal notranslate"><span class="pre">max</span></code> files satisfying the condition <code class="docutils literal notranslate"><span class="pre">condition</span></code> from the <code class="docutils literal notranslate"><span class="pre">root_directories</span></code> listed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root_directories</strong> (<em>list</em><em> of </em><em>str</em>) – The list of paths to include in the searchable part of the selection.</p></li>
+<li><p><strong>max</strong> (<em>int</em><em>, </em><em>default=None</em>) – The maximal number of selected items. By default there is no limit.</p></li>
+<li><p><strong>condition</strong> (<em>callable</em>) – The <code class="docutils literal notranslate"><span class="pre">condition</span></code> can be used to sort for certain items in the nested lists. This should be a function which
+takes a single argument, <code class="docutils literal notranslate"><span class="pre">path</span></code> and returns either <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code> to indicate whether or not the
+item should be included.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list of selected directories.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

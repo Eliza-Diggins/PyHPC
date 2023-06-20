@@ -1,4 +1,4 @@
-PyHPC.PyHPC_Core.log
+﻿PyHPC.PyHPC_Core.log
 ====================
 
 .. automodule:: PyHPC.PyHPC_Core.log
@@ -12,9 +12,8 @@ PyHPC.PyHPC_Core.log
       :recursive:
 
    
+      configure_logging
       get_dict_str
-      get_module_logger
-      getlogger
    
    
 

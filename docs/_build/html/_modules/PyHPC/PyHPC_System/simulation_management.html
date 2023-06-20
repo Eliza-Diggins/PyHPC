@@ -145,6 +145,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../Configuration.html">
+                        Configuration
+                      </a>
+                    </li>
+                
   </ul>
 </nav></div>
       
@@ -235,6 +242,13 @@ document.write(`
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../../software.html">
                         Software
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../Configuration.html">
+                        Configuration
                       </a>
                     </li>
                 
@@ -332,7 +346,7 @@ document.write(`
 
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.configuration</span> <span class="kn">import</span> <span class="n">read_config</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.errors</span> <span class="kn">import</span> <span class="n">PyHPC_Error</span>
-<span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.log</span> <span class="kn">import</span> <span class="n">get_module_logger</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.utils</span> <span class="kn">import</span> <span class="n">NonStandardEncoder</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Utils.text_display_utilities</span> <span class="kn">import</span> <span class="n">dict_to_html</span>
 
@@ -345,7 +359,7 @@ document.write(`
 <span class="n">_filename</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 <span class="n">_dbg_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_location</span><span class="p">,</span> <span class="n">_filename</span><span class="p">)</span>
 <span class="n">CONFIG</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">()</span>
-<span class="n">modlog</span> <span class="o">=</span> <span class="n">get_module_logger</span><span class="p">(</span><span class="n">_location</span><span class="p">,</span> <span class="n">_filename</span><span class="p">)</span>
+<span class="n">modlog</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">_structure_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;struct&quot;</span><span class="p">,</span>
                                <span class="s2">&quot;simlog_struct.json&quot;</span><span class="p">)</span>
 <span class="c1"># - managing warnings -#</span>
@@ -1363,12 +1377,12 @@ document.write(`
 <span class="sd">                        }</span>
 <span class="sd">                    }</span>
 <span class="sd">                }</span>
-
+<span class="sd">        </span>
 <span class="sd">        auto_save : bool</span>
 <span class="sd">            ``True`` will cause the object to autosave.</span>
 <span class="sd">        force : bool</span>
 <span class="sd">            If ``True``, will force the addition even if it comes back with an addition structure failure.</span>
-
+<span class="sd">            </span>
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>

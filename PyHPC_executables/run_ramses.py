@@ -1,7 +1,65 @@
 """
+=======================
+RAMSES Execution
+=======================
 
-Runs RAMSES from the command line.
+The ``run_ramses.py`` executable allows the user to run a ``RAMSES`` simulation from the command line using one
+of the currently existing initial conditions available.
 
+Usage
+-----
+
+.. code-block:: console
+
+    usage: run_ramses.py [-h] [-v] [-i IC] [-n NML] [--nml_output NML_OUTPUT] [--slurm_output SLURM_OUTPUT] [-s] [--simulation_log SIMULATION_LOG]
+    optional arguments:
+      -h, --help            show this help message and exit
+      -v, --verbose         Toggles verbose mode.
+      -i IC, --ic IC        Tag to the initial condition file to initialize.
+      -n NML, --nml NML     The nml path to use to pass the settings generation stage.
+      --nml_output NML_OUTPUT
+                            Use this to hard set the .nml output location.
+      --slurm_output SLURM_OUTPUT
+                            Use this to hard set the slurm file location.
+      -s, --stop            Enable this flag to generate only the slurm file but not execute.
+      --simulation_log SIMULATION_LOG
+                            A [PATH] to a simulation logger if desired.
+
+Notes
+-----
+
+.. mermaid::
+
+    flowchart TD
+    A[Command Line Argument<br/>Parsing] --> B[Load Simulation Log]
+    B --> C{is .nml specified}
+    C -- .nml specified --> D[Select runtime software]
+    D --> Z[RAMSES Execution]
+    C -- .nml not specified --> E{is IC file provided?}
+    E -- no --> F(Select existing IC file)
+    F --> G
+    E -- yes --> G[Find IC file in SimLog]
+    G --> H[Get .nml settings from </br> User Preferences]
+    H -- software specific generation process --> J[Generate .nml file]
+    J --> Z
+
+Advanced Notes
+--------------
+
+Software Options
+^^^^^^^^^^^^^^^^
+
+A variety of different core software types can be included in the ``run_ramses`` directive. The available softwares are
+determined by the ``PyHPC/bin/lib/imp/types.json`` file, which specifies how the system should react to the
+given choice of software.
+
+- Each piece of available software is listed under ``software.RAMSES`` in the json file.
+
+.. include:: ../../PyHPC/bin/lib/imp/types.json
+    :code:
+
+Developer Information
+---------------------
 """
 import argparse
 import json
@@ -47,6 +105,7 @@ fail_string = "[" + Fore.RED + Style.BRIGHT + "FAILED" + Style.RESET_ALL + "]"
 
 # - Grabbing type information -#
 with open(os.path.join(pt.Path(__file__).parents[1], "PyHPC", "bin", "lib", "imp", "types.json"), "r") as type_file:
+    #: The ``types`` json dictionary contains information on the structure of the software usage.
     types = json.load(type_file)
 
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
@@ -77,11 +136,14 @@ if __name__ == '__main__':
                            default=None)
     argparser.add_argument("-n", "--nml", type=str, help="The nml path to use to pass the settings generation stage.",
                            default=None)
-    argparser.add_argument("--nml_output", type=str, help='Use this to hard set the .nml output location.', default=None)
-    argparser.add_argument("--slurm_output", type=str, help="Use this to hard set the slurm file location.", default=None)
+    argparser.add_argument("--nml_output", type=str, help='Use this to hard set the .nml output location.',
+                           default=None)
+    argparser.add_argument("--slurm_output", type=str, help="Use this to hard set the slurm file location.",
+                           default=None)
     argparser.add_argument("-s", "--stop", action="store_true",
                            help="Enable this flag to generate only the slurm file but not execute.")
-    argparser.add_argument("--simulation_log", type=str, help="A [PATH] to a simulation logger if desired.", default=None)
+    argparser.add_argument("--simulation_log", type=str, help="A [PATH] to a simulation logger if desired.",
+                           default=None)
     # - parsing
     user_arguments = argparser.parse_args()
     printer.print(done_string)
@@ -143,8 +205,9 @@ if __name__ == '__main__':
         # ----------------------------------------------------------------------------------------------------------------- #
         if not user_arguments.ic:
             # - The initial conditions are not specified by flag. Fetching.
-            printer.print("%s\t\tInitial condition was not provided explicitly. Going to file selection..." % fdbg_string,
-                          end="\n")
+            printer.print(
+                "%s\t\tInitial condition was not provided explicitly. Going to file selection..." % fdbg_string,
+                end="\n")
             sleep(2)
             # - Grabbing initial conditions from the user.
             try:
@@ -169,7 +232,7 @@ if __name__ == '__main__':
                 raise PyHPC_Error("The selected initial condition file is not valid.")
 
             printer.print(done_string)
-
+        printer.print(str(selected_initial_condition_path))
         printer.print("%s\tInitial conditions data successfully obtained." % fdbg_string)
 
         #  Grabbing the initial condition from the simulation log
@@ -227,6 +290,7 @@ if __name__ == '__main__':
         # ---------------------------------------------------------------------------------------------------------------- #
 
         # - Setting the IC - #
+        print(selected_initial_condition_path)
         ramses_config_user["META"]["ic_file"]["v"] = str(selected_initial_condition_path)
         # - Fetching the software - #
         nml_software = ramses_config_user["META"]["software"]["v"]
@@ -241,9 +305,11 @@ if __name__ == '__main__':
         # - Fetching the output location -#
         if not user_arguments.nml_output:
             nml_output_loc = os.path.join(CONFIG["System"]["Directories"]["nml_directory"],
-                                          input("%sPlease enter a name for the .nml file (*.nml): " % fdbg_string))
+                                          input("%sPlease enter a name for the .nml file (Exclude .nml): " % fdbg_string))
         else:
             nml_output_loc = user_arguments.nml_output
+
+        nml_output_loc = str(pt.Path(nml_output_loc).with_suffix(".nml"))
 
         printer.print("%s\tGenerating the .nml file at %s..." % (fdbg_string, nml_output_loc), end="")
 
@@ -298,7 +364,8 @@ if __name__ == '__main__':
         # This is a full path
         output_directory = pt.Path(output_directory[1:])
     else:
-        output_directory = pt.Path(os.path.join(CONFIG["System"]["Simulations"]["simulation_directory"], output_directory))
+        output_directory = pt.Path(
+            os.path.join(CONFIG["System"]["Simulations"]["simulation_directory"],nml_software, output_directory))
 
     if str(output_directory) not in nml_log.raw["outputs"]:
         nml_log.raw["outputs"][str(output_directory)] = {
@@ -311,10 +378,10 @@ if __name__ == '__main__':
         nml_log.log("Added output at %s." % str(output_directory), "ADD_OUTPUT")
     else:
         nml_log.raw["outputs"][str(output_directory)]["meta"] = {
-                "path"       : str(output_directory),
-                "dateCreated": datetime.now().strftime('%m-%d-%Y_%H-%M-%S'),
-                "slurm_path" : str(slurm_path)
-            }
+            "path"       : str(output_directory),
+            "dateCreated": datetime.now().strftime('%m-%d-%Y_%H-%M-%S'),
+            "slurm_path" : str(slurm_path)
+        }
         nml_log.save()
         nml_log.log("Updated output at %s." % str(output_directory), "UPDATED_OUTPUT")
 

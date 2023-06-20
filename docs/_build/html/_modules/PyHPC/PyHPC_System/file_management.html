@@ -145,6 +145,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../Configuration.html">
+                        Configuration
+                      </a>
+                    </li>
+                
   </ul>
 </nav></div>
       
@@ -238,6 +245,13 @@ document.write(`
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../Configuration.html">
+                        Configuration
+                      </a>
+                    </li>
+                
   </ul>
 </nav></div>
         
@@ -325,7 +339,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-<span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.log</span> <span class="kn">import</span> <span class="n">get_module_logger</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.configuration</span> <span class="kn">import</span> <span class="n">read_config</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Utils.remote_utils</span> <span class="kn">import</span> <span class="n">rclone_listdir</span>
 <span class="kn">import</span> <span class="nn">pathlib</span> <span class="k">as</span> <span class="nn">pt</span>
@@ -346,7 +360,7 @@ document.write(`
 <span class="n">_filename</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 <span class="n">_dbg_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_location</span><span class="p">,</span> <span class="n">_filename</span><span class="p">)</span>
 <span class="n">CONFIG</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">()</span>
-<span class="n">modlog</span> <span class="o">=</span> <span class="n">get_module_logger</span><span class="p">(</span><span class="n">_location</span><span class="p">,</span> <span class="n">_filename</span><span class="p">)</span>
+<span class="n">modlog</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="c1"># - managing warnings -#</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">CONFIG</span><span class="p">[</span><span class="s2">&quot;System&quot;</span><span class="p">][</span><span class="s2">&quot;Logging&quot;</span><span class="p">][</span><span class="s2">&quot;warnings&quot;</span><span class="p">]:</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>

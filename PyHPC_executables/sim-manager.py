@@ -3,6 +3,81 @@
 Simulation Manager
 =======================
 The simulation manager allows the user to locate, interact with, and take notes about simulations.
+
+.. mermaid::
+
+classDiagram
+    note for Root "Controller class for the entire </br>executable. Contains the SimLog object and controls</br> top level aspects of the execution process."
+    note for SubRoot "sdf"
+    Tk --|> Root
+    `Tk.Frame` --|> InitConPage
+    `Tk.Frame` --|> FrontPage
+    `Tk.Frame` --|> HeaderConfigPage
+    `Tk.Frame` --|> SimPage
+    HeaderConfigPage <.. SubRoot : Realization
+    SubRoot <|-- `Tk.TopLevel`
+    SimPage --> InitConPage
+    InitConPage --> FrontPage
+    SimPage ..> Root : Attribute
+    InitConPage ..> Root : Attribute
+    HeaderConfigPage ..> Root: Raised by User
+    FrontPage ..> Root: Attribute
+
+
+    namespace Tk-Tk{
+    class Tk{
+        #Tkinter Root Class Object
+    }
+    class Root{
+        +self.SimulationLog
+        +self.simpath
+        -self.page_raised
+        +self.headers
+        +self.pages
+        +self.menubar
+        +self.filemenu
+        +self.viewmenu
+        ~__init__(*args,**kwargs)
+        +raise_page(Page)
+        +load_simlog()
+        +config_columns()
+    }
+    }
+    namespace Tk-Frame{
+        class HeaderConfigPage{
+            +self.parent
+            +self.Controller
+            +self.chx_box
+        }
+        class FrontPage{
+            +self.parent
+            +self.controller
+        }
+        class InitConPage{
+            +self.parent
+            +self.controller
+        }
+        class SimPage{
+            +self.parent
+            +self.controller
+        }
+        class `Tk.Frame`{
+
+        }
+    }
+    namespace Tk-TopLevel{
+        class `Tk.TopLevel`{
+
+        }
+        class `SubRoot`{
+            +self.Controller
+            +self.headers
+            +self.enabled_headers
+            +raise_page()
+            +destroy()
+        }
+    }
+
 """
 import json
 import logging
@@ -217,6 +292,7 @@ class SubRoot(tk.Toplevel):
         self.controller._page_raised.rebuild_database()
         super().destroy()
 
+
 class HeaderConfigPage(tk.Frame):
     def __init__(self, parent, controller):
         #  Attributes
@@ -276,7 +352,7 @@ class FrontPage(tk.Frame):
         # ----------------------------------------------------------------------------------------------------------------- #
 
         # - Managing the base grid -#
-        for col_id, weight in zip([0, 1, 2], [1, 3, 2]):
+        for col_id, weight in zip([0, 1, 2], [3, 5, 3]):
             self.columnconfigure(col_id, weight=weight)
 
         for row_id, weight in zip([0, 1, 2, 3], [2, 4, 4, 1]):
@@ -306,9 +382,6 @@ class FrontPage(tk.Frame):
                                 background=title_frame["bg"])
         title_label.place(relx=0.05, rely=0.1)
 
-        # - options - #
-        options_label = tk.Label(options_frame, text="Options", font=("Helvetica", 15), background=options_frame["bg"])
-        options_label.place(relx=0.5, rely=0.1, anchor="center")
         #: label of the simulation log directory
         simlog_label = ttk.Label(bottom_frame, textvariable=self.controller.simpath, background=bottom_frame["bg"])
         simlog_label.grid(row=0, column=0, sticky="ew", columnspan=3)
@@ -327,50 +400,119 @@ class FrontPage(tk.Frame):
         # Configuring the action_log viewer #
         #-----------------------------------#
 
-        """
-        #: label of the options area.
-        options_label = ttk.Label(self, text="Options", background="#62d9c9")
+        #  Configuring options
+        # ----------------------------------------------------------------------------------------------------------------- #
+        # - options - #
+        options_label = tk.Label(options_frame, text="Options", font=("Helvetica", 15), background=options_frame["bg"])
+        options_label.grid(row=0,column=0,sticky="ew")
 
-        options_label.grid(row=2, column=0, padx=50, pady=0, sticky="nwes")
+        options_enter_button = tk.Button(options_frame,text="Enter",command=lambda:self.raise_next())
+        options_enter_button.grid(row=1,column=0,sticky="ew")
 
-        #: buttons for the options
-        button1 = tk.Button(self, text="Page 1",
-                             command=lambda: controller.raise_page("middle"),bg="#62d9c9")
-        button1.grid(row=3, column=0, padx=10, pady=10,sticky="nwes")
+        options_enter_button = tk.Button(options_frame,text="Delete",command=lambda:controller.delete_sim_entry())
+        options_enter_button.grid(row=2,column=0,sticky="ew")
 
-        button2 = tk.Button(self, text="Page 2",
-                             command=lambda: controller.raise_page("back"),bg="#62d9c9")
-        button2.grid(row=4, column=0, padx=10, pady=10,sticky="nwes")
-        """
+        options_enter_button = tk.Button(options_frame,text="Open Raw",command=lambda:controller.raise_page("middle"))
+        options_enter_button.grid(row=4,column=0,sticky="ew")
+
+        options_enter_button = tk.Button(options_frame, text="Add",
+                                         command=lambda: controller.raise_page("middle"))
+        options_enter_button.grid(row=3, column=0, sticky="ew")
+
     def rebuild_database(self):
         self.db = MultiColumnListbox(self.center_frame, self.controller.simulation_log, 1,
                                      enabled_headers=self.controller.headers[1])
 
+    def raise_next(self):
+        current_item = self.db.tree.focus()
+        print(current_item,self.db.tree.get_children())
 # second window frame FrontPage
 class InitConPage(tk.Frame):
 
     def __init__(self, parent, controller):
+        #  Attributes
+        # ----------------------------------------------------------------------------------------------------------------- #
+        self.parent = parent
+        self.controller = controller
+        #  Loading in the frame
+        # ----------------------------------------------------------------------------------------------------------------- #
         tk.Frame.__init__(self, parent)
-        label = ttk.Label(self, text="Page 1", font=LARGEFONT)
-        label.grid(row=0, column=4, padx=10, pady=10)
 
-        # button to show frame 2 with text
-        # layout2
-        button1 = ttk.Button(self, text="StartPage",
-                             command=lambda: controller.raise_page(FrontPage))
+        #  Managing the grid
+        # ----------------------------------------------------------------------------------------------------------------- #
 
-        # putting the button in its place
-        # by using grid
-        button1.grid(row=1, column=1, padx=10, pady=10)
+        # - Managing the base grid -#
+        for col_id, weight in zip([0, 1, 2], [3, 5, 3]):
+            self.columnconfigure(col_id, weight=weight)
 
-        # button to show frame 2 with text
-        # layout2
-        button2 = ttk.Button(self, text="Page 2",
-                             command=lambda: controller.raise_page("middle"))
+        for row_id, weight in zip([0, 1, 2, 3], [2, 4, 4, 1]):
+            self.rowconfigure(row_id, weight=weight)
 
-        # putting the button in its place by
-        # using grid
-        button2.grid(row=2, column=1, padx=10, pady=10)
+        # - adding frames -#
+        title_frame = tk.Frame(self, bg="#546fd1")
+        title_frame.grid(row=0, column=0, columnspan=3, rowspan=1, sticky="nesw")
+
+        # - options frame -#
+        options_frame = tk.Frame(self, bg="#34937e")
+        options_frame.grid(row=1, column=0, rowspan=2, sticky="nesw")
+
+        # - bottom frame -#
+        bottom_frame = tk.Frame(self, bg="#666f77")
+        bottom_frame.grid(row=3, column=0, columnspan=3, sticky="nesw")
+
+        # - RHS frame -#
+        right_frame = tk.Frame(self, bg="#4b8b4a")
+        right_frame.grid(row=1, column=2, rowspan=2, sticky="nesw")
+
+        #  Managing text elements
+        # ----------------------------------------------------------------------------------------------------------------- #
+        # - Title - #
+        title_label = ttk.Label(title_frame, text="PyHPC Simulation Manager", font=("Cascadia Code", 30),
+                                background=title_frame["bg"])
+        title_label.place(relx=0.05, rely=0.1)
+
+        #: label of the simulation log directory
+        simlog_label = ttk.Label(bottom_frame, textvariable=self.controller.simpath, background=bottom_frame["bg"])
+        simlog_label.grid(row=0, column=0, sticky="ew", columnspan=3)
+
+        #  Database
+        # ----------------------------------------------------------------------------------------------------------------- #
+        # - Center Frame -#
+        self.center_frame = tk.Frame(self, bg="#FFFFFF")
+        self.center_frame.grid(row=1, column=1, rowspan=2, sticky="nsew")
+        self.center_frame.rowconfigure(0, weight=99)
+        self.center_frame.rowconfigure(0, weight=1)
+        self.center_frame.columnconfigure(0, weight=99)
+        self.center_frame.columnconfigure(0, weight=1)
+        self.db = MultiColumnListbox(self.center_frame, self.controller.simulation_log, 1,
+                                     enabled_headers=controller.headers[1])
+
+        # Configuring the action_log viewer #
+        # -----------------------------------#
+
+        #  Configuring options
+        # ----------------------------------------------------------------------------------------------------------------- #
+        # - options - #
+        options_label = tk.Label(options_frame, text="Options", font=("Helvetica", 15), background=options_frame["bg"])
+        options_label.grid(row=0, column=0, sticky="ew")
+
+        options_enter_button = tk.Button(options_frame, text="Enter", command=lambda: controller.raise_page("middle"))
+        options_enter_button.grid(row=1, column=0, sticky="ew")
+
+        options_enter_button = tk.Button(options_frame, text="Delete", command=lambda: controller.delete_sim_entry())
+        options_enter_button.grid(row=2, column=0, sticky="ew")
+
+        options_enter_button = tk.Button(options_frame, text="Open Raw",
+                                         command=lambda: controller.raise_page("middle"))
+        options_enter_button.grid(row=4, column=0, sticky="ew")
+
+        options_enter_button = tk.Button(options_frame, text="Add",
+                                         command=lambda: controller.raise_page("middle"))
+        options_enter_button.grid(row=3, column=0, sticky="ew")
+
+    def rebuild_database(self):
+        self.db = MultiColumnListbox(self.center_frame, self.controller.simulation_log, 1,
+                                     enabled_headers=self.controller.headers[1])
 
 
 # third window frame "middle"

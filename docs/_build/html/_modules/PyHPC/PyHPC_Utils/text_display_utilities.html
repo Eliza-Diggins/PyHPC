@@ -145,6 +145,13 @@
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../Configuration.html">
+                        Configuration
+                      </a>
+                    </li>
+                
   </ul>
 </nav></div>
       
@@ -238,6 +245,13 @@ document.write(`
                       </a>
                     </li>
                 
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../Configuration.html">
+                        Configuration
+                      </a>
+                    </li>
+                
   </ul>
 </nav></div>
         
@@ -328,7 +342,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.utils</span> <span class="kn">import</span> <span class="n">get_system_info</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Utils.standard_utils</span> <span class="kn">import</span> <span class="n">getFromDict</span><span class="p">,</span> <span class="n">setInDict</span>
-<span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.log</span> <span class="kn">import</span> <span class="n">get_module_logger</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.configuration</span> <span class="kn">import</span> <span class="n">read_config</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Utils.remote_utils</span> <span class="kn">import</span> <span class="n">rclone_listdir</span><span class="p">,</span> <span class="n">rclone_isdir</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -343,7 +357,7 @@ document.write(`
 <span class="n">_filename</span> <span class="o">=</span> <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 <span class="n">_dbg_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2">:&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_location</span><span class="p">,</span> <span class="n">_filename</span><span class="p">)</span>
 <span class="n">_text_file_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">)</span>
-<span class="n">modlog</span> <span class="o">=</span> <span class="n">get_module_logger</span><span class="p">(</span><span class="n">_location</span><span class="p">,</span> <span class="n">_filename</span><span class="p">)</span>
+<span class="n">modlog</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">CONFIG</span> <span class="o">=</span> <span class="n">read_config</span><span class="p">()</span>
 <span class="n">_GSV</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># -&gt; This global variable allows for communication between the listener and the function</span>
 <span class="n">strip_ANSI_escape_sequences_sub</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\x1b\[[;\d]*[A-Za-z]&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">VERBOSE</span><span class="p">)</span><span class="o">.</span><span class="n">sub</span>  <span class="c1"># Function to remove color.</span>
@@ -1046,11 +1060,24 @@ document.write(`
 
 <div class="viewcode-block" id="select_files"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.text_display_utilities.select_files.html#PyHPC.PyHPC_Utils.text_display_utilities.select_files">[docs]</a><span class="k">def</span> <span class="nf">select_files</span><span class="p">(</span><span class="n">root_directories</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">condition</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Allows the user to select files from the root directories, selecting a maximum of max subject to conditions.</span>
-<span class="sd">    :param root_directories: The root directories to search from</span>
-<span class="sd">    :param max: The maximum number of selectable items</span>
-<span class="sd">    :param condition: Conditions by which to sort.</span>
-<span class="sd">    :return:</span>
+<span class="sd">    Allows the user to select up to ``max`` files satisfying the condition ``condition`` from the ``root_directories`` listed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root_directories: list of str</span>
+<span class="sd">        The list of paths to include in the searchable part of the selection.</span>
+<span class="sd">    max : int, default=None</span>
+<span class="sd">        The maximal number of selected items. By default there is no limit.</span>
+<span class="sd">    condition: callable</span>
+<span class="sd">        The ``condition`` can be used to sort for certain items in the nested lists. This should be a function which</span>
+<span class="sd">        takes a single argument, ``path`` and returns either ``True`` or ``False`` to indicate whether or not the</span>
+<span class="sd">        item should be included.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list</span>
+<span class="sd">        The list of selected directories.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#  Debugging and Setup</span>
     <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
@@ -1061,7 +1088,6 @@ document.write(`
                      <span class="n">position</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
                      <span class="n">location</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                      <span class="n">command</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-    <span class="n">text_t</span> <span class="o">=</span> <span class="n">TerminalString</span><span class="p">()</span>
 
     <span class="c1"># - Selected items -#</span>
     <span class="n">selected_items</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1303,7 +1329,7 @@ document.write(`
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">text_t</span> <span class="o">=</span> <span class="n">TerminalString</span><span class="p">()</span>
-    <span class="n">option_menu</span><span class="p">({</span><span class="s2">&quot;Op1&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;Op2&quot;</span><span class="p">:</span> <span class="s2">&quot;2&quot;</span><span class="p">})</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">select_files</span><span class="p">([</span><span class="s2">&quot;/home/ediggins&quot;</span><span class="p">]))</span>
 </pre></div>
 
                 </article>

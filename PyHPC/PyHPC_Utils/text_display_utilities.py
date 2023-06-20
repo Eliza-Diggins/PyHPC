@@ -729,11 +729,24 @@ def build_options(option_dict, title):
 
 def select_files(root_directories, max=None, condition=lambda x: True):
     """
-    Allows the user to select files from the root directories, selecting a maximum of max subject to conditions.
-    :param root_directories: The root directories to search from
-    :param max: The maximum number of selectable items
-    :param condition: Conditions by which to sort.
-    :return:
+    Allows the user to select up to ``max`` files satisfying the condition ``condition`` from the ``root_directories`` listed.
+
+    Parameters
+    ----------
+    root_directories: list of str
+        The list of paths to include in the searchable part of the selection.
+    max : int, default=None
+        The maximal number of selected items. By default there is no limit.
+    condition: callable
+        The ``condition`` can be used to sort for certain items in the nested lists. This should be a function which
+        takes a single argument, ``path`` and returns either ``True`` or ``False`` to indicate whether or not the
+        item should be included.
+
+    Returns
+    -------
+    list
+        The list of selected directories.
+
     """
     #  Debugging and Setup
     # ----------------------------------------------------------------------------------------------------------------- #
@@ -744,7 +757,6 @@ def select_files(root_directories, max=None, condition=lambda x: True):
                      position="",
                      location=0,
                      command=None)
-    text_t = TerminalString()
 
     # - Selected items -#
     selected_items = []
@@ -986,4 +998,4 @@ def option_menu(options, desc=True, title=None):
 
 if __name__ == '__main__':
     text_t = TerminalString()
-    option_menu({"Op1": "1", "Op2": "2"})
+    print(select_files(["/home/ediggins"]))
