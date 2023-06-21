@@ -44,7 +44,12 @@ def getFromDict(dataDict, mapList):
     """
     return reduce(operator.getitem, mapList, dataDict)
 
-
+def isInDict(dataDict,mapList):
+    try:
+        reduce(operator.getitem, mapList, dataDict)
+        return True
+    except KeyError:
+        return False
 def setInDict(dataDict, mapList, value):
     """
     sets the value located at ``mapList`` to ``value`` in ``dataDict``.

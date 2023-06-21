@@ -1,4 +1,4 @@
-PyHPC.PyHPC_System.simulation_management.InitCon
+﻿PyHPC.PyHPC_System.simulation_management.InitCon
 ================================================
 
 .. currentmodule:: PyHPC.PyHPC_System.simulation_management
@@ -16,6 +16,7 @@ PyHPC.PyHPC_System.simulation_management.InitCon
    
       ~InitCon.__init__
       ~InitCon.add
+      ~InitCon.delete
       ~InitCon.log
       ~InitCon.save
       ~InitCon.to_html
@@ -32,6 +33,7 @@ PyHPC.PyHPC_System.simulation_management.InitCon
    
       ~InitCon.core
       ~InitCon.inf
+      ~InitCon.listed
       ~InitCon.meta
       ~InitCon.sims
       ~InitCon.parent

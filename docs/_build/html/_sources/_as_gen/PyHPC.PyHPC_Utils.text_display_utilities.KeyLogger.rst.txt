@@ -15,10 +15,13 @@ PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger
       :recursive:
    
       ~KeyLogger.__init__
+      ~KeyLogger.build_dict_keylog
+      ~KeyLogger.edit_dict_keylog
       ~KeyLogger.file_keylog
       ~KeyLogger.menu_keylog
       ~KeyLogger.nav_build_keylog
       ~KeyLogger.nav_keylog
+      ~KeyLogger.sim_manager_keylog
       ~KeyLogger.yes_no_keylog
    
    

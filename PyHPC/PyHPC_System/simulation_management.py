@@ -31,6 +31,7 @@ CONFIG = read_config()
 modlog = logging.getLogger(__name__)
 _structure_file = os.path.join(pt.Path(os.path.realpath(__file__)).parents[1], "bin", "lib", "struct",
                                "simlog_struct.json")
+
 # - managing warnings -#
 if not CONFIG["System"]["Logging"]["warnings"]:
     warnings.filterwarnings('ignore')
@@ -196,6 +197,9 @@ class SimulationLog:
             k: InitCon(k, v, parent=self) for k, v in self.raw.items()
         }
 
+    @property
+    def listed(self)-> dict:
+        return self.raw
     # ---------------------------------------------------------------------------------------------------------------- #
     # Dunder Methods ================================================================================================= #
     # ---------------------------------------------------------------------------------------------------------------- #
@@ -451,55 +455,6 @@ class SimulationLog:
         with open(self.path, "w+") as simlog_file:
             json.dump(self.raw, simlog_file,cls=NonStandardEncoder)
 
-    def to_html(self, output):
-        """
-        Writes the simulation log to a system of ``html`` files at the ``output`` location.
-
-        .. warning::
-            Incomplete
-
-        .. todo::
-            Finish this.
-        Parameters
-        ----------
-        output: The ``path`` to the output directory.
-
-        Returns
-        -------
-        None
-        """
-        #  Debugging
-        # ------------------------------------------------------------------------------------------------------------ #
-        modlog.debug("Generating html output of %s." % self.__repr__())
-
-        #  Managing the directory
-        # ------------------------------------------------------------------------------------------------------------ #
-        if not os.path.exists(output):
-            pt.Path(output).mkdir(parents=True)
-            modlog.debug("Generated output directory %s." % output)
-        else:
-            modlog.debug("Found output directory %s." % output)
-
-        #  Generating the first table
-        # ------------------------------------------------------------------------------------------------------------ #
-        table_data = {
-            k: {
-                "Name"        : "<a href='%s'>%s</a>" % (
-                    os.path.join(output, "InitCons", "%s.html" % k), pt.Path(k).name),
-                "Date Created": v["meta"]["dateCreated"],
-                "Last Edited" : v["meta"]["lastEdited"],
-                "# of ICs"    : len(v["simulations"])
-            }
-            for k, v in self.raw.items()
-        }
-        with open(os.path.join(output, "test.html"), "w") as f:
-            with open(os.path.join(pt.Path(__file__).parents[1], "bin", "lib", "templates", "simlog_html_1.html"),
-                      "r") as template:
-                f.write(template.read() % {"table": dict_to_html(table_data),
-                                           "path" : self.path})
-
-        for ic, v in self.ics.items():
-            v.to_html(output)
 
 
 class InitCon:
@@ -550,7 +505,9 @@ class InitCon:
             return {k: SimRec(k, data, parent=self) for k, data in self.raw["simulations"].items()}
         except KeyError:
             return None
-
+    @property
+    def listed(self)-> dict:
+        return self.raw["simulations"]
     @property
     def core(self):
         """``self.core``  contains all of the core information for this entry."""
@@ -705,7 +662,7 @@ class InitCon:
                 new = data.copy()
 
                 # - Adding necessary headers -#
-                for header, obj in zip(["information", "meta", "action_log", "core", "outputs"], ["", {}, {}, {}, {}]):
+                for header, obj in zip(["information", "meta", "action_log", "core", "outputs","components"], ["", {}, {}, {}, {},{}]):
                     if header not in data:
                         new[header] = obj
 
@@ -714,6 +671,8 @@ class InitCon:
                     new["meta"]["dateCreated"] = generation_time
                 if "lastEdited" not in new["meta"]:
                     new["meta"]["lastEdited"] = generation_time
+                if "software" not in new["meta"]:
+                    new["meta"]["software"] = "NA"
 
                 new_entries[item] = new
             entries = new_entries
@@ -739,6 +698,9 @@ class InitCon:
     def save(self):
         self.parent.save()
 
+    def delete(self):
+        del self.parent.raw[self.name]
+        self.parent.save()
     def to_html(self, output):
         """
         Writes the init_log to a system of ``html`` files at the ``output`` location.
@@ -875,7 +837,9 @@ class SimRec:
             return self.raw["outputs"]
         except KeyError:
             return None
-
+    @property
+    def listed(self)-> dict:
+        return self.raw["outputs"]
     @property
     def core(self):
         """``self.core``  contains all of the core information for this entry."""
@@ -1026,7 +990,9 @@ class SimRec:
 
     def save(self):
         self.parent.parent.save()
-
+    def delete(self):
+        del self.parent.raw["simulations"][self.name]
+        self.parent.parent.save()
     def add(self, entries, auto_save=True, force=False):
         """
         Adds the data contained in ``entries`` to the ``SimRec`` object's ``outputs`` dictionary.
@@ -1088,7 +1054,7 @@ class SimRec:
                 new = data.copy()
 
                 # - Adding necessary headers -#
-                for header, obj in zip(["information", "meta"], ["", {}]):
+                for header, obj in zip(["information", "meta","action_log"], ["", {},{}]):
                     if header not in data:
                         new[header] = obj
 
@@ -1097,6 +1063,8 @@ class SimRec:
                     new["meta"]["dateCreated"] = generation_time
                 if "isRun" not in new["meta"]:
                     new["meta"]["isRun"] = False
+                if "slurm_path" not in new["meta"]:
+                    new["meta"]["slurm_path"] = "None"
 
                 new_entries[item] = new
             entries = new_entries
@@ -1112,12 +1080,12 @@ class SimRec:
 
         #  Adding
         # ------------------------------------------------------------------------------------------------------------ #
-        self.raw["simulations"] = {**self.raw["simulations"], **entries}
+        self.raw["outputs"] = {**self.raw["outputs"], **entries}
 
         #  Managing Saves
         # ------------------------------------------------------------------------------------------------------------ #
         if auto_save:
-            self.parent.save()
+            self.parent.parent.save()
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Sub Functions ====================================================================================================== #
@@ -1165,4 +1133,3 @@ def check_dictionary_structure(master: dict, base: dict) -> bool:
 
 if __name__ == '__main__':
     simlog = SimulationLog()
-    simlog.to_html("/home/ediggins/html_test")

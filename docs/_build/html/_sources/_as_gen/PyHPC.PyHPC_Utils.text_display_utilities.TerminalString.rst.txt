@@ -17,6 +17,7 @@ PyHPC.PyHPC_Utils.text_display_utilities.TerminalString
       ~TerminalString.__init__
       ~TerminalString.get_color
       ~TerminalString.print_directory_string
+      ~TerminalString.print_frame
       ~TerminalString.print_option_string
       ~TerminalString.print_title
       ~TerminalString.str_in_grid

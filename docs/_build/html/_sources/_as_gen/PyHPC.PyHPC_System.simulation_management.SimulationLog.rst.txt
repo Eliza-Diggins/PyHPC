@@ -1,4 +1,4 @@
-PyHPC.PyHPC_System.simulation_management.SimulationLog
+﻿PyHPC.PyHPC_System.simulation_management.SimulationLog
 ======================================================
 
 .. currentmodule:: PyHPC.PyHPC_System.simulation_management
@@ -19,7 +19,6 @@ PyHPC.PyHPC_System.simulation_management.SimulationLog
       ~SimulationLog.get_simulation_records
       ~SimulationLog.save
       ~SimulationLog.search
-      ~SimulationLog.to_html
    
    
 
@@ -32,6 +31,7 @@ PyHPC.PyHPC_System.simulation_management.SimulationLog
       :recursive:
    
       ~SimulationLog.ics
+      ~SimulationLog.listed
       ~SimulationLog.path
    
    

@@ -347,17 +347,20 @@ document.write(`
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_Utils.standard_utils.html">PyHPC.PyHPC_Utils.standard_utils</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.standard_utils.getFromDict.html">PyHPC.PyHPC_Utils.standard_utils.getFromDict</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.standard_utils.isInDict.html">PyHPC.PyHPC_Utils.standard_utils.isInDict</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.standard_utils.setInDict.html">PyHPC.PyHPC_Utils.standard_utils.setInDict</a></li>
 </ul>
 </li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.html">PyHPC.PyHPC_Utils.text_display_utilities</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.build_options.html">PyHPC.PyHPC_Utils.text_display_utilities.build_options</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.dict_to_html.html">PyHPC.PyHPC_Utils.text_display_utilities.dict_to_html</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.edit_dictionary.html">PyHPC.PyHPC_Utils.text_display_utilities.edit_dictionary</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.get_dict_str.html">PyHPC.PyHPC_Utils.text_display_utilities.get_dict_str</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.get_options.html">PyHPC.PyHPC_Utils.text_display_utilities.get_options</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.get_yes_no.html">PyHPC.PyHPC_Utils.text_display_utilities.get_yes_no</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.lenwc.html">PyHPC.PyHPC_Utils.text_display_utilities.lenwc</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.option_menu.html">PyHPC.PyHPC_Utils.text_display_utilities.option_menu</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.print_dictionary.html">PyHPC.PyHPC_Utils.text_display_utilities.print_dictionary</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.print_directories_dict.html">PyHPC.PyHPC_Utils.text_display_utilities.print_directories_dict</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.print_option_dict.html">PyHPC.PyHPC_Utils.text_display_utilities.print_option_dict</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_Utils.text_display_utilities.print_title.html">PyHPC.PyHPC_Utils.text_display_utilities.print_title</a></li>
@@ -510,13 +513,16 @@ the individual sub-units of the <code class="docutils literal notranslate"><span
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.add.html#PyHPC.PyHPC_System.simulation_management.InitCon.add" title="PyHPC.PyHPC_System.simulation_management.InitCon.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code></a>(entries[, auto_save, force])</p></td>
 <td><p>adds the entry contained in <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> to the <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.log.html#PyHPC.PyHPC_System.simulation_management.InitCon.log" title="PyHPC.PyHPC_System.simulation_management.InitCon.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a>(message, action[, auto_save])</p></td>
-<td><p>logs the <code class="docutils literal notranslate"><span class="pre">message</span></code> to the <code class="docutils literal notranslate"><span class="pre">self.raw.action_log</span></code>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.save.html#PyHPC.PyHPC_System.simulation_management.InitCon.save" title="PyHPC.PyHPC_System.simulation_management.InitCon.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.delete.html#PyHPC.PyHPC_System.simulation_management.InitCon.delete" title="PyHPC.PyHPC_System.simulation_management.InitCon.delete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete</span></code></a>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.to_html.html#PyHPC.PyHPC_System.simulation_management.InitCon.to_html" title="PyHPC.PyHPC_System.simulation_management.InitCon.to_html"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_html</span></code></a>(output)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.log.html#PyHPC.PyHPC_System.simulation_management.InitCon.log" title="PyHPC.PyHPC_System.simulation_management.InitCon.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a>(message, action[, auto_save])</p></td>
+<td><p>logs the <code class="docutils literal notranslate"><span class="pre">message</span></code> to the <code class="docutils literal notranslate"><span class="pre">self.raw.action_log</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.save.html#PyHPC.PyHPC_System.simulation_management.InitCon.save" title="PyHPC.PyHPC_System.simulation_management.InitCon.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.to_html.html#PyHPC.PyHPC_System.simulation_management.InitCon.to_html" title="PyHPC.PyHPC_System.simulation_management.InitCon.to_html"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_html</span></code></a>(output)</p></td>
 <td><p>Writes the init_log to a system of <code class="docutils literal notranslate"><span class="pre">html</span></code> files at the <code class="docutils literal notranslate"><span class="pre">output</span></code> location.</p></td>
 </tr>
 </tbody>
@@ -530,19 +536,22 @@ the individual sub-units of the <code class="docutils literal notranslate"><span
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.inf.html#PyHPC.PyHPC_System.simulation_management.InitCon.inf" title="PyHPC.PyHPC_System.simulation_management.InitCon.inf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inf</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">self.inf</span></code> contains all of the description information for this entry.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.meta.html#PyHPC.PyHPC_System.simulation_management.InitCon.meta" title="PyHPC.PyHPC_System.simulation_management.InitCon.meta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meta</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.listed.html#PyHPC.PyHPC_System.simulation_management.InitCon.listed" title="PyHPC.PyHPC_System.simulation_management.InitCon.listed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listed</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.meta.html#PyHPC.PyHPC_System.simulation_management.InitCon.meta" title="PyHPC.PyHPC_System.simulation_management.InitCon.meta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meta</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">self.meta</span></code> contains all of the meta information for this entry.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.sims.html#PyHPC.PyHPC_System.simulation_management.InitCon.sims" title="PyHPC.PyHPC_System.simulation_management.InitCon.sims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sims</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.sims.html#PyHPC.PyHPC_System.simulation_management.InitCon.sims" title="PyHPC.PyHPC_System.simulation_management.InitCon.sims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sims</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">self.sims</span></code> contains all of the <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> objects in the simulation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.parent.html#PyHPC.PyHPC_System.simulation_management.InitCon.parent" title="PyHPC.PyHPC_System.simulation_management.InitCon.parent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.parent.html#PyHPC.PyHPC_System.simulation_management.InitCon.parent" title="PyHPC.PyHPC_System.simulation_management.InitCon.parent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">self.parent</span></code> is a reference to the parent object.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.name.html#PyHPC.PyHPC_System.simulation_management.InitCon.name" title="PyHPC.PyHPC_System.simulation_management.InitCon.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.name.html#PyHPC.PyHPC_System.simulation_management.InitCon.name" title="PyHPC.PyHPC_System.simulation_management.InitCon.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">self.name</span></code> contains the key value of the entry in the <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.raw.html#PyHPC.PyHPC_System.simulation_management.InitCon.raw" title="PyHPC.PyHPC_System.simulation_management.InitCon.raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">raw</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.raw.html#PyHPC.PyHPC_System.simulation_management.InitCon.raw" title="PyHPC.PyHPC_System.simulation_management.InitCon.raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">raw</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">self.raw</span></code> is the core information in the <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> object.</p></td>
 </tr>
 </tbody>

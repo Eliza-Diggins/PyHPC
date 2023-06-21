@@ -31,6 +31,9 @@
         },
       "core": {
 
+      },
+      "components": {
+
       }
       }
     },
@@ -39,7 +42,10 @@
       "information": "str",
       "meta": {
         "dateCreated": "str",
-        "isRun": "bool"
+        "isRun": "bool",
+        "slurm_path": "str"
+      },
+      "action_log":{
       }
     }
   }

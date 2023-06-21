@@ -349,6 +349,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">sshkeyboard</span> <span class="kn">import</span> <span class="n">listen_keyboard</span><span class="p">,</span> <span class="n">stop_listening</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
 <span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
 <span class="c1">#  Setup  ============================================================================================================ #</span>
@@ -490,7 +491,79 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="n">out_string</span> <span class="o">=</span> <span class="n">Fore</span><span class="o">.</span><span class="n">BLACK</span> <span class="o">+</span> <span class="n">Back</span><span class="o">.</span><span class="n">WHITE</span> <span class="o">+</span> <span class="n">path</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="n">space</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">str_in_grid</span><span class="p">(</span><span class="n">out_string</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">str_in_grid</span><span class="p">(</span><span class="n">out_string</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TerminalString.print_frame"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.text_display_utilities.TerminalString.print_frame.html#PyHPC.PyHPC_Utils.text_display_utilities.TerminalString.print_frame">[docs]</a>    <span class="k">def</span> <span class="nf">print_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dataframe</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">selected</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">location</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Prints the input dataframe to the terminal in a correctly outputted table format.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataframe: pd.DataFrame</span>
+<span class="sd">            The dataframe to display.</span>
+<span class="sd">        columns: list of str</span>
+<span class="sd">            The columns of the table to show in the table.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#  Generating the regex</span>
+        <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
+        <span class="n">_non_span_v_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;[^</span><span class="si">%s</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">span_v</span><span class="p">)</span>
+        <span class="n">_no_color_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">u001b[[0-9]*m&quot;</span><span class="p">)</span>
+        <span class="c1">#  Configuring the columns of the printing process</span>
+        <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">columns</span><span class="p">:</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="n">dataframe</span><span class="o">.</span><span class="n">columns</span>
+
+        <span class="n">col_width_base</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">dim_alt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">))</span> <span class="c1">#: This is the natural length we want</span>
+        <span class="n">col_width_offset</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim_alt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="c1">#: This is the remainer on the outsides.</span>
+
+        <span class="n">column_widths</span> <span class="o">=</span> <span class="p">[</span><span class="n">col_width_base</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">))]</span> <span class="o">+</span> <span class="p">[</span><span class="n">col_width_offset</span><span class="o">+</span><span class="n">col_width_base</span><span class="p">]</span>
+
+        <span class="c1">#- Configuring the columns for the printing process -#</span>
+        <span class="n">column_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">column</span><span class="o">+</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">*</span><span class="p">(</span><span class="n">column_width</span><span class="o">-</span><span class="mi">2</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">column</span><span class="p">)))</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">column</span><span class="p">)</span><span class="o">&lt;</span><span class="n">column_width</span><span class="o">-</span><span class="mi">2</span> <span class="k">else</span> <span class="n">column</span><span class="p">[:</span><span class="n">column_width</span><span class="o">-</span><span class="mi">5</span><span class="p">]</span><span class="o">+</span><span class="s2">&quot;...&quot;</span> <span class="k">for</span> <span class="n">column_width</span><span class="p">,</span><span class="n">column</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">column_widths</span><span class="p">,</span><span class="n">columns</span><span class="p">)]</span>
+
+        <span class="c1">#- generating the print header -#</span>
+        <span class="n">return_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="c1">#: This is the string that is eventually returned from the function.</span>
+        <span class="n">header_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">span_v</span> <span class="c1">#: This is the header specific string.</span>
+
+        <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">column_names</span><span class="p">:</span>
+            <span class="n">header_string</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot; </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">RED</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">BRIGHT</span> <span class="o">+</span> <span class="n">column</span> <span class="o">+</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">span_v</span><span class="p">))</span>
+
+        <span class="n">return_string</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">return_string</span> <span class="o">+=</span> <span class="n">header_string</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">return_string</span> <span class="o">+=</span> <span class="n">_non_span_v_re</span><span class="o">.</span><span class="n">subn</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">,</span><span class="n">_no_color_re</span><span class="o">.</span><span class="n">subn</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">header_string</span><span class="p">)[</span><span class="mi">0</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1">#  Managing rows</span>
+        <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">selected</span><span class="p">:</span>
+            <span class="n">selected</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">location</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">location</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">row_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataframe</span><span class="p">)):</span>
+            <span class="c1">#- Grabbing the color precursor -#</span>
+            <span class="k">if</span> <span class="n">row_id</span> <span class="o">==</span> <span class="n">location</span><span class="p">:</span>
+                <span class="n">prec</span> <span class="o">=</span> <span class="n">Back</span><span class="o">.</span><span class="n">BLUE</span>
+            <span class="k">elif</span> <span class="n">row_id</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
+                <span class="n">prec</span> <span class="o">=</span> <span class="n">Fore</span><span class="o">.</span><span class="n">BLACK</span><span class="o">+</span><span class="n">Back</span><span class="o">.</span><span class="n">WHITE</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">prec</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+            <span class="n">return_string</span><span class="o">+=</span> <span class="n">prec</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">span_v</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">dataframe</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row_id</span><span class="p">,:][</span><span class="n">columns</span><span class="p">])]</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">value</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">column_width</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">lenwc</span><span class="p">(</span><span class="n">value</span><span class="p">)))</span> <span class="k">if</span> <span class="n">lenwc</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">column_width</span> <span class="o">-</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">value</span><span class="p">[</span>
+                                                                                                         <span class="p">:</span><span class="n">column_width</span> <span class="o">-</span> <span class="mi">5</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span>
+                <span class="k">for</span> <span class="n">column_width</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">column_widths</span><span class="p">,</span> <span class="n">values</span><span class="p">)]</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                <span class="n">return_string</span> <span class="o">+=</span> <span class="p">(</span><span class="s2">&quot; </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">span_v</span><span class="p">))</span>
+
+            <span class="n">return_string</span> <span class="o">+=</span> <span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">return_string</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">return_string</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="KeyLogger"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.html#PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger">[docs]</a><span class="k">class</span> <span class="nc">KeyLogger</span><span class="p">:</span>
@@ -571,6 +644,92 @@ document.write(`
                 <span class="n">stop_listening</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="k">pass</span></div>
+<div class="viewcode-block" id="KeyLogger.sim_manager_keylog"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.sim_manager_keylog.html#PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.sim_manager_keylog">[docs]</a>    <span class="k">def</span> <span class="nf">sim_manager_keylog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;enter&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;enter&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;backspace&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;back&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;l&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;log&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;select&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;delete&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;e&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;edit&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;add&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+<div class="viewcode-block" id="KeyLogger.edit_dict_keylog"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.edit_dict_keylog.html#PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.edit_dict_keylog">[docs]</a>    <span class="k">def</span> <span class="nf">edit_dict_keylog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;enter&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;enter&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">object</span><span class="o">.</span><span class="n">raw</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;backspace&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;back&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;l&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;log&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;select&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;delete&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+<div class="viewcode-block" id="KeyLogger.build_dict_keylog"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.build_dict_keylog.html#PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.build_dict_keylog">[docs]</a>    <span class="k">def</span> <span class="nf">build_dict_keylog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">key</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;enter&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;enter&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_dict</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_dict</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;backspace&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;back&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;add&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;d&quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;delete&quot;</span>
+                <span class="n">stop_listening</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">pass</span></div>
 <div class="viewcode-block" id="KeyLogger.menu_keylog"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.menu_keylog.html#PyHPC.PyHPC_Utils.text_display_utilities.KeyLogger.menu_keylog">[docs]</a>    <span class="k">def</span> <span class="nf">menu_keylog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="c1"># Key logger for the options navigation #</span>
         <span class="k">try</span><span class="p">:</span>
@@ -578,10 +737,10 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;enter&quot;</span>
                 <span class="n">stop_listening</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;down&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_dict</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
                 <span class="n">stop_listening</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;up&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">location</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_dict</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">stop_listening</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
             <span class="k">pass</span></div>
@@ -667,7 +826,6 @@ document.write(`
 
     <span class="k">return</span> <span class="nb">str</span></div>
 
-
 <div class="viewcode-block" id="print_option_dict"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.text_display_utilities.print_option_dict.html#PyHPC.PyHPC_Utils.text_display_utilities.print_option_dict">[docs]</a><span class="k">def</span> <span class="nf">print_option_dict</span><span class="p">(</span><span class="nb">dict</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Prints an options dictionary in corrected format.</span>
@@ -690,6 +848,31 @@ document.write(`
     <span class="c1"># Main #</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">text_t</span><span class="o">.</span><span class="n">print_option_string</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">selected</span><span class="o">=</span><span class="p">(</span><span class="n">location</span> <span class="o">==</span> <span class="n">k</span><span class="p">)))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">text_t</span><span class="o">.</span><span class="n">h</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="print_dictionary"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.text_display_utilities.print_dictionary.html#PyHPC.PyHPC_Utils.text_display_utilities.print_dictionary">[docs]</a><span class="k">def</span> <span class="nf">print_dictionary</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">location</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prints an options dictionary in corrected format.</span>
+<span class="sd">    :param dict: The dictionary containing the correct structure.</span>
+<span class="sd">    :param location: The location inside of the dictionary if desired.</span>
+<span class="sd">    :param header: The header (if desired)</span>
+<span class="sd">    :return: None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># - loading the terminal string -#</span>
+    <span class="n">text_t</span> <span class="o">=</span> <span class="n">TerminalString</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">dictionary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">location</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">text_t</span><span class="o">.</span><span class="n">print_option_string</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),{</span><span class="s2">&quot;v&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="s2">&quot;d&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;i&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">},</span><span class="n">selected</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">text_t</span><span class="o">.</span><span class="n">str_in_grid</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">CYAN</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">))))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">text_t</span><span class="o">.</span><span class="n">print_option_string</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),{</span><span class="s2">&quot;v&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="s2">&quot;d&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;i&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">},</span><span class="n">selected</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">Fore</span><span class="o">.</span><span class="n">BLACK</span><span class="o">+</span><span class="n">Back</span><span class="o">.</span><span class="n">WHITE</span><span class="o">+</span><span class="n">text_t</span><span class="o">.</span><span class="n">str_in_grid</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">)))</span><span class="o">+</span><span class="n">Style</span><span class="o">.</span><span class="n">RESET_ALL</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="n">text_t</span><span class="o">.</span><span class="n">h</span><span class="p">)</span></div>
 
@@ -1326,10 +1509,129 @@ document.write(`
 
         <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span> <span class="k">else</span> <span class="s1">&#39;clear&#39;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="edit_dictionary"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.text_display_utilities.edit_dictionary.html#PyHPC.PyHPC_Utils.text_display_utilities.edit_dictionary">[docs]</a><span class="k">def</span> <span class="nf">edit_dictionary</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span><span class="n">title</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Allows for editing of the dictionary.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dictionary: dict</span>
+<span class="sd">        The dictionary to edit.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        The resulting dictionary after edits.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#  Logging</span>
+    <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
+    <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Selecting dictionary from </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">dictionary</span><span class="p">)</span>
+
+    <span class="c1">#  Managing structure</span>
+    <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
+    <span class="n">klog</span> <span class="o">=</span> <span class="n">KeyLogger</span><span class="p">(</span><span class="n">sub_dict</span><span class="o">=</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">exit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">position</span><span class="o">=</span><span class="p">[])</span>
+
+
+    <span class="c1"># - Fetching terminal - #</span>
+    <span class="n">terminal_string</span> <span class="o">=</span> <span class="n">TerminalString</span><span class="p">()</span>
+
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">klog</span><span class="o">.</span><span class="n">exit</span><span class="p">:</span>
+        <span class="c1">#  Managing title printing</span>
+        <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
+        <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+            <span class="n">terminal_string</span><span class="o">.</span><span class="n">print_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">terminal_string</span><span class="o">.</span><span class="n">print_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="p">):</span>
+            <span class="n">print_dictionary</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="p">,</span><span class="n">location</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">klog</span><span class="o">.</span><span class="n">location</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-- Nothing Here --&quot;</span><span class="p">)</span>
+        <span class="n">listen_keyboard</span><span class="p">(</span><span class="n">on_press</span><span class="o">=</span><span class="n">klog</span><span class="o">.</span><span class="n">build_dict_keylog</span><span class="p">)</span>
+
+        <span class="c1">#  Managing the commands</span>
+        <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
+        <span class="k">if</span> <span class="n">klog</span><span class="o">.</span><span class="n">command</span><span class="p">:</span>  <span class="c1"># we have a command to execute</span>
+            <span class="k">if</span> <span class="n">klog</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s2">&quot;enter&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">klog</span><span class="o">.</span><span class="n">location</span><span class="p">]],</span><span class="nb">dict</span><span class="p">):</span>
+                    <span class="n">klog</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">klog</span><span class="o">.</span><span class="n">location</span><span class="p">])</span>
+                    <span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span> <span class="o">=</span> <span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">klog</span><span class="o">.</span><span class="n">location</span><span class="p">]]</span>
+                    <span class="n">klog</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">type</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;[Dict-Manager]: Data type? [L[ist],D[ict],I[nt],F[loat],S[tring]&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;dict&quot;</span><span class="p">,</span> <span class="s1">&#39;DICT&#39;</span><span class="p">]:</span>
+                        <span class="n">setInDict</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">klog</span><span class="o">.</span><span class="n">position</span> <span class="o">+</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">klog</span><span class="o">.</span><span class="n">location</span><span class="p">]],</span> <span class="p">{})</span>
+                    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;L&quot;</span><span class="p">:</span>
+                        <span class="n">setInDict</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">klog</span><span class="o">.</span><span class="n">position</span> <span class="o">+</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">klog</span><span class="o">.</span><span class="n">location</span><span class="p">]],</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;[Dict-Manager]: Enter the new value: &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">))</span>
+                    <span class="k">elif</span> <span class="nb">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span> <span class="s2">&quot;I&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">}:</span>
+                        <span class="nb">input</span><span class="p">(</span>
+                            <span class="s2">&quot;[Dict-Manager]: The datatype you entered isn&#39;t valid. Press any key top return to execution...&quot;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">setInDict</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">klog</span><span class="o">.</span><span class="n">position</span> <span class="o">+</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">klog</span><span class="o">.</span><span class="n">location</span><span class="p">]],</span>
+                                  <span class="p">{</span><span class="s2">&quot;I&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">}[</span><span class="nb">type</span><span class="p">](</span>
+                                      <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;[Dict-Manager]: Enter the new value: &quot;</span><span class="p">)))</span>
+
+                    <span class="nb">print</span><span class="p">(</span><span class="n">dictionary</span><span class="p">)</span>
+                    <span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span> <span class="o">=</span> <span class="n">getFromDict</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">klog</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">klog</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s2">&quot;back&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">position</span><span class="p">)</span><span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">klog</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">klog</span><span class="o">.</span><span class="n">position</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span> <span class="o">=</span> <span class="n">getFromDict</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span><span class="n">klog</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+                    <span class="n">klog</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="n">get_yes_no</span><span class="p">(</span><span class="s2">&quot;Exit Dictioanry Editor?&quot;</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">val</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">dictionary</span>
+            <span class="k">elif</span> <span class="n">klog</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s2">&quot;add&quot;</span><span class="p">:</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;[Dict-Manager]: Enter the key name:&quot;</span><span class="p">)</span>
+                <span class="nb">type</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;[Dict-Manager]: Data type? [L[ist],D[ict],I[nt],F[loat],S[tring]&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;D&quot;</span><span class="p">,</span><span class="s2">&quot;dict&quot;</span><span class="p">,</span><span class="s1">&#39;DICT&#39;</span><span class="p">]:</span>
+                    <span class="n">setInDict</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span><span class="n">klog</span><span class="o">.</span><span class="n">position</span><span class="o">+</span><span class="p">[</span><span class="n">key</span><span class="p">],{})</span>
+                <span class="k">elif</span> <span class="nb">type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;L&quot;</span><span class="p">:</span><span class="nb">list</span><span class="p">,</span><span class="s2">&quot;D&quot;</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span><span class="s2">&quot;I&quot;</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="s2">&quot;F&quot;</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="s2">&quot;S&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">}:</span>
+                    <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;[Dict-Manager]: The datatype you entered isn&#39;t valid. Press any key top return to execution...&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">setInDict</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span><span class="n">klog</span><span class="o">.</span><span class="n">position</span><span class="o">+</span><span class="p">[</span><span class="n">key</span><span class="p">],{</span><span class="s2">&quot;L&quot;</span><span class="p">:</span><span class="nb">list</span><span class="p">,</span><span class="s2">&quot;D&quot;</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span><span class="s2">&quot;I&quot;</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="s2">&quot;F&quot;</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="s2">&quot;S&quot;</span><span class="p">:</span><span class="nb">str</span><span class="p">}[</span><span class="nb">type</span><span class="p">](</span><span class="nb">input</span><span class="p">(</span><span class="s2">&quot;[Dict-Manager]: Enter the new value: &quot;</span><span class="p">)))</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="n">dictionary</span><span class="p">)</span>
+                <span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span> <span class="o">=</span> <span class="n">getFromDict</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span><span class="n">klog</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">klog</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s2">&quot;delete&quot;</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">klog</span><span class="o">.</span><span class="n">location</span><span class="p">]]</span>
+                <span class="n">setInDict</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span><span class="n">klog</span><span class="o">.</span><span class="n">position</span><span class="p">,</span><span class="n">klog</span><span class="o">.</span><span class="n">sub_dict</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+                <span class="n">klog</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">klog</span><span class="o">.</span><span class="n">command</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span> <span class="k">else</span> <span class="s1">&#39;clear&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">klog</span><span class="o">.</span><span class="n">position</span><span class="p">)</span></div>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">stri</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s2">&quot;test.g2&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="s2">&quot;A simple test case to guide development use.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;dateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;01_01_2000-01:00:00&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;lastEdited&quot;</span><span class="p">:</span> <span class="s2">&quot;01_01_2000-01:00:00&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;simulations&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;test.nml&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="s2">&quot;Simulation example entry.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;action_log&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;created&quot;</span><span class="p">:</span> <span class="s2">&quot;date = something&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">&quot;core&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="p">{}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;core&quot;</span><span class="p">:</span> <span class="p">{}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
     <span class="n">text_t</span> <span class="o">=</span> <span class="n">TerminalString</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">select_files</span><span class="p">([</span><span class="s2">&quot;/home/ediggins&quot;</span><span class="p">]))</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+    <span class="n">x</span> <span class="o">=</span><span class="p">{</span><span class="s2">&quot;1&quot;</span><span class="p">:{</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">:</span><span class="mi">4</span><span class="p">},</span><span class="s2">&quot;2&quot;</span><span class="p">:</span><span class="s2">&quot;hemp&quot;</span><span class="p">,</span><span class="s2">&quot;Somethin&quot;</span><span class="p">:</span><span class="s2">&quot;345&quot;</span><span class="p">}</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">TerminalString</span><span class="p">()</span>
+    <span class="n">edit_dictionary</span><span class="p">(</span><span class="n">stri</span><span class="p">,</span><span class="s2">&quot;None&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </article>

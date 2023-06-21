@@ -1,4 +1,4 @@
-PyHPC.PyHPC_Utils.text_display_utilities
+﻿PyHPC.PyHPC_Utils.text_display_utilities
 ========================================
 
 .. automodule:: PyHPC.PyHPC_Utils.text_display_utilities
@@ -14,11 +14,13 @@ PyHPC.PyHPC_Utils.text_display_utilities
    
       build_options
       dict_to_html
+      edit_dictionary
       get_dict_str
       get_options
       get_yes_no
       lenwc
       option_menu
+      print_dictionary
       print_directories_dict
       print_option_dict
       print_title

@@ -375,7 +375,12 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">getitem</span><span class="p">,</span> <span class="n">mapList</span><span class="p">,</span> <span class="n">dataDict</span><span class="p">)</span></div>
 
-
+<div class="viewcode-block" id="isInDict"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.standard_utils.isInDict.html#PyHPC.PyHPC_Utils.standard_utils.isInDict">[docs]</a><span class="k">def</span> <span class="nf">isInDict</span><span class="p">(</span><span class="n">dataDict</span><span class="p">,</span><span class="n">mapList</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">reduce</span><span class="p">(</span><span class="n">operator</span><span class="o">.</span><span class="n">getitem</span><span class="p">,</span> <span class="n">mapList</span><span class="p">,</span> <span class="n">dataDict</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 <div class="viewcode-block" id="setInDict"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_Utils.standard_utils.setInDict.html#PyHPC.PyHPC_Utils.standard_utils.setInDict">[docs]</a><span class="k">def</span> <span class="nf">setInDict</span><span class="p">(</span><span class="n">dataDict</span><span class="p">,</span> <span class="n">mapList</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    sets the value located at ``mapList`` to ``value`` in ``dataDict``.</span>

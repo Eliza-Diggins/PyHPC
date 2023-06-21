@@ -27,8 +27,8 @@ loggers:
   console:
     level: 90
     handlers: [console_out]
-    propogate: false
+    propagate: false
   meta:
     level: DEBUG
     handlers: [meta]
-    propogate: false
+    propagate: false

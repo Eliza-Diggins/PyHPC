@@ -362,6 +362,7 @@ document.write(`
 <span class="n">modlog</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">_structure_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;struct&quot;</span><span class="p">,</span>
                                <span class="s2">&quot;simlog_struct.json&quot;</span><span class="p">)</span>
+
 <span class="c1"># - managing warnings -#</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">CONFIG</span><span class="p">[</span><span class="s2">&quot;System&quot;</span><span class="p">][</span><span class="s2">&quot;Logging&quot;</span><span class="p">][</span><span class="s2">&quot;warnings&quot;</span><span class="p">]:</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
@@ -527,6 +528,9 @@ document.write(`
             <span class="n">k</span><span class="p">:</span> <span class="n">InitCon</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
         <span class="p">}</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">listed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span>
     <span class="c1"># ---------------------------------------------------------------------------------------------------------------- #</span>
     <span class="c1"># Dunder Methods ================================================================================================= #</span>
     <span class="c1"># ---------------------------------------------------------------------------------------------------------------- #</span>
@@ -780,57 +784,8 @@ document.write(`
         <span class="c1">#  Saving</span>
         <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">simlog_file</span><span class="p">:</span>
-            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span> <span class="n">simlog_file</span><span class="p">,</span><span class="bp">cls</span><span class="o">=</span><span class="n">NonStandardEncoder</span><span class="p">)</span></div>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span> <span class="n">simlog_file</span><span class="p">,</span><span class="bp">cls</span><span class="o">=</span><span class="n">NonStandardEncoder</span><span class="p">)</span></div></div>
 
-<div class="viewcode-block" id="SimulationLog.to_html"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimulationLog.to_html.html#PyHPC.PyHPC_System.simulation_management.SimulationLog.to_html">[docs]</a>    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Writes the simulation log to a system of ``html`` files at the ``output`` location.</span>
-
-<span class="sd">        .. warning::</span>
-<span class="sd">            Incomplete</span>
-
-<span class="sd">        .. todo::</span>
-<span class="sd">            Finish this.</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        output: The ``path`` to the output directory.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1">#  Debugging</span>
-        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
-        <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Generating html output of </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
-
-        <span class="c1">#  Managing the directory</span>
-        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output</span><span class="p">):</span>
-            <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Generated output directory </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found output directory </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">output</span><span class="p">)</span>
-
-        <span class="c1">#  Generating the first table</span>
-        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
-        <span class="n">table_data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">k</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;Name&quot;</span>        <span class="p">:</span> <span class="s2">&quot;&lt;a href=&#39;</span><span class="si">%s</span><span class="s2">&#39;&gt;</span><span class="si">%s</span><span class="s2">&lt;/a&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;InitCons&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.html&quot;</span> <span class="o">%</span> <span class="n">k</span><span class="p">),</span> <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
-                <span class="s2">&quot;Date Created&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;dateCreated&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;Last Edited&quot;</span> <span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;lastEdited&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;# of ICs&quot;</span>    <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">])</span>
-            <span class="p">}</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="p">}</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;test.html&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">,</span> <span class="s2">&quot;simlog_html_1.html&quot;</span><span class="p">),</span>
-                      <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">template</span><span class="p">:</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="n">dict_to_html</span><span class="p">(</span><span class="n">table_data</span><span class="p">),</span>
-                                           <span class="s2">&quot;path&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">})</span>
-
-        <span class="k">for</span> <span class="n">ic</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">v</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="n">output</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="InitCon"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.InitCon.html#PyHPC.PyHPC_System.simulation_management.InitCon">[docs]</a><span class="k">class</span> <span class="nc">InitCon</span><span class="p">:</span>
@@ -881,7 +836,9 @@ document.write(`
             <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">SimRec</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">listed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.core``  contains all of the core information for this entry.&quot;&quot;&quot;</span>
@@ -1036,7 +993,7 @@ document.write(`
                 <span class="n">new</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
                 <span class="c1"># - Adding necessary headers -#</span>
-                <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;information&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;action_log&quot;</span><span class="p">,</span> <span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{}]):</span>
+                <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;information&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;action_log&quot;</span><span class="p">,</span> <span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">,</span><span class="s2">&quot;components&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{},{}]):</span>
                     <span class="k">if</span> <span class="n">header</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                         <span class="n">new</span><span class="p">[</span><span class="n">header</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
 
@@ -1045,6 +1002,8 @@ document.write(`
                     <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;dateCreated&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generation_time</span>
                 <span class="k">if</span> <span class="s2">&quot;lastEdited&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
                     <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;lastEdited&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generation_time</span>
+                <span class="k">if</span> <span class="s2">&quot;software&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
+                    <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;software&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;NA&quot;</span>
 
                 <span class="n">new_entries</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span>
             <span class="n">entries</span> <span class="o">=</span> <span class="n">new_entries</span>
@@ -1070,6 +1029,9 @@ document.write(`
 <div class="viewcode-block" id="InitCon.save"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.InitCon.save.html#PyHPC.PyHPC_System.simulation_management.InitCon.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="InitCon.delete"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.InitCon.delete.html#PyHPC.PyHPC_System.simulation_management.InitCon.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 <div class="viewcode-block" id="InitCon.to_html"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.InitCon.to_html.html#PyHPC.PyHPC_System.simulation_management.InitCon.to_html">[docs]</a>    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the init_log to a system of ``html`` files at the ``output`` location.</span>
@@ -1206,7 +1168,9 @@ document.write(`
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">listed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.core``  contains all of the core information for this entry.&quot;&quot;&quot;</span>
@@ -1357,7 +1321,9 @@ document.write(`
 
 <div class="viewcode-block" id="SimRec.save"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.save.html#PyHPC.PyHPC_System.simulation_management.SimRec.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
-
+<div class="viewcode-block" id="SimRec.delete"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.delete.html#PyHPC.PyHPC_System.simulation_management.SimRec.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 <div class="viewcode-block" id="SimRec.add"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.add.html#PyHPC.PyHPC_System.simulation_management.SimRec.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds the data contained in ``entries`` to the ``SimRec`` object&#39;s ``outputs`` dictionary.</span>
@@ -1419,7 +1385,7 @@ document.write(`
                 <span class="n">new</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
                 <span class="c1"># - Adding necessary headers -#</span>
-                <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;information&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{}]):</span>
+                <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;information&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span><span class="s2">&quot;action_log&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{},{}]):</span>
                     <span class="k">if</span> <span class="n">header</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                         <span class="n">new</span><span class="p">[</span><span class="n">header</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
 
@@ -1428,6 +1394,8 @@ document.write(`
                     <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;dateCreated&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">generation_time</span>
                 <span class="k">if</span> <span class="s2">&quot;isRun&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
                     <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;isRun&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">if</span> <span class="s2">&quot;slurm_path&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]:</span>
+                    <span class="n">new</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;slurm_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
 
                 <span class="n">new_entries</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">new</span>
             <span class="n">entries</span> <span class="o">=</span> <span class="n">new_entries</span>
@@ -1443,12 +1411,12 @@ document.write(`
 
         <span class="c1">#  Adding</span>
         <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">entries</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">],</span> <span class="o">**</span><span class="n">entries</span><span class="p">}</span>
 
         <span class="c1">#  Managing Saves</span>
         <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
         <span class="k">if</span> <span class="n">auto_save</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div></div>
 
 <span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
 <span class="c1"># Sub Functions ====================================================================================================== #</span>
@@ -1496,7 +1464,6 @@ document.write(`
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">simlog</span> <span class="o">=</span> <span class="n">SimulationLog</span><span class="p">()</span>
-    <span class="n">simlog</span><span class="o">.</span><span class="n">to_html</span><span class="p">(</span><span class="s2">&quot;/home/ediggins/html_test&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </article>

@@ -53,7 +53,6 @@ __logging_data = {"dir"  : os.path.join(CONFIG["System"]["Directories"]["log_dir
                                             sys.modules["__main__"], "__file__") else "console")),
                   "files": CONFIG["System"]["Logging"]["output_to_file"]}
 
-print(__logging_data)
 
 with open(os.path.join(pt.Path(__file__).parents[1], "bin", "inst", "log", "logcon.yaml"), "r") as f:
     log_config_dict = yaml.load(f, Loader=yaml.FullLoader)
@@ -109,15 +108,12 @@ def configure_logging(location):
             if not os.path.exists(pt.Path(log_config_dict["handlers"][k]["filename"]).parents[0]):
                 pt.Path(log_config_dict["handlers"][k]["filename"]).parents[0].mkdir(parents=True)
 
-            print(v["filename"] % {"log_dir": __logging_data["dir"],
-                                     "time"   : __logtime,
-                                     "loc"    : pt.Path(location).name.replace(pt.Path(location).suffix, "")})
     # Generating modules
     # ------------------------------------------------------------------------------------------------------------ #
     for mod in _get_modules(str(pt.Path(__file__).parents[2])):
         log_config_dict["loggers"][mod] = {"level"    : "DEBUG",
                                   "handlers" : ["%s_handler" % mod],
-                                  "propogate": True}
+                                  "propagate": True}
         log_config_dict["handlers"]["%s_handler" % mod] = {
             "level"    : "DEBUG",
             "filename" : os.path.join(__logging_data["dir"],
@@ -126,9 +122,6 @@ def configure_logging(location):
             "class"    : "logging.FileHandler",
             "formatter": "fileFormatter"
         }
-        print(os.path.join(__logging_data["dir"],
-                                      pt.Path(location).name.replace(pt.Path(location).suffix, ""),
-                                      *mod.split("."), "log.log"))
         if not os.path.exists(pt.Path(log_config_dict["handlers"]["%s_handler" % mod]["filename"]).parents[0]):
             pt.Path(log_config_dict["handlers"]["%s_handler" % mod]["filename"]).parents[0].mkdir(parents=True)
 
