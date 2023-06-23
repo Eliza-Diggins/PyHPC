@@ -1,7 +1,10 @@
-.. PyHPC documentation master file, created by
-   sphinx-quickstart on Fri Jun  9 07:09:59 2023.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+|yt-project|
+
+.. |yt-project| image:: https://img.shields.io/static/v1?label="works%20with"&message="yt"&color="blueviolet"
+   :target: https://yt-project.org
+
+.. image:: https://img.shields.io/badge/linting-pylint-yellowgreen
+    :target: https://github.com/pylint-dev/pylint
 
 Welcome to PyHPC's documentation!
 =================================
