@@ -45,11 +45,12 @@ which case a full reinstallation will occur.
 import argparse
 import json
 import os
+import sys
 import pathlib as pt
 import shutil
 from datetime import datetime
 from types import SimpleNamespace
-
+sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
 import tomlkit as t
 from colorama import Fore, Style
 import pathlib as pt
