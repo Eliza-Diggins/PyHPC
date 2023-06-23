@@ -53,7 +53,7 @@ from types import SimpleNamespace
 import tomlkit as t
 from colorama import Fore, Style
 import pathlib as pt
-from PyHPC_Core.utils import get_system_info,NonStandardEncoder
+from PyHPC.PyHPC_Core.utils import get_system_info,NonStandardEncoder
 
 
 # -------------------------------------------------------------------------------------------------------------------- #
