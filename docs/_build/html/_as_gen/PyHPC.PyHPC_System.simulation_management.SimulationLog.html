@@ -473,150 +473,70 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="PyHPC.PyHPC_System.simulation_management.SimulationLog">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PyHPC.PyHPC_System.simulation_management.</span></span><span class="sig-name descname"><span class="pre">SimulationLog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyHPC/PyHPC_System/simulation_management.html#SimulationLog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyHPC.PyHPC_System.simulation_management.SimulationLog" title="Permalink to this definition">#</a></dt>
-<dd><p><code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> class to manage the simulations stored on the drive.</p>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> class is the super class object for simulation management and contains all the simulation
+data corresponding to a single log file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> – The filepath at which to locate the simulation log file (<code class="docutils literal notranslate"><span class="pre">.json</span></code>)</p>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> or </em><em>pt.Path</em>) – The path to the corresponding logging file.</p>
 </dd>
 </dl>
-<p>—</p>
-<p>## Formatting <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> Objects</p>
-<p>The purpose of the simulation logging module is to keep track of active simulations in the research
-stream in as seamless a way as possible. The following are of core importance for use of the system</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>The &lt;b&gt;root&lt;/b&gt; of any entry in the simulation log is the &lt;u&gt;initial condition file&lt;/u&gt;</dt><dd><ul>
-<li><p>The intention here is that for any given physical setup, there may be many simulations
-of interest which need to all be tracked and which may have different <code class="docutils literal notranslate"><span class="pre">.nml</span></code> and <code class="docutils literal notranslate"><span class="pre">.slurm</span></code> files.</p></li>
-</ul>
-</dd>
-</dl>
-</li>
-<li><p>The simulation log pertinent to your installation is located at <code class="docutils literal notranslate"><span class="pre">/bin/simLog.json</span></code> and prescribes to &lt;u&gt;all&lt;/u&gt; of
-the formatting restrictions of <code class="docutils literal notranslate"><span class="pre">.json</span></code> type files.</p></li>
-</ul>
-<p>## Formatting</p>
-<p>The format of a single entry is as follows:</p>
-<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>json
-{</p>
-<blockquote>
-<div><dl>
-<dt>‘&lt;initial_condition_file_path&gt;’: {</dt><dd><p>“information”: “&lt;user input information&gt;”,
-“meta”: {</p>
-<blockquote>
-<div><p>“dateCreated”: “”,
-“lastEdited”: “”,
-“&lt;further meta data&gt;”: “”</p>
-</div></blockquote>
-<p>},
-“simulations”: {</p>
-<blockquote>
-<div><dl class="simple">
-<dt>“&lt;simulation 1&gt;”: {</dt><dd><p>“keys”: “values”</p>
-</dd>
-</dl>
-<p>}</p>
-</div></blockquote>
-<p>},
-“core”: {
-},
-“action_log”:{
-},</p>
-</dd>
-</dl>
-<p>}</p>
-</div></blockquote>
-<section id="id5">
-<h2>}<a class="headerlink" href="#id5" title="Permalink to this heading">#</a></h2>
-<p>meta data can be added to the entry as needed as the system &lt;u&gt;never enforces a key list&lt;/u&gt;. If the user is
-benefitted by adding additional information, then they may do so without issue. There are a few required pieces
-of information required for every entry:</p>
-<p><a href="#id6"><span class="problematic" id="id7">``</span></a><a href="#id8"><span class="problematic" id="id9">`</span></a>json
-{</p>
-<blockquote>
-<div><dl>
-<dt>“&lt;initial_condition_file_path&gt;”: {</dt><dd><p>“information”: “(Can be blank, but must be present)”,
-“meta”: {</p>
-<blockquote>
-<div><p>“dateCreated”: “the timestap for creation”,
-“software”: “the software used to generate the .nml file”</p>
-</div></blockquote>
-<p>},
-“simulations”: {
-},
-“action_log”:{
-}</p>
-</dd>
-</dl>
-<p>}</p>
-</div></blockquote>
-</section>
-<section id="id10">
-<h2>}<a class="headerlink" href="#id10" title="Permalink to this heading">#</a></h2>
-<p>The user &lt;b&gt;must specify: <code class="docutils literal notranslate"><span class="pre">information</span></code>,``meta``,``simulations``,and``core``&lt;/b&gt;.</p>
-<p>## Simulations</p>
-<p>Simulations are logged as subsets of the <code class="docutils literal notranslate"><span class="pre">initial_condition_file</span></code> objects in the database. This means that they hold a
-format
-of there own. Like the initial conditions, the &lt;b&gt;root&lt;/b&gt; of any <code class="docutils literal notranslate"><span class="pre">simulation</span></code> in the log is the <code class="docutils literal notranslate"><span class="pre">.nml</span></code> file. The
-simulation takes the
-following format</p>
-<p><a href="#id11"><span class="problematic" id="id12">``</span></a><a href="#id13"><span class="problematic" id="id14">`</span></a>json
-{</p>
-<blockquote>
-<div><dl>
-<dt>“simulations”: {</dt><dd><dl>
-<dt>“&lt;.nml file (or equivalent for other software&gt;”: {</dt><dd><p>“information”: “Filled by the user to record important simulation notes.”,
-“action_log”: {</p>
-<blockquote>
-<div><p>“action”: “information”</p>
-</div></blockquote>
-<p>},
-“meta”: {
-},
-“core”: {
-},
-“outputs”: {
-}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-</div></blockquote>
-</section>
-<section id="id15">
-<h2>}<a class="headerlink" href="#id15" title="Permalink to this heading">#</a></h2>
-<p>Again, there is no hard enforcement of the format. There are a few required keys for adding a simulation; an example of
-a very basic simulation
-being added to the simulation log might look like</p>
-<p><a href="#id16"><span class="problematic" id="id17">``</span></a><a href="#id18"><span class="problematic" id="id19">`</span></a>json
-{</p>
-<blockquote>
-<div><dl>
-<dt>“simulations”: {</dt><dd><dl>
-<dt>“example.nml”: {</dt><dd><p>“information”: “A dummy simulation for use as an example.”,
-“action_log”: {
-},
-“meta”: {</p>
-<blockquote>
-<div><p>“fileCreated”: “01-01-1000”</p>
-</div></blockquote>
-<p>},
-“core”: {
-},
-“outputs”: {
-}</p>
-</dd>
-</dl>
-<p>}</p>
-</dd>
-</dl>
-<p>}</p>
-</div></blockquote>
-</section>
-<section id="id20">
-<h2>}<a class="headerlink" href="#id20" title="Permalink to this heading">#</a></h2>
+<p class="rubric">Notes</p>
+<p>The formatting for the simulation management objects is dictated by the <code class="docutils literal notranslate"><span class="pre">/bin/bin/lib/struct/simlog_struct.json</span></code> file,
+which has constraints on the formatting of each of the logging objects. The format is determined as follows:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="s2">&quot;This file contains all of the information about required entries for simulation log objects.&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;SimulationLog&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;information&quot;</span> <span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;dateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;lastEdited&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;simulations&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">},</span>
+      <span class="s2">&quot;core&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">},</span>
+      <span class="s2">&quot;action_log&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;InitCon&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;dateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;software&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;action_log&quot;</span><span class="p">:{</span>
+        <span class="p">},</span>
+      <span class="s2">&quot;core&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">},</span>
+      <span class="s2">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+  <span class="s2">&quot;SimRec&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;format&quot;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;dateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;isRun&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;slurm_path&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;action_log&quot;</span><span class="p">:{</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
@@ -627,7 +547,7 @@ being added to the simulation log might look like</p>
 <td><p>adds the entry contained in <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> to the <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> object.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimulationLog.get_simulation_records.html#PyHPC.PyHPC_System.simulation_management.SimulationLog.get_simulation_records" title="PyHPC.PyHPC_System.simulation_management.SimulationLog.get_simulation_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_simulation_records</span></code></a>()</p></td>
-<td><p>Fetches all of the <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> objects in the <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code>.</p></td>
+<td><p>Fetches all the <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> objects in the <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimulationLog.save.html#PyHPC.PyHPC_System.simulation_management.SimulationLog.save" title="PyHPC.PyHPC_System.simulation_management.SimulationLog.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>()</p></td>
 <td><p>Saves the current simulation log.</p></td>
@@ -644,14 +564,13 @@ being added to the simulation log might look like</p>
 <td><p>Contains the dictionary of <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> objects to use during execution.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimulationLog.listed.html#PyHPC.PyHPC_System.simulation_management.SimulationLog.listed" title="PyHPC.PyHPC_System.simulation_management.SimulationLog.listed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listed</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Contains the <code class="docutils literal notranslate"><span class="pre">self.raw</span></code> object as a <code class="docutils literal notranslate"><span class="pre">property</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimulationLog.path.html#PyHPC.PyHPC_System.simulation_management.SimulationLog.path" title="PyHPC.PyHPC_System.simulation_management.SimulationLog.path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">path</span></code></a></p></td>
 <td><p>The path variable indicating the location of the underlying <code class="docutils literal notranslate"><span class="pre">.json</span></code> file.</p></td>
 </tr>
 </tbody>
 </table>
-</section>
 </dd></dl>
 
 </section>

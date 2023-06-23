@@ -163,7 +163,7 @@ if __name__ == '__main__':
                         klog.position = 0
                         klog.selected = []
 
-                if klog.command == "log" and len(klog.location) > 1:
+                if klog.command == "log" and len(klog.location) >= 1:
                     os.system('cls' if os.name == 'nt' else 'clear')
                     if type(klog.object).__name__ != "SimRec":
                         print(get_dict_str(klog.object[list(klog.object.listed.keys())[klog.position]].raw["action_log"]))

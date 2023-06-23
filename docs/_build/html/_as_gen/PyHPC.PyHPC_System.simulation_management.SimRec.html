@@ -473,7 +473,7 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="PyHPC.PyHPC_System.simulation_management.SimRec">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PyHPC.PyHPC_System.simulation_management.</span></span><span class="sig-name descname"><span class="pre">SimRec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyHPC/PyHPC_System/simulation_management.html#SimRec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyHPC.PyHPC_System.simulation_management.SimRec" title="Permalink to this definition">#</a></dt>
-<dd><p>The <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> class contains all of the information for a single simulation record in the <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> system.
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> class contains all the information for a single simulation record in the <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> system.
 This is the most granular view available in the <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> hierarchy.</p>
 <p><strong>Formatting</strong>:</p>
 <section id="id1">
@@ -513,8 +513,8 @@ This is the most granular view available in the <code class="docutils literal no
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.add.html#PyHPC.PyHPC_System.simulation_management.SimRec.add" title="PyHPC.PyHPC_System.simulation_management.SimRec.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code></a>(entries[, auto_save, force])</p></td>
 <td><p>Adds the data contained in <code class="docutils literal notranslate"><span class="pre">entries</span></code> to the <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> object's <code class="docutils literal notranslate"><span class="pre">outputs</span></code> dictionary.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.delete.html#PyHPC.PyHPC_System.simulation_management.SimRec.delete" title="PyHPC.PyHPC_System.simulation_management.SimRec.delete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete</span></code></a>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.delete.html#PyHPC.PyHPC_System.simulation_management.SimRec.delete" title="PyHPC.PyHPC_System.simulation_management.SimRec.delete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete</span></code></a>([force])</p></td>
+<td><p>Deletes the <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.log.html#PyHPC.PyHPC_System.simulation_management.SimRec.log" title="PyHPC.PyHPC_System.simulation_management.SimRec.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a>(message, action[, auto_save])</p></td>
 <td><p>logs the <code class="docutils literal notranslate"><span class="pre">message</span></code> to the <code class="docutils literal notranslate"><span class="pre">self.raw.action_log</span></code>.</p></td>
@@ -528,19 +528,19 @@ This is the most granular view available in the <code class="docutils literal no
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.core.html#PyHPC.PyHPC_System.simulation_management.SimRec.core" title="PyHPC.PyHPC_System.simulation_management.SimRec.core"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">self.core</span></code>  contains all of the core information for this entry.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self.core</span></code>  contains all the core information for this entry.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.inf.html#PyHPC.PyHPC_System.simulation_management.SimRec.inf" title="PyHPC.PyHPC_System.simulation_management.SimRec.inf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inf</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">self.inf</span></code> contains all of the description information for this entry.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self.inf</span></code> contains all the description information for this entry.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.listed.html#PyHPC.PyHPC_System.simulation_management.SimRec.listed" title="PyHPC.PyHPC_System.simulation_management.SimRec.listed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listed</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.meta.html#PyHPC.PyHPC_System.simulation_management.SimRec.meta" title="PyHPC.PyHPC_System.simulation_management.SimRec.meta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meta</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">self.meta</span></code> contains all of the meta information for this entry.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self.meta</span></code> contains all the meta information for this entry.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.outputs.html#PyHPC.PyHPC_System.simulation_management.SimRec.outputs" title="PyHPC.PyHPC_System.simulation_management.SimRec.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outputs</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">self.outputs</span></code> Contains all of the outputs for the <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> object.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self.outputs</span></code> Contains all the outputs for the <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.parent.html#PyHPC.PyHPC_System.simulation_management.SimRec.parent" title="PyHPC.PyHPC_System.simulation_management.SimRec.parent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">self.parent</span></code> is a reference to the parent object.</p></td>
@@ -549,7 +549,7 @@ This is the most granular view available in the <code class="docutils literal no
 <td><p><code class="docutils literal notranslate"><span class="pre">self.name</span></code> contains the &lt;u&gt;absolute path&lt;/u&gt; to the <code class="docutils literal notranslate"><span class="pre">.nml</span></code> file or equivalent init file for runtime use.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimRec.raw.html#PyHPC.PyHPC_System.simulation_management.SimRec.raw" title="PyHPC.PyHPC_System.simulation_management.SimRec.raw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">raw</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">self.raw</span></code> contains all of the raw data provided in the <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> object.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self.raw</span></code> contains all the raw data provided in the <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> object.</p></td>
 </tr>
 </tbody>
 </table>

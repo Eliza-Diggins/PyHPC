@@ -335,9 +335,11 @@ document.write(`
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">builtins</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">operator</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pathlib</span> <span class="k">as</span> <span class="nn">pt</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">threading</span> <span class="k">as</span> <span class="nn">t</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
@@ -346,9 +348,7 @@ document.write(`
 
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.configuration</span> <span class="kn">import</span> <span class="n">read_config</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.errors</span> <span class="kn">import</span> <span class="n">PyHPC_Error</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.utils</span> <span class="kn">import</span> <span class="n">NonStandardEncoder</span>
-<span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Utils.text_display_utilities</span> <span class="kn">import</span> <span class="n">dict_to_html</span>
 
 <span class="c1"># generating screen locking #</span>
 <span class="n">screen_lock</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># locks off multi-threaded screen.</span>
@@ -373,120 +373,21 @@ document.write(`
 <span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
 <div class="viewcode-block" id="SimulationLog"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimulationLog.html#PyHPC.PyHPC_System.simulation_management.SimulationLog">[docs]</a><span class="k">class</span> <span class="nc">SimulationLog</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    ``SimulationLog`` class to manage the simulations stored on the drive.</span>
+<span class="sd">    The ``SimulationLog`` class is the super class object for simulation management and contains all the simulation</span>
+<span class="sd">    data corresponding to a single log file.</span>
 
-<span class="sd">    :param path: The filepath at which to locate the simulation log file (``.json``)</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path: str or pt.Path</span>
+<span class="sd">        The path to the corresponding logging file.</span>
 
-<span class="sd">    ---</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The formatting for the simulation management objects is dictated by the ``/bin/bin/lib/struct/simlog_struct.json`` file,</span>
+<span class="sd">    which has constraints on the formatting of each of the logging objects. The format is determined as follows:</span>
 
-<span class="sd">    ## Formatting ``SimulationLog`` Objects</span>
-
-<span class="sd">    The purpose of the simulation logging module is to keep track of active simulations in the research</span>
-<span class="sd">    stream in as seamless a way as possible. The following are of core importance for use of the system</span>
-
-<span class="sd">    - The &lt;b&gt;root&lt;/b&gt; of any entry in the simulation log is the &lt;u&gt;initial condition file&lt;/u&gt;</span>
-<span class="sd">        - The intention here is that for any given physical setup, there may be many simulations</span>
-<span class="sd">          of interest which need to all be tracked and which may have different ``.nml`` and ``.slurm`` files.</span>
-<span class="sd">    - The simulation log pertinent to your installation is located at ``/bin/simLog.json`` and prescribes to &lt;u&gt;all&lt;/u&gt; of</span>
-<span class="sd">      the formatting restrictions of ``.json`` type files.</span>
-
-<span class="sd">    ## Formatting</span>
-
-<span class="sd">    The format of a single entry is as follows:</span>
-
-<span class="sd">    ```json</span>
-<span class="sd">    {</span>
-<span class="sd">      &#39;&lt;initial_condition_file_path&gt;&#39;: {</span>
-<span class="sd">        &quot;information&quot;: &quot;&lt;user input information&gt;&quot;,</span>
-<span class="sd">        &quot;meta&quot;: {</span>
-<span class="sd">          &quot;dateCreated&quot;: &quot;&quot;,</span>
-<span class="sd">          &quot;lastEdited&quot;: &quot;&quot;,</span>
-<span class="sd">          &quot;&lt;further meta data&gt;&quot;: &quot;&quot;</span>
-<span class="sd">        },</span>
-<span class="sd">        &quot;simulations&quot;: {</span>
-<span class="sd">          &quot;&lt;simulation 1&gt;&quot;: {</span>
-<span class="sd">            &quot;keys&quot;: &quot;values&quot;</span>
-<span class="sd">          }</span>
-<span class="sd">        },</span>
-<span class="sd">        &quot;core&quot;: {</span>
-<span class="sd">        },</span>
-<span class="sd">        &quot;action_log&quot;:{</span>
-<span class="sd">        },</span>
-<span class="sd">      }</span>
-<span class="sd">    }</span>
-<span class="sd">    ```</span>
-
-<span class="sd">    meta data can be added to the entry as needed as the system &lt;u&gt;never enforces a key list&lt;/u&gt;. If the user is</span>
-<span class="sd">    benefitted by adding additional information, then they may do so without issue. There are a few required pieces</span>
-<span class="sd">    of information required for every entry:</span>
-
-<span class="sd">    ```json</span>
-<span class="sd">    {</span>
-<span class="sd">      &quot;&lt;initial_condition_file_path&gt;&quot;: {</span>
-<span class="sd">        &quot;information&quot;: &quot;(Can be blank, but must be present)&quot;,</span>
-<span class="sd">        &quot;meta&quot;: {</span>
-<span class="sd">          &quot;dateCreated&quot;: &quot;the timestap for creation&quot;,</span>
-<span class="sd">          &quot;software&quot;: &quot;the software used to generate the .nml file&quot;</span>
-<span class="sd">        },</span>
-<span class="sd">        &quot;simulations&quot;: {</span>
-<span class="sd">        },</span>
-<span class="sd">        &quot;action_log&quot;:{</span>
-<span class="sd">        }</span>
-<span class="sd">      }</span>
-<span class="sd">    }</span>
-<span class="sd">    ```</span>
-
-<span class="sd">    The user &lt;b&gt;must specify: ``information``,``meta``,``simulations``,and``core``&lt;/b&gt;.</span>
-
-<span class="sd">    ## Simulations</span>
-
-<span class="sd">    Simulations are logged as subsets of the ``initial_condition_file`` objects in the database. This means that they hold a</span>
-<span class="sd">    format</span>
-<span class="sd">    of there own. Like the initial conditions, the &lt;b&gt;root&lt;/b&gt; of any ``simulation`` in the log is the ``.nml`` file. The</span>
-<span class="sd">    simulation takes the</span>
-<span class="sd">    following format</span>
-
-<span class="sd">    ```json</span>
-<span class="sd">    {</span>
-<span class="sd">      &quot;simulations&quot;: {</span>
-<span class="sd">        &quot;&lt;.nml file (or equivalent for other software&gt;&quot;: {</span>
-<span class="sd">          &quot;information&quot;: &quot;Filled by the user to record important simulation notes.&quot;,</span>
-<span class="sd">          &quot;action_log&quot;: {</span>
-<span class="sd">            &quot;action&quot;: &quot;information&quot;</span>
-<span class="sd">          },</span>
-<span class="sd">          &quot;meta&quot;: {</span>
-<span class="sd">          },</span>
-<span class="sd">          &quot;core&quot;: {</span>
-<span class="sd">          },</span>
-<span class="sd">          &quot;outputs&quot;: {</span>
-<span class="sd">          }</span>
-<span class="sd">        }</span>
-<span class="sd">      }</span>
-<span class="sd">    }</span>
-<span class="sd">    ```</span>
-
-<span class="sd">    Again, there is no hard enforcement of the format. There are a few required keys for adding a simulation; an example of</span>
-<span class="sd">    a very basic simulation</span>
-<span class="sd">    being added to the simulation log might look like</span>
-
-<span class="sd">    ```json</span>
-<span class="sd">    {</span>
-<span class="sd">      &quot;simulations&quot;: {</span>
-<span class="sd">        &quot;example.nml&quot;: {</span>
-<span class="sd">          &quot;information&quot;: &quot;A dummy simulation for use as an example.&quot;,</span>
-<span class="sd">          &quot;action_log&quot;: {</span>
-<span class="sd">          },</span>
-<span class="sd">          &quot;meta&quot;: {</span>
-<span class="sd">            &quot;fileCreated&quot;: &quot;01-01-1000&quot;</span>
-<span class="sd">          },</span>
-<span class="sd">          &quot;core&quot;: {</span>
-<span class="sd">          },</span>
-<span class="sd">          &quot;outputs&quot;: {</span>
-<span class="sd">          }</span>
-<span class="sd">        }</span>
-<span class="sd">      }</span>
-<span class="sd">    }</span>
-<span class="sd">    ```</span>
+<span class="sd">    .. include:: ../../PyHPC/bin/lib/struct/simlog_struct.json</span>
+<span class="sd">        :code:</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -515,13 +416,13 @@ document.write(`
     <span class="c1"># ---------------------------------------------------------------------------------------------------------------- #</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">ics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">ics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Contains the dictionary of ``InitCon`` objects to use during execution.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        val : ``dict``</span>
+<span class="sd">        val : dict of {str : InitCon}</span>
 <span class="sd">            The dictionary of ``InitCon`` objects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">{</span>
@@ -529,8 +430,10 @@ document.write(`
         <span class="p">}</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">listed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">listed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Contains the ``self.raw`` object as a ``property``. This allows for a more uniform development structure.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span>
+
     <span class="c1"># ---------------------------------------------------------------------------------------------------------------- #</span>
     <span class="c1"># Dunder Methods ================================================================================================= #</span>
     <span class="c1"># ---------------------------------------------------------------------------------------------------------------- #</span>
@@ -560,11 +463,13 @@ document.write(`
 <span class="sd">        Defines the capacity to get items from the ``self.raw`` variable.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        item ``list``: The item position to pull from.</span>
+<span class="sd">        item : list</span>
+<span class="sd">            The item position to pull from.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        ``dict``: The dictionary sub-position generated.</span>
+<span class="sd">        dict</span>
+<span class="sd">            The dictionary sub-position generated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">item</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">]</span>
@@ -599,12 +504,12 @@ document.write(`
 
 <div class="viewcode-block" id="SimulationLog.get_simulation_records"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimulationLog.get_simulation_records.html#PyHPC.PyHPC_System.simulation_management.SimulationLog.get_simulation_records">[docs]</a>    <span class="k">def</span> <span class="nf">get_simulation_records</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Fetches all of the ``SimRec`` objects in the ``SimulationLog``.</span>
+<span class="sd">        Fetches all the ``SimRec`` objects in the ``SimulationLog``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict</span>
-<span class="sd">            Dictionary of all of the ``SimRec`` objects in the format ``{name:SimRec}``.</span>
+<span class="sd">            Dictionary of all the ``SimRec`` objects in the format ``{name:SimRec}``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">obs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">ic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ics</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -670,37 +575,23 @@ document.write(`
 <div class="viewcode-block" id="SimulationLog.add"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimulationLog.add.html#PyHPC.PyHPC_System.simulation_management.SimulationLog.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        adds the entry contained in ``**kwargs`` to the ``SimulationLog`` object. The ``entries`` may contain any number</span>
-<span class="sd">        of individual (&lt;u&gt;correctly formatted&lt;/u&gt;) entries to add.</span>
+<span class="sd">        of individual entries to add.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        auto_save : bool</span>
 <span class="sd">            ``auto_save=True`` will immediately write the simulation log to file once alterations are made.</span>
 <span class="sd">        entries : dict</span>
-<span class="sd">            The entries to add to the ``SimulationLog``. Each entry should have the standard format:</span>
+<span class="sd">            The entries to add to the ``SimulationLog``. Each entry should have the standard format for ``InitCon``:</span>
 
-<span class="sd">            ```</span>
-<span class="sd">            {</span>
-<span class="sd">              &#39;&lt;initial_condition_file_path&gt;&#39;: {</span>
-<span class="sd">                &quot;information&quot;: &quot;&lt;user input information&gt;&quot;,</span>
-<span class="sd">                &quot;meta&quot;: {</span>
-<span class="sd">                  &quot;dateCreated&quot;: &quot;&quot;,</span>
-<span class="sd">                  &quot;lastEdited&quot;: &quot;&quot;,</span>
-<span class="sd">                  &quot;&lt;further meta data&gt;&quot;: &quot;&quot;</span>
-<span class="sd">                },</span>
-<span class="sd">                &quot;simulations&quot;: {</span>
-<span class="sd">                  &quot;&lt;simulation 1&gt;&quot;: {</span>
-<span class="sd">                    &quot;keys&quot;: &quot;values&quot;</span>
-<span class="sd">                  }</span>
-<span class="sd">                },</span>
-<span class="sd">                &quot;core&quot;: {</span>
-<span class="sd">                }</span>
-<span class="sd">              }</span>
-<span class="sd">            }</span>
-<span class="sd">            ```</span>
+<span class="sd">            .. include:: ../../PyHPC/bin/lib/struct/simlog_struct.json</span>
+<span class="sd">                :code:</span>
+
 <span class="sd">        force : bool</span>
 <span class="sd">            Forces the Simulation log to accommodate the structure used regardless of if it meets the standard format</span>
-<span class="sd">            ..warning:: This could have catastrophic consequences and should be used only if sure of the result.</span>
+
+<span class="sd">            .. warning::</span>
+<span class="sd">                This could have catastrophic consequences and should be used only if sure of the result.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -738,7 +629,8 @@ document.write(`
                 <span class="n">new</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
                 <span class="c1"># - Adding necessary headers -#</span>
-                <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;information&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;simulations&quot;</span><span class="p">,</span> <span class="s2">&quot;core&quot;</span><span class="p">,</span><span class="s2">&quot;action_log&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{},{}]):</span>
+                <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;information&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;simulations&quot;</span><span class="p">,</span> <span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="s2">&quot;action_log&quot;</span><span class="p">],</span>
+                                       <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{}]):</span>
                     <span class="k">if</span> <span class="n">header</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                         <span class="n">new</span><span class="p">[</span><span class="n">header</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
 
@@ -784,36 +676,30 @@ document.write(`
         <span class="c1">#  Saving</span>
         <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">simlog_file</span><span class="p">:</span>
-            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span> <span class="n">simlog_file</span><span class="p">,</span><span class="bp">cls</span><span class="o">=</span><span class="n">NonStandardEncoder</span><span class="p">)</span></div></div>
-
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">,</span> <span class="n">simlog_file</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">NonStandardEncoder</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="InitCon"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.InitCon.html#PyHPC.PyHPC_System.simulation_management.InitCon">[docs]</a><span class="k">class</span> <span class="nc">InitCon</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The ``InitCon`` object is a container for an initial condition file (typically a ``.dat`` or ``.g2`` file). These form</span>
-<span class="sd">    the individual sub-units of the ``SimulationLog`` object and can be accessed using the ``SimulationLog.ics`` method.</span>
+<span class="sd">    The ``InitCon`` class contains data concerning a **single** initial condition file in any format. It is stored</span>
+<span class="sd">    in a ``SimulationLog`` and is read from the underlying file of it&#39;s parent object.</span>
 
-<span class="sd">    ---</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name : str</span>
+<span class="sd">        The name of the ``InitCon`` object as it is initialized by its ``parent`` object.</span>
+<span class="sd">    parent: SimulationLog</span>
+<span class="sd">        The parent ``SimulationLog`` object corresponding to the ``InitCon`` object.</span>
+<span class="sd">    raw: dict</span>
+<span class="sd">        The raw data, which should typically be just ``self.parent[&quot;name&quot;]`` in this case.</span>
 
-<span class="sd">    **Formatting**:</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The formatting for the simulation management objects is dictated by the ``/bin/bin/lib/struct/simlog_struct.json`` file,</span>
+<span class="sd">    which has constraints on the formatting of each of the logging objects. The format is determined as follows:</span>
 
-<span class="sd">    ```json</span>
-<span class="sd">    &#39;&lt;initial_condition_file_path&gt;&#39;: {</span>
-<span class="sd">        &quot;information&quot;: &quot;&lt;user input information&gt;&quot;,</span>
-<span class="sd">        &quot;meta&quot;: {</span>
-<span class="sd">          &quot;dateCreated&quot;: &quot;&quot;,</span>
-<span class="sd">          &quot;lastEdited&quot;: &quot;&quot;,</span>
-<span class="sd">          &quot;&lt;further meta data&gt;&quot;: &quot;&quot;</span>
-<span class="sd">        },</span>
-<span class="sd">        &quot;simulations&quot;: {</span>
-<span class="sd">          &quot;&lt;simulation 1&gt;&quot;: {</span>
-<span class="sd">            &quot;keys&quot;: &quot;values&quot;</span>
-<span class="sd">          }</span>
-<span class="sd">        },</span>
-<span class="sd">        &quot;core&quot;: {</span>
-<span class="sd">        }</span>
-<span class="sd">      }</span>
-<span class="sd">    ```</span>
+<span class="sd">    .. include:: ../../PyHPC/bin/lib/struct/simlog_struct.json</span>
+<span class="sd">        :code:</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -831,17 +717,20 @@ document.write(`
     <span class="c1"># ---------------------------------------------------------------------------------------------------------------- #</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">sims</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.sims`` contains all of the ``SimRec`` objects in the simulation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.sims`` contains all the ``SimRec`` objects in the simulation.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">SimRec</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
+
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">listed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">listed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Corresponds to ``self.raw[&quot;simulations&quot;]``. Base utility to standardize entrance procedures across objects.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">]</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.core``  contains all of the core information for this entry.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.core``  contains all the core information for this entry.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -849,7 +738,7 @@ document.write(`
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">inf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.inf`` contains all of the description information for this entry.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.inf`` contains all the description information for this entry.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;information&quot;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -857,7 +746,7 @@ document.write(`
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">meta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.meta`` contains all of the meta information for this entry.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.meta`` contains all the meta information for this entry.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -891,11 +780,13 @@ document.write(`
 <span class="sd">        Defines the capacity to get items from the ``self.raw`` variable.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        item_map ``list``: The item position to pull from.</span>
+<span class="sd">        item_map : list</span>
+<span class="sd">            The item position to pull from.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        ``dict``: The dictionary sub-position generated.</span>
+<span class="sd">        dict</span>
+<span class="sd">            The dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item_map</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">item_map</span> <span class="o">=</span> <span class="p">[</span><span class="n">item_map</span><span class="p">]</span>
@@ -930,32 +821,24 @@ document.write(`
 
 <div class="viewcode-block" id="InitCon.add"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.InitCon.add.html#PyHPC.PyHPC_System.simulation_management.InitCon.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        adds the entry contained in ``**kwargs`` to the ``InitCon`` object. The ``entries`` may contain any number</span>
-<span class="sd">        of individual (&lt;u&gt;correctly formatted&lt;/u&gt;) entries to add.</span>
+<span class="sd">        adds the entry contained in ``**kwargs`` to the ``SimulationLog`` object. The ``entries`` may contain any number</span>
+<span class="sd">        of individual entries to add.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        auto_save : bool</span>
 <span class="sd">            ``auto_save=True`` will immediately write the simulation log to file once alterations are made.</span>
 <span class="sd">        entries : dict</span>
-<span class="sd">            The entries to add to the ``InitCon``. Each entry should have the standard format:</span>
+<span class="sd">            The entries to add to the ``SimulationLog``. Each entry should have the standard format for ``InitCon``:</span>
 
-<span class="sd">            ```</span>
-<span class="sd">             &quot;format&quot;: {</span>
-<span class="sd">              &quot;information&quot;: &quot;str&quot;,</span>
-<span class="sd">              &quot;action_log&quot;: {</span>
-<span class="sd">              },</span>
-<span class="sd">              &quot;meta&quot;: {</span>
-<span class="sd">              },</span>
-<span class="sd">              &quot;core&quot;: {</span>
-<span class="sd">              },</span>
-<span class="sd">              &quot;outputs&quot;: {</span>
-<span class="sd">              }</span>
-<span class="sd">            }</span>
-<span class="sd">            ```</span>
+<span class="sd">            .. include:: ../../PyHPC/bin/lib/struct/simlog_struct.json</span>
+<span class="sd">                :code:</span>
+
 <span class="sd">        force : bool</span>
 <span class="sd">            Forces the Simulation log to accommodate the structure used regardless of if it meets the standard format</span>
-<span class="sd">            ..warning:: This could have catastrophic consequences and should be used only if sure of the result.</span>
+
+<span class="sd">            .. warning::</span>
+<span class="sd">                This could have catastrophic consequences and should be used only if sure of the result.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -993,7 +876,8 @@ document.write(`
                 <span class="n">new</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
                 <span class="c1"># - Adding necessary headers -#</span>
-                <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;information&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;action_log&quot;</span><span class="p">,</span> <span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">,</span><span class="s2">&quot;components&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{},{}]):</span>
+                <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;information&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;action_log&quot;</span><span class="p">,</span> <span class="s2">&quot;core&quot;</span><span class="p">,</span> <span class="s2">&quot;outputs&quot;</span><span class="p">,</span> <span class="s2">&quot;components&quot;</span><span class="p">],</span>
+                                       <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{},</span> <span class="p">{}]):</span>
                     <span class="k">if</span> <span class="n">header</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                         <span class="n">new</span><span class="p">[</span><span class="n">header</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
 
@@ -1027,51 +911,87 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="InitCon.save"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.InitCon.save.html#PyHPC.PyHPC_System.simulation_management.InitCon.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="InitCon.delete"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.InitCon.delete.html#PyHPC.PyHPC_System.simulation_management.InitCon.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
-<div class="viewcode-block" id="InitCon.to_html"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.InitCon.to_html.html#PyHPC.PyHPC_System.simulation_management.InitCon.to_html">[docs]</a>    <span class="k">def</span> <span class="nf">to_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Writes the init_log to a system of ``html`` files at the ``output`` location.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        output: The ``path`` to the output directory.</span>
+<span class="sd">        Saves the info contained in ``InitCon`` to file.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        None</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        .. attention::</span>
+<span class="sd">            This function is implemented by calling ``self.parent.save()``, which will cause the **entire** ``parent`` instance</span>
+<span class="sd">            to save all the changes in the ``SimulationLog``, not just those relevant to this instance of ``InitCon``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1">#  Debugging</span>
-        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
-        <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Generating html output of </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
-        <span class="c1">#  Managing the directory</span>
-        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;InitCons&quot;</span><span class="p">)):</span>
-            <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;InitCons&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Generated output directory </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;InitCons&quot;</span><span class="p">))</span>
+<div class="viewcode-block" id="InitCon.delete"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.InitCon.delete.html#PyHPC.PyHPC_System.simulation_management.InitCon.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes the ``InitCon`` object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        force : bool</span>
+<span class="sd">            ``True`` will force the deletion of the object in question.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#  debugging</span>
+        <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
+        <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Attempting to delete </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1">#  Getting Confirmation</span>
+        <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
+        <span class="n">prefix_text</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="se">\u001b</span><span class="s2">[32mSimulation Management</span><span class="se">\u001b</span><span class="s2">[0m]: &quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span> <span class="k">else</span> <span class="s1">&#39;clear&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;User requests to DELETE object </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">yn</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;Confirm DELETE? [y,N]: &quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">yn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE cancelled.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE confirmed.&quot;</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;+---------------------------------+&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sims</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;Found </span><span class="si">%s</span><span class="s2"> as subobject.&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;+---------------------------------+&quot;</span><span class="p">)</span>
+            <span class="n">yn</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE all materials and sub-objects? [y,N]: &quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">yn</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE sub-objects...&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sims</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">item</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="n">modlog</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to delete </span><span class="si">%s</span><span class="s2"> while deleting </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE FAILED for </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="p">)</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;The file </span><span class="si">%s</span><span class="s2"> corresponding to </span><span class="si">%s</span><span class="s2"> doesn&#39;t exist.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Found output directory </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;InitCons&quot;</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sims</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">modlog</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to delete </span><span class="si">%s</span><span class="s2"> while deleting </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE FAILED for </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
 
-        <span class="c1">#  Generating the first table</span>
-        <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
-        <span class="n">table_data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">k</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;Name&quot;</span>        <span class="p">:</span> <span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;Date Created&quot;</span><span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;dateCreated&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;Last Edited&quot;</span> <span class="p">:</span> <span class="n">v</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">][</span><span class="s2">&quot;lastEdited&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;# of Sims&quot;</span>   <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">])</span>
-            <span class="p">}</span>
-            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="p">}</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;InitCons&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.html&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pt</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;bin&quot;</span><span class="p">,</span> <span class="s2">&quot;lib&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">,</span> <span class="s2">&quot;simlog_html_1.html&quot;</span><span class="p">),</span>
-                      <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">template</span><span class="p">:</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">%</span> <span class="p">{</span><span class="s2">&quot;table&quot;</span><span class="p">:</span> <span class="n">dict_to_html</span><span class="p">(</span><span class="n">table_data</span><span class="p">),</span>
-                                           <span class="s2">&quot;path&quot;</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">path</span><span class="p">})</span></div>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;The file </span><span class="si">%s</span><span class="s2"> corresponding to </span><span class="si">%s</span><span class="s2"> doesn&#39;t exist.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="InitCon.log"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.InitCon.log.html#PyHPC.PyHPC_System.simulation_management.InitCon.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1085,7 +1005,7 @@ document.write(`
 <span class="sd">            The specific action being under-taken. These actions can be arbitrary, but should be consistent for</span>
 <span class="sd">            best impact.</span>
 <span class="sd">        auto_save : bool</span>
-<span class="sd">            ``True`` to automatically write all of the data to file.</span>
+<span class="sd">            ``True`` to automatically write all the data to file.</span>
 <span class="sd">        kwargs : optional</span>
 <span class="sd">            Additional attributes to log with the message. All entries should be ``key=&quot;string&quot;``. If entries overlap</span>
 <span class="sd">            with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.</span>
@@ -1119,9 +1039,11 @@ document.write(`
 
         <span class="k">if</span> <span class="n">auto_save</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div></div>
+
+
 <div class="viewcode-block" id="SimRec"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.html#PyHPC.PyHPC_System.simulation_management.SimRec">[docs]</a><span class="k">class</span> <span class="nc">SimRec</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The ``SimRec`` class contains all of the information for a single simulation record in the ``SimulationLog`` system.</span>
+<span class="sd">    The ``SimRec`` class contains all the information for a single simulation record in the ``SimulationLog`` system.</span>
 <span class="sd">    This is the most granular view available in the ``SimulationLog`` hierarchy.</span>
 
 <span class="sd">    **Formatting**:</span>
@@ -1155,7 +1077,7 @@ document.write(`
         <span class="c1">#: ``self.name`` contains the &lt;u&gt;absolute path&lt;/u&gt; to the ``.nml`` file or equivalent init file for runtime use.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
 
-        <span class="c1">#: ``self.raw`` contains all of the raw data provided in the ``SimRec`` object.</span>
+        <span class="c1">#: ``self.raw`` contains all the raw data provided in the ``SimRec`` object.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">raw</span> <span class="o">=</span> <span class="n">data</span></div>
 
     <span class="c1"># ---------------------------------------------------------------------------------------------------------------- #</span>
@@ -1163,17 +1085,19 @@ document.write(`
     <span class="c1"># ---------------------------------------------------------------------------------------------------------------- #</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.outputs`` Contains all of the outputs for the ``SimRec`` object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.outputs`` Contains all the outputs for the ``SimRec`` object.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
+
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">listed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">listed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">]</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">core</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.core``  contains all of the core information for this entry.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.core``  contains all the core information for this entry.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;core&quot;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -1181,7 +1105,7 @@ document.write(`
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">inf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.inf`` contains all of the description information for this entry.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.inf`` contains all the description information for this entry.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;information&quot;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -1189,7 +1113,7 @@ document.write(`
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">meta</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.meta`` contains all of the meta information for this entry.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;``self.meta`` contains all the meta information for this entry.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
@@ -1223,11 +1147,13 @@ document.write(`
 <span class="sd">        Defines the capacity to get items from the ``self.raw`` variable.</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        item ``list``: The item position to pull from.</span>
+<span class="sd">        item : list</span>
+<span class="sd">            The item position to pull from.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        ``dict``: The dictionary sub-position generated.</span>
+<span class="sd">        dict</span>
+<span class="sd">            The dict</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
             <span class="n">item</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">]</span>
@@ -1284,7 +1210,7 @@ document.write(`
 <span class="sd">            The specific action being under-taken. These actions can be arbitrary, but should be consistent for</span>
 <span class="sd">            best impact.</span>
 <span class="sd">        auto_save : bool</span>
-<span class="sd">            ``True`` to automatically write all of the data to file.</span>
+<span class="sd">            ``True`` to automatically write all the data to file.</span>
 <span class="sd">        kwargs : optional</span>
 <span class="sd">            Additional attributes to log with the message. All entries should be ``key=&quot;string&quot;``. If entries overlap</span>
 <span class="sd">            with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.</span>
@@ -1321,16 +1247,80 @@ document.write(`
 
 <div class="viewcode-block" id="SimRec.save"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.save.html#PyHPC.PyHPC_System.simulation_management.SimRec.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
-<div class="viewcode-block" id="SimRec.delete"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.delete.html#PyHPC.PyHPC_System.simulation_management.SimRec.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;simulations&quot;</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+<div class="viewcode-block" id="SimRec.delete"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.delete.html#PyHPC.PyHPC_System.simulation_management.SimRec.delete">[docs]</a>    <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes the ``InitCon`` object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        force : bool</span>
+<span class="sd">            ``True`` will force the deletion of the object in question.</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#  debugging</span>
+        <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
+        <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Attempting to delete </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1">#  Getting Confirmation</span>
+        <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
+        <span class="n">prefix_text</span> <span class="o">=</span> <span class="s2">&quot;[</span><span class="se">\u001b</span><span class="s2">[32mSimulation Management</span><span class="se">\u001b</span><span class="s2">[0m]: &quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;cls&#39;</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span> <span class="k">else</span> <span class="s1">&#39;clear&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;User requests to DELETE object </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">yn</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;Confirm DELETE? [y,N]: &quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">yn</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE cancelled.&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE confirmed.&quot;</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;+---------------------------------+&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;Found </span><span class="si">%s</span><span class="s2"> as subobject.&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;+---------------------------------+&quot;</span><span class="p">)</span>
+            <span class="n">yn</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE all materials and sub-objects? [y,N]: &quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">yn</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE sub-objects...&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="n">modlog</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to delete </span><span class="si">%s</span><span class="s2"> while deleting </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE FAILED for </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;The file </span><span class="si">%s</span><span class="s2"> corresponding to </span><span class="si">%s</span><span class="s2"> doesn&#39;t exist.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="n">modlog</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s2">&quot;Failed to delete </span><span class="si">%s</span><span class="s2"> while deleting </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE FAILED for </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">item</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;DELETE </span><span class="si">%s</span><span class="s2">...&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">prefix_text</span> <span class="o">+</span> <span class="s2">&quot;The file </span><span class="si">%s</span><span class="s2"> corresponding to </span><span class="si">%s</span><span class="s2"> doesn&#39;t exist.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="SimRec.add"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.add.html#PyHPC.PyHPC_System.simulation_management.SimRec.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">entries</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds the data contained in ``entries`` to the ``SimRec`` object&#39;s ``outputs`` dictionary.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        entries : list of dict</span>
+<span class="sd">        entries : dict of {str : dict}</span>
 <span class="sd">            The entries to add to the ``SimRec``. These should have the following format:</span>
 
 <span class="sd">            .. code-block:: json</span>
@@ -1385,7 +1375,7 @@ document.write(`
                 <span class="n">new</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
                 <span class="c1"># - Adding necessary headers -#</span>
-                <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;information&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span><span class="s2">&quot;action_log&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{},{}]):</span>
+                <span class="k">for</span> <span class="n">header</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s2">&quot;information&quot;</span><span class="p">,</span> <span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="s2">&quot;action_log&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="p">{},</span> <span class="p">{}]):</span>
                     <span class="k">if</span> <span class="n">header</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
                         <span class="n">new</span><span class="p">[</span><span class="n">header</span><span class="p">]</span> <span class="o">=</span> <span class="n">obj</span>
 
@@ -1417,6 +1407,7 @@ document.write(`
         <span class="c1"># ------------------------------------------------------------------------------------------------------------ #</span>
         <span class="k">if</span> <span class="n">auto_save</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div></div>
+
 
 <span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
 <span class="c1"># Sub Functions ====================================================================================================== #</span>

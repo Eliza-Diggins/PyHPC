@@ -473,37 +473,74 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="PyHPC.PyHPC_System.simulation_management.InitCon">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PyHPC.PyHPC_System.simulation_management.</span></span><span class="sig-name descname"><span class="pre">InitCon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyHPC/PyHPC_System/simulation_management.html#InitCon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyHPC.PyHPC_System.simulation_management.InitCon" title="Permalink to this definition">#</a></dt>
-<dd><p>The <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> object is a container for an initial condition file (typically a <code class="docutils literal notranslate"><span class="pre">.dat</span></code> or <code class="docutils literal notranslate"><span class="pre">.g2</span></code> file). These form
-the individual sub-units of the <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> object and can be accessed using the <code class="docutils literal notranslate"><span class="pre">SimulationLog.ics</span></code> method.</p>
-<p>—</p>
-<p><strong>Formatting</strong>:</p>
-<p><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>json
-‘&lt;initial_condition_file_path&gt;’: {</p>
-<blockquote>
-<div><blockquote>
-<div><p>“information”: “&lt;user input information&gt;”,
-“meta”: {</p>
-<blockquote>
-<div><p>“dateCreated”: “”,
-“lastEdited”: “”,
-“&lt;further meta data&gt;”: “”</p>
-</div></blockquote>
-<p>},
-“simulations”: {</p>
-<blockquote>
-<div><dl class="simple">
-<dt>“&lt;simulation 1&gt;”: {</dt><dd><p>“keys”: “values”</p>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> class contains data concerning a <strong>single</strong> initial condition file in any format. It is stored
+in a <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> and is read from the underlying file of it’s parent object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> object as it is initialized by its <code class="docutils literal notranslate"><span class="pre">parent</span></code> object.</p></li>
+<li><p><strong>parent</strong> (<a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.SimulationLog.html#PyHPC.PyHPC_System.simulation_management.SimulationLog" title="PyHPC.PyHPC_System.simulation_management.SimulationLog"><em>SimulationLog</em></a>) – The parent <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> object corresponding to the <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> object.</p></li>
+<li><p><strong>raw</strong> (<em>dict</em>) – The raw data, which should typically be just <code class="docutils literal notranslate"><span class="pre">self.parent[&quot;name&quot;]</span></code> in this case.</p></li>
+</ul>
 </dd>
 </dl>
-<p>}</p>
-</div></blockquote>
-<p>},
-“core”: {
-}</p>
-</div></blockquote>
-<p>}</p>
-</div></blockquote>
-<p><a href="#id5"><span class="problematic" id="id6">``</span></a><a href="#id7"><span class="problematic" id="id8">`</span></a></p>
+<p class="rubric">Notes</p>
+<p>The formatting for the simulation management objects is dictated by the <code class="docutils literal notranslate"><span class="pre">/bin/bin/lib/struct/simlog_struct.json</span></code> file,
+which has constraints on the formatting of each of the logging objects. The format is determined as follows:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="s2">&quot;This file contains all of the information about required entries for simulation log objects.&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;SimulationLog&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;information&quot;</span> <span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;dateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;lastEdited&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;simulations&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">},</span>
+      <span class="s2">&quot;core&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">},</span>
+      <span class="s2">&quot;action_log&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;InitCon&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;dateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;software&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;action_log&quot;</span><span class="p">:{</span>
+        <span class="p">},</span>
+      <span class="s2">&quot;core&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">},</span>
+      <span class="s2">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+  <span class="s2">&quot;SimRec&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;format&quot;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;dateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;isRun&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;slurm_path&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;action_log&quot;</span><span class="p">:{</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable table autosummary">
 <tbody>
@@ -511,19 +548,16 @@ the individual sub-units of the <code class="docutils literal notranslate"><span
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.add.html#PyHPC.PyHPC_System.simulation_management.InitCon.add" title="PyHPC.PyHPC_System.simulation_management.InitCon.add"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add</span></code></a>(entries[, auto_save, force])</p></td>
-<td><p>adds the entry contained in <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> to the <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> object.</p></td>
+<td><p>adds the entry contained in <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> to the <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> object.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.delete.html#PyHPC.PyHPC_System.simulation_management.InitCon.delete" title="PyHPC.PyHPC_System.simulation_management.InitCon.delete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete</span></code></a>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.delete.html#PyHPC.PyHPC_System.simulation_management.InitCon.delete" title="PyHPC.PyHPC_System.simulation_management.InitCon.delete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">delete</span></code></a>([force])</p></td>
+<td><p>Deletes the <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> object.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.log.html#PyHPC.PyHPC_System.simulation_management.InitCon.log" title="PyHPC.PyHPC_System.simulation_management.InitCon.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log</span></code></a>(message, action[, auto_save])</p></td>
 <td><p>logs the <code class="docutils literal notranslate"><span class="pre">message</span></code> to the <code class="docutils literal notranslate"><span class="pre">self.raw.action_log</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.save.html#PyHPC.PyHPC_System.simulation_management.InitCon.save" title="PyHPC.PyHPC_System.simulation_management.InitCon.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>()</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.to_html.html#PyHPC.PyHPC_System.simulation_management.InitCon.to_html" title="PyHPC.PyHPC_System.simulation_management.InitCon.to_html"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_html</span></code></a>(output)</p></td>
-<td><p>Writes the init_log to a system of <code class="docutils literal notranslate"><span class="pre">html</span></code> files at the <code class="docutils literal notranslate"><span class="pre">output</span></code> location.</p></td>
+<td><p>Saves the info contained in <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> to file.</p></td>
 </tr>
 </tbody>
 </table>
@@ -531,19 +565,19 @@ the individual sub-units of the <code class="docutils literal notranslate"><span
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.core.html#PyHPC.PyHPC_System.simulation_management.InitCon.core" title="PyHPC.PyHPC_System.simulation_management.InitCon.core"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">self.core</span></code>  contains all of the core information for this entry.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self.core</span></code>  contains all the core information for this entry.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.inf.html#PyHPC.PyHPC_System.simulation_management.InitCon.inf" title="PyHPC.PyHPC_System.simulation_management.InitCon.inf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inf</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">self.inf</span></code> contains all of the description information for this entry.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self.inf</span></code> contains all the description information for this entry.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.listed.html#PyHPC.PyHPC_System.simulation_management.InitCon.listed" title="PyHPC.PyHPC_System.simulation_management.InitCon.listed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">listed</span></code></a></p></td>
-<td><p></p></td>
+<td><p>Corresponds to <code class="docutils literal notranslate"><span class="pre">self.raw[&quot;simulations&quot;]</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.meta.html#PyHPC.PyHPC_System.simulation_management.InitCon.meta" title="PyHPC.PyHPC_System.simulation_management.InitCon.meta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">meta</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">self.meta</span></code> contains all of the meta information for this entry.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self.meta</span></code> contains all the meta information for this entry.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.sims.html#PyHPC.PyHPC_System.simulation_management.InitCon.sims" title="PyHPC.PyHPC_System.simulation_management.InitCon.sims"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sims</span></code></a></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">self.sims</span></code> contains all of the <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> objects in the simulation.</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">self.sims</span></code> contains all the <code class="docutils literal notranslate"><span class="pre">SimRec</span></code> objects in the simulation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_System.simulation_management.InitCon.parent.html#PyHPC.PyHPC_System.simulation_management.InitCon.parent" title="PyHPC.PyHPC_System.simulation_management.InitCon.parent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parent</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">self.parent</span></code> is a reference to the parent object.</p></td>

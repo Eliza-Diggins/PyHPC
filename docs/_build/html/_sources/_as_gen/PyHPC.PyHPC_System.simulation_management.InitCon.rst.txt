@@ -19,7 +19,6 @@
       ~InitCon.delete
       ~InitCon.log
       ~InitCon.save
-      ~InitCon.to_html
    
    
 

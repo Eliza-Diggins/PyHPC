@@ -4,9 +4,11 @@ store and manage simulations throughout the generation pipeline.
 """
 import builtins
 import json
+import logging
 import operator
 import os
 import pathlib as pt
+import shutil
 import threading as t
 import warnings
 from datetime import datetime
@@ -15,9 +17,7 @@ from inspect import getframeinfo, stack
 
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.errors import PyHPC_Error
-import logging
 from PyHPC.PyHPC_Core.utils import NonStandardEncoder
-from PyHPC.PyHPC_Utils.text_display_utilities import dict_to_html
 
 # generating screen locking #
 screen_lock = t.Semaphore(value=1)  # locks off multi-threaded screen.
@@ -42,120 +42,21 @@ if not CONFIG["System"]["Logging"]["warnings"]:
 # -------------------------------------------------------------------------------------------------------------------- #
 class SimulationLog:
     """
-    ``SimulationLog`` class to manage the simulations stored on the drive.
+    The ``SimulationLog`` class is the super class object for simulation management and contains all the simulation
+    data corresponding to a single log file.
 
-    :param path: The filepath at which to locate the simulation log file (``.json``)
+    Parameters
+    ----------
+    path: str or pt.Path
+        The path to the corresponding logging file.
 
-    ---
+    Notes
+    -----
+    The formatting for the simulation management objects is dictated by the ``/bin/bin/lib/struct/simlog_struct.json`` file,
+    which has constraints on the formatting of each of the logging objects. The format is determined as follows:
 
-    ## Formatting ``SimulationLog`` Objects
-
-    The purpose of the simulation logging module is to keep track of active simulations in the research
-    stream in as seamless a way as possible. The following are of core importance for use of the system
-
-    - The <b>root</b> of any entry in the simulation log is the <u>initial condition file</u>
-        - The intention here is that for any given physical setup, there may be many simulations
-          of interest which need to all be tracked and which may have different ``.nml`` and ``.slurm`` files.
-    - The simulation log pertinent to your installation is located at ``/bin/simLog.json`` and prescribes to <u>all</u> of
-      the formatting restrictions of ``.json`` type files.
-
-    ## Formatting
-
-    The format of a single entry is as follows:
-
-    ```json
-    {
-      '<initial_condition_file_path>': {
-        "information": "<user input information>",
-        "meta": {
-          "dateCreated": "",
-          "lastEdited": "",
-          "<further meta data>": ""
-        },
-        "simulations": {
-          "<simulation 1>": {
-            "keys": "values"
-          }
-        },
-        "core": {
-        },
-        "action_log":{
-        },
-      }
-    }
-    ```
-
-    meta data can be added to the entry as needed as the system <u>never enforces a key list</u>. If the user is
-    benefitted by adding additional information, then they may do so without issue. There are a few required pieces
-    of information required for every entry:
-
-    ```json
-    {
-      "<initial_condition_file_path>": {
-        "information": "(Can be blank, but must be present)",
-        "meta": {
-          "dateCreated": "the timestap for creation",
-          "software": "the software used to generate the .nml file"
-        },
-        "simulations": {
-        },
-        "action_log":{
-        }
-      }
-    }
-    ```
-
-    The user <b>must specify: ``information``,``meta``,``simulations``,and``core``</b>.
-
-    ## Simulations
-
-    Simulations are logged as subsets of the ``initial_condition_file`` objects in the database. This means that they hold a
-    format
-    of there own. Like the initial conditions, the <b>root</b> of any ``simulation`` in the log is the ``.nml`` file. The
-    simulation takes the
-    following format
-
-    ```json
-    {
-      "simulations": {
-        "<.nml file (or equivalent for other software>": {
-          "information": "Filled by the user to record important simulation notes.",
-          "action_log": {
-            "action": "information"
-          },
-          "meta": {
-          },
-          "core": {
-          },
-          "outputs": {
-          }
-        }
-      }
-    }
-    ```
-
-    Again, there is no hard enforcement of the format. There are a few required keys for adding a simulation; an example of
-    a very basic simulation
-    being added to the simulation log might look like
-
-    ```json
-    {
-      "simulations": {
-        "example.nml": {
-          "information": "A dummy simulation for use as an example.",
-          "action_log": {
-          },
-          "meta": {
-            "fileCreated": "01-01-1000"
-          },
-          "core": {
-          },
-          "outputs": {
-          }
-        }
-      }
-    }
-    ```
+    .. include:: ../../PyHPC/bin/lib/struct/simlog_struct.json
+        :code:
 
     """
 
@@ -184,13 +85,13 @@ class SimulationLog:
     # ---------------------------------------------------------------------------------------------------------------- #
 
     @property
-    def ics(self) -> dict:
+    def ics(self):
         """
         Contains the dictionary of ``InitCon`` objects to use during execution.
 
         Returns
         -------
-        val : ``dict``
+        val : dict of {str : InitCon}
             The dictionary of ``InitCon`` objects.
         """
         return {
@@ -198,8 +99,10 @@ class SimulationLog:
         }
 
     @property
-    def listed(self)-> dict:
+    def listed(self) -> dict:
+        """Contains the ``self.raw`` object as a ``property``. This allows for a more uniform development structure."""
         return self.raw
+
     # ---------------------------------------------------------------------------------------------------------------- #
     # Dunder Methods ================================================================================================= #
     # ---------------------------------------------------------------------------------------------------------------- #
@@ -229,11 +132,13 @@ class SimulationLog:
         Defines the capacity to get items from the ``self.raw`` variable.
         Parameters
         ----------
-        item ``list``: The item position to pull from.
+        item : list
+            The item position to pull from.
 
         Returns
         -------
-        ``dict``: The dictionary sub-position generated.
+        dict
+            The dictionary sub-position generated.
         """
         if not isinstance(item, list):
             item = [item]
@@ -268,12 +173,12 @@ class SimulationLog:
 
     def get_simulation_records(self) -> dict:
         """
-        Fetches all of the ``SimRec`` objects in the ``SimulationLog``.
+        Fetches all the ``SimRec`` objects in the ``SimulationLog``.
 
         Returns
         -------
         dict
-            Dictionary of all of the ``SimRec`` objects in the format ``{name:SimRec}``.
+            Dictionary of all the ``SimRec`` objects in the format ``{name:SimRec}``.
         """
         obs = {}
         for ic in self.ics.values():
@@ -339,37 +244,23 @@ class SimulationLog:
     def add(self, entries, auto_save=True, force=False):
         """
         adds the entry contained in ``**kwargs`` to the ``SimulationLog`` object. The ``entries`` may contain any number
-        of individual (<u>correctly formatted</u>) entries to add.
+        of individual entries to add.
 
         Parameters
         ----------
         auto_save : bool
             ``auto_save=True`` will immediately write the simulation log to file once alterations are made.
         entries : dict
-            The entries to add to the ``SimulationLog``. Each entry should have the standard format:
+            The entries to add to the ``SimulationLog``. Each entry should have the standard format for ``InitCon``:
 
-            ```
-            {
-              '<initial_condition_file_path>': {
-                "information": "<user input information>",
-                "meta": {
-                  "dateCreated": "",
-                  "lastEdited": "",
-                  "<further meta data>": ""
-                },
-                "simulations": {
-                  "<simulation 1>": {
-                    "keys": "values"
-                  }
-                },
-                "core": {
-                }
-              }
-            }
-            ```
+            .. include:: ../../PyHPC/bin/lib/struct/simlog_struct.json
+                :code:
+
         force : bool
             Forces the Simulation log to accommodate the structure used regardless of if it meets the standard format
-            ..warning:: This could have catastrophic consequences and should be used only if sure of the result.
+
+            .. warning::
+                This could have catastrophic consequences and should be used only if sure of the result.
 
         Returns
         -------
@@ -407,7 +298,8 @@ class SimulationLog:
                 new = data.copy()
 
                 # - Adding necessary headers -#
-                for header, obj in zip(["information", "meta", "simulations", "core","action_log"], ["", {}, {}, {},{}]):
+                for header, obj in zip(["information", "meta", "simulations", "core", "action_log"],
+                                       ["", {}, {}, {}, {}]):
                     if header not in data:
                         new[header] = obj
 
@@ -453,36 +345,30 @@ class SimulationLog:
         #  Saving
         # ------------------------------------------------------------------------------------------------------------ #
         with open(self.path, "w+") as simlog_file:
-            json.dump(self.raw, simlog_file,cls=NonStandardEncoder)
-
+            json.dump(self.raw, simlog_file, cls=NonStandardEncoder)
 
 
 class InitCon:
     """
-    The ``InitCon`` object is a container for an initial condition file (typically a ``.dat`` or ``.g2`` file). These form
-    the individual sub-units of the ``SimulationLog`` object and can be accessed using the ``SimulationLog.ics`` method.
+    The ``InitCon`` class contains data concerning a **single** initial condition file in any format. It is stored
+    in a ``SimulationLog`` and is read from the underlying file of it's parent object.
 
-    ---
+    Parameters
+    ----------
+    name : str
+        The name of the ``InitCon`` object as it is initialized by its ``parent`` object.
+    parent: SimulationLog
+        The parent ``SimulationLog`` object corresponding to the ``InitCon`` object.
+    raw: dict
+        The raw data, which should typically be just ``self.parent["name"]`` in this case.
 
-    **Formatting**:
+    Notes
+    -----
+    The formatting for the simulation management objects is dictated by the ``/bin/bin/lib/struct/simlog_struct.json`` file,
+    which has constraints on the formatting of each of the logging objects. The format is determined as follows:
 
-    ```json
-    '<initial_condition_file_path>': {
-        "information": "<user input information>",
-        "meta": {
-          "dateCreated": "",
-          "lastEdited": "",
-          "<further meta data>": ""
-        },
-        "simulations": {
-          "<simulation 1>": {
-            "keys": "values"
-          }
-        },
-        "core": {
-        }
-      }
-    ```
+    .. include:: ../../PyHPC/bin/lib/struct/simlog_struct.json
+        :code:
 
     """
 
@@ -500,17 +386,20 @@ class InitCon:
     # ---------------------------------------------------------------------------------------------------------------- #
     @property
     def sims(self):
-        """``self.sims`` contains all of the ``SimRec`` objects in the simulation."""
+        """``self.sims`` contains all the ``SimRec`` objects in the simulation."""
         try:
             return {k: SimRec(k, data, parent=self) for k, data in self.raw["simulations"].items()}
         except KeyError:
             return None
+
     @property
-    def listed(self)-> dict:
+    def listed(self) -> dict:
+        """Corresponds to ``self.raw["simulations"]``. Base utility to standardize entrance procedures across objects."""
         return self.raw["simulations"]
+
     @property
     def core(self):
-        """``self.core``  contains all of the core information for this entry."""
+        """``self.core``  contains all the core information for this entry."""
         try:
             return self.raw["core"]
         except KeyError:
@@ -518,7 +407,7 @@ class InitCon:
 
     @property
     def inf(self):
-        """``self.inf`` contains all of the description information for this entry."""
+        """``self.inf`` contains all the description information for this entry."""
         try:
             return self.raw["information"]
         except KeyError:
@@ -526,7 +415,7 @@ class InitCon:
 
     @property
     def meta(self):
-        """``self.meta`` contains all of the meta information for this entry."""
+        """``self.meta`` contains all the meta information for this entry."""
         try:
             return self.raw["meta"]
         except KeyError:
@@ -560,11 +449,13 @@ class InitCon:
         Defines the capacity to get items from the ``self.raw`` variable.
         Parameters
         ----------
-        item_map ``list``: The item position to pull from.
+        item_map : list
+            The item position to pull from.
 
         Returns
         -------
-        ``dict``: The dictionary sub-position generated.
+        dict
+            The dict
         """
         if not isinstance(item_map, list):
             item_map = [item_map]
@@ -599,32 +490,24 @@ class InitCon:
 
     def add(self, entries, auto_save=True, force=False):
         """
-        adds the entry contained in ``**kwargs`` to the ``InitCon`` object. The ``entries`` may contain any number
-        of individual (<u>correctly formatted</u>) entries to add.
+        adds the entry contained in ``**kwargs`` to the ``SimulationLog`` object. The ``entries`` may contain any number
+        of individual entries to add.
 
         Parameters
         ----------
         auto_save : bool
             ``auto_save=True`` will immediately write the simulation log to file once alterations are made.
         entries : dict
-            The entries to add to the ``InitCon``. Each entry should have the standard format:
+            The entries to add to the ``SimulationLog``. Each entry should have the standard format for ``InitCon``:
 
-            ```
-             "format": {
-              "information": "str",
-              "action_log": {
-              },
-              "meta": {
-              },
-              "core": {
-              },
-              "outputs": {
-              }
-            }
-            ```
+            .. include:: ../../PyHPC/bin/lib/struct/simlog_struct.json
+                :code:
+
         force : bool
             Forces the Simulation log to accommodate the structure used regardless of if it meets the standard format
-            ..warning:: This could have catastrophic consequences and should be used only if sure of the result.
+
+            .. warning::
+                This could have catastrophic consequences and should be used only if sure of the result.
 
         Returns
         -------
@@ -662,7 +545,8 @@ class InitCon:
                 new = data.copy()
 
                 # - Adding necessary headers -#
-                for header, obj in zip(["information", "meta", "action_log", "core", "outputs","components"], ["", {}, {}, {}, {},{}]):
+                for header, obj in zip(["information", "meta", "action_log", "core", "outputs", "components"],
+                                       ["", {}, {}, {}, {}, {}]):
                     if header not in data:
                         new[header] = obj
 
@@ -696,51 +580,87 @@ class InitCon:
             self.parent.save()
 
     def save(self):
-        self.parent.save()
-
-    def delete(self):
-        del self.parent.raw[self.name]
-        self.parent.save()
-    def to_html(self, output):
         """
-        Writes the init_log to a system of ``html`` files at the ``output`` location.
-
-        Parameters
-        ----------
-        output: The ``path`` to the output directory.
+        Saves the info contained in ``InitCon`` to file.
 
         Returns
         -------
         None
+
+        Notes
+        -----
+        .. attention::
+            This function is implemented by calling ``self.parent.save()``, which will cause the **entire** ``parent`` instance
+            to save all the changes in the ``SimulationLog``, not just those relevant to this instance of ``InitCon``.
         """
-        #  Debugging
-        # ------------------------------------------------------------------------------------------------------------ #
-        modlog.debug("Generating html output of %s." % self.__repr__())
+        self.parent.save()
 
-        #  Managing the directory
-        # ------------------------------------------------------------------------------------------------------------ #
-        if not os.path.exists(os.path.join(output, "InitCons")):
-            pt.Path(os.path.join(output, "InitCons")).mkdir(parents=True)
-            modlog.debug("Generated output directory %s." % os.path.join(output, "InitCons"))
+    def delete(self, force=False):
+        """
+        Deletes the ``InitCon`` object.
+
+        Parameters
+        ----------
+        force : bool
+            ``True`` will force the deletion of the object in question.
+        Returns
+        -------
+        None
+        """
+        #  debugging
+        # ----------------------------------------------------------------------------------------------------------------- #
+        modlog.debug("Attempting to delete %s." % self)
+
+        #  Getting Confirmation
+        # ----------------------------------------------------------------------------------------------------------------- #
+        prefix_text = "[\u001b[32mSimulation Management\u001b[0m]: "
+        if not force:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(prefix_text + "User requests to DELETE object %s..." % self)
+            yn = input(prefix_text + "Confirm DELETE? [y,N]: ")
+
+            if yn not in ["y", "Y"]:
+                print(prefix_text + "DELETE cancelled.")
+                return None
+
+            print(prefix_text + "DELETE confirmed.")
+
+            print("+---------------------------------+")
+            for item in self.sims:
+                print(prefix_text + "Found %s as subobject." % item)
+            print("+---------------------------------+")
+            yn = input(prefix_text + "DELETE all materials and sub-objects? [y,N]: ")
+            if yn in ["y", "Y"]:
+                print(prefix_text + "DELETE sub-objects...")
+                for item in self.sims:
+                    try:
+                        item.delete(force=True)
+                    except Exception:
+                        modlog.exception("Failed to delete %s while deleting %s." % (item, self))
+                        print(prefix_text + "DELETE FAILED for %s." % item)
+
+                print(prefix_text + "DELETE %s..." % self)
+
+                try:
+                    os.remove(self.name)
+                except FileNotFoundError:
+                    print(prefix_text + "The file %s corresponding to %s doesn't exist." % (self.name, self))
         else:
-            modlog.debug("Found output directory %s." % os.path.join(output, "InitCons"))
+            for item in self.sims:
+                try:
+                    item.delete(force=True)
+                except Exception:
+                    modlog.exception("Failed to delete %s while deleting %s." % (item, self))
+                    print(prefix_text + "DELETE FAILED for %s." % item)
+            print(prefix_text + "DELETE %s..." % self)
 
-        #  Generating the first table
-        # ------------------------------------------------------------------------------------------------------------ #
-        table_data = {
-            k: {
-                "Name"        : pt.Path(k).name,
-                "Date Created": v["meta"]["dateCreated"],
-                "Last Edited" : v["meta"]["lastEdited"],
-                "# of Sims"   : len(v["outputs"])
-            }
-            for k, v in self.raw["simulations"].items()
-        }
-        with open(pt.Path(os.path.join(output, "InitCons", "%s.html" % self.name)), "w") as f:
-            with open(os.path.join(pt.Path(__file__).parents[1], "bin", "lib", "templates", "simlog_html_1.html"),
-                      "r") as template:
-                f.write(template.read() % {"table": dict_to_html(table_data),
-                                           "path" : self.parent.path})
+            try:
+                os.remove(self.name)
+            except FileNotFoundError:
+                print(prefix_text + "The file %s corresponding to %s doesn't exist." % (self.name, self))
+
+        del self.parent.raw[self.name]
+        self.parent.save()
 
     def log(self, message, action, auto_save=True, **kwargs):
         """
@@ -754,7 +674,7 @@ class InitCon:
             The specific action being under-taken. These actions can be arbitrary, but should be consistent for
             best impact.
         auto_save : bool
-            ``True`` to automatically write all of the data to file.
+            ``True`` to automatically write all the data to file.
         kwargs : optional
             Additional attributes to log with the message. All entries should be ``key="string"``. If entries overlap
             with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.
@@ -788,9 +708,11 @@ class InitCon:
 
         if auto_save:
             self.parent.save()
+
+
 class SimRec:
     """
-    The ``SimRec`` class contains all of the information for a single simulation record in the ``SimulationLog`` system.
+    The ``SimRec`` class contains all the information for a single simulation record in the ``SimulationLog`` system.
     This is the most granular view available in the ``SimulationLog`` hierarchy.
 
     **Formatting**:
@@ -824,7 +746,7 @@ class SimRec:
         #: ``self.name`` contains the <u>absolute path</u> to the ``.nml`` file or equivalent init file for runtime use.
         self.name = name
 
-        #: ``self.raw`` contains all of the raw data provided in the ``SimRec`` object.
+        #: ``self.raw`` contains all the raw data provided in the ``SimRec`` object.
         self.raw = data
 
     # ---------------------------------------------------------------------------------------------------------------- #
@@ -832,17 +754,19 @@ class SimRec:
     # ---------------------------------------------------------------------------------------------------------------- #
     @property
     def outputs(self):
-        """``self.outputs`` Contains all of the outputs for the ``SimRec`` object."""
+        """``self.outputs`` Contains all the outputs for the ``SimRec`` object."""
         try:
             return self.raw["outputs"]
         except KeyError:
             return None
+
     @property
-    def listed(self)-> dict:
+    def listed(self) -> dict:
         return self.raw["outputs"]
+
     @property
     def core(self):
-        """``self.core``  contains all of the core information for this entry."""
+        """``self.core``  contains all the core information for this entry."""
         try:
             return self.raw["core"]
         except KeyError:
@@ -850,7 +774,7 @@ class SimRec:
 
     @property
     def inf(self):
-        """``self.inf`` contains all of the description information for this entry."""
+        """``self.inf`` contains all the description information for this entry."""
         try:
             return self.raw["information"]
         except KeyError:
@@ -858,7 +782,7 @@ class SimRec:
 
     @property
     def meta(self):
-        """``self.meta`` contains all of the meta information for this entry."""
+        """``self.meta`` contains all the meta information for this entry."""
         try:
             return self.raw["meta"]
         except KeyError:
@@ -892,11 +816,13 @@ class SimRec:
         Defines the capacity to get items from the ``self.raw`` variable.
         Parameters
         ----------
-        item ``list``: The item position to pull from.
+        item : list
+            The item position to pull from.
 
         Returns
         -------
-        ``dict``: The dictionary sub-position generated.
+        dict
+            The dict
         """
         if not isinstance(item, list):
             item = [item]
@@ -953,7 +879,7 @@ class SimRec:
             The specific action being under-taken. These actions can be arbitrary, but should be consistent for
             best impact.
         auto_save : bool
-            ``True`` to automatically write all of the data to file.
+            ``True`` to automatically write all the data to file.
         kwargs : optional
             Additional attributes to log with the message. All entries should be ``key="string"``. If entries overlap
             with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.
@@ -990,16 +916,80 @@ class SimRec:
 
     def save(self):
         self.parent.parent.save()
-    def delete(self):
-        del self.parent.raw["simulations"][self.name]
+
+    def delete(self, force=False):
+        """
+        Deletes the ``InitCon`` object.
+
+        Parameters
+        ----------
+        force : bool
+            ``True`` will force the deletion of the object in question.
+        Returns
+        -------
+        None
+        """
+        #  debugging
+        # ----------------------------------------------------------------------------------------------------------------- #
+        modlog.debug("Attempting to delete %s." % self)
+
+        #  Getting Confirmation
+        # ----------------------------------------------------------------------------------------------------------------- #
+        prefix_text = "[\u001b[32mSimulation Management\u001b[0m]: "
+        if not force:
+            os.system('cls' if os.name == 'nt' else 'clear')
+            print(prefix_text + "User requests to DELETE object %s..." % self)
+            yn = input(prefix_text + "Confirm DELETE? [y,N]: ")
+
+            if yn not in ["y", "Y"]:
+                print(prefix_text + "DELETE cancelled.")
+                return None
+
+            print(prefix_text + "DELETE confirmed.")
+
+            print("+---------------------------------+")
+            for item in self.outputs:
+                print(prefix_text + "Found %s as subobject." % item)
+            print("+---------------------------------+")
+            yn = input(prefix_text + "DELETE all materials and sub-objects? [y,N]: ")
+            if yn in ["y", "Y"]:
+                print(prefix_text + "DELETE sub-objects...")
+                for item in self.outputs:
+                    try:
+                        shutil.rmtree(item)
+                    except Exception:
+                        modlog.exception("Failed to delete %s while deleting %s." % (item, self))
+                        print(prefix_text + "DELETE FAILED for %s." % item)
+                print(prefix_text + "DELETE %s..." % self)
+
+                try:
+                    os.remove(self.name)
+                except FileNotFoundError:
+                    print(prefix_text + "The file %s corresponding to %s doesn't exist." % (self.name, self))
+        else:
+            for item in self.outputs:
+                try:
+                    shutil.rmtree(item)
+                except Exception:
+                    modlog.exception("Failed to delete %s while deleting %s." % (item, self))
+                    print(prefix_text + "DELETE FAILED for %s." % item)
+            print(prefix_text + "DELETE %s..." % self)
+
+            try:
+                os.remove(self.name)
+            except FileNotFoundError:
+                print(prefix_text + "The file %s corresponding to %s doesn't exist." % (self.name, self))
+
+        del self.parent.raw[self.name]
         self.parent.parent.save()
+
     def add(self, entries, auto_save=True, force=False):
         """
         Adds the data contained in ``entries`` to the ``SimRec`` object's ``outputs`` dictionary.
 
         Parameters
         ----------
-        entries : list of dict
+        entries : dict of {str : dict}
             The entries to add to the ``SimRec``. These should have the following format:
 
             .. code-block:: json
@@ -1054,7 +1044,7 @@ class SimRec:
                 new = data.copy()
 
                 # - Adding necessary headers -#
-                for header, obj in zip(["information", "meta","action_log"], ["", {},{}]):
+                for header, obj in zip(["information", "meta", "action_log"], ["", {}, {}]):
                     if header not in data:
                         new[header] = obj
 
@@ -1086,6 +1076,7 @@ class SimRec:
         # ------------------------------------------------------------------------------------------------------------ #
         if auto_save:
             self.parent.parent.save()
+
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # Sub Functions ====================================================================================================== #

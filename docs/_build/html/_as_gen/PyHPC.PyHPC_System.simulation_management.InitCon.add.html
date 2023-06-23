@@ -473,31 +473,74 @@ document.write(`
 <dl class="py method">
 <dt class="sig sig-object py" id="PyHPC.PyHPC_System.simulation_management.InitCon.add">
 <span class="sig-prename descclassname"><span class="pre">InitCon.</span></span><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyHPC/PyHPC_System/simulation_management.html#InitCon.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyHPC.PyHPC_System.simulation_management.InitCon.add" title="Permalink to this definition">#</a></dt>
-<dd><p>adds the entry contained in <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> to the <code class="docutils literal notranslate"><span class="pre">InitCon</span></code> object. The <code class="docutils literal notranslate"><span class="pre">entries</span></code> may contain any number
-of individual (&lt;u&gt;correctly formatted&lt;/u&gt;) entries to add.</p>
+<dd><p>adds the entry contained in <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code> to the <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code> object. The <code class="docutils literal notranslate"><span class="pre">entries</span></code> may contain any number
+of individual entries to add.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>auto_save</strong> (<em>bool</em>) – <code class="docutils literal notranslate"><span class="pre">auto_save=True</span></code> will immediately write the simulation log to file once alterations are made.</p></li>
-<li><p><strong>entries</strong> (<em>dict</em>) – <p>The entries to add to the <code class="docutils literal notranslate"><span class="pre">InitCon</span></code>. Each entry should have the standard format:</p>
-<dl class="simple">
-<dt><a href="#id1"><span class="problematic" id="id2">``</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a></dt><dd><dl class="simple">
-<dt>”format”: {</dt><dd><p>“information”: “str”,
-“action_log”: {
-},
-“meta”: {
-},
-“core”: {
-},
-“outputs”: {
-}</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<li><p><strong>entries</strong> (<em>dict</em>) – <p>The entries to add to the <code class="docutils literal notranslate"><span class="pre">SimulationLog</span></code>. Each entry should have the standard format for <code class="docutils literal notranslate"><span class="pre">InitCon</span></code>:</p>
+<div class="code highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="s2">&quot;This file contains all of the information about required entries for simulation log objects.&quot;</span><span class="p">,</span>
+  <span class="s2">&quot;SimulationLog&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;information&quot;</span> <span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;dateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;lastEdited&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;simulations&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">},</span>
+      <span class="s2">&quot;core&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">},</span>
+      <span class="s2">&quot;action_log&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;InitCon&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="s2">&quot;dateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+          <span class="s2">&quot;software&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;outputs&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;action_log&quot;</span><span class="p">:{</span>
+        <span class="p">},</span>
+      <span class="s2">&quot;core&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">},</span>
+      <span class="s2">&quot;components&quot;</span><span class="p">:</span> <span class="p">{</span>
+
+      <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+  <span class="s2">&quot;SimRec&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;format&quot;</span> <span class="p">:</span> <span class="p">{</span>
+      <span class="s2">&quot;information&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;meta&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;dateCreated&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;isRun&quot;</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;slurm_path&quot;</span><span class="p">:</span> <span class="s2">&quot;str&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;action_log&quot;</span><span class="p">:{</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </p></li>
-<li><p><strong>force</strong> (<em>bool</em>) – Forces the Simulation log to accommodate the structure used regardless of if it meets the standard format
-..warning:: This could have catastrophic consequences and should be used only if sure of the result.</p></li>
+<li><p><strong>force</strong> (<em>bool</em>) – <p>Forces the Simulation log to accommodate the structure used regardless of if it meets the standard format</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This could have catastrophic consequences and should be used only if sure of the result.</p>
+</div>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
