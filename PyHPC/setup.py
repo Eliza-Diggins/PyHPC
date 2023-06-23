@@ -276,7 +276,10 @@ if __name__ == '__main__':
             print("%s %s -l flag necessary for new installation..." % (fdbg_string, fail_string))
             exit()
 
-        yn = input("%sCreate a new installation? This will wipe existing data. (Y/n): " % fdbg_string)
+        if args.reinstall:
+            yn = 'y'
+        else:
+            yn = input("%sCreate a new installation? This will wipe existing data. (Y/n): " % fdbg_string)
 
         if yn in ["y", "Y"]:
             print("%sCreating a new installation instance..." % fdbg_string)
