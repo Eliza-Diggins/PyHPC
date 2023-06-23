@@ -22,5 +22,5 @@ jobs:
           pip install -r req.txt
       - name: Running pytest
         run: |
-          python PyHPC/setup.py -l /home/runner/work/PyHPC/PyHPC
+          python PyHPC/setup.py -ri -l /home/runner/work/PyHPC/PyHPC
           pytest --doctest-modules --junitxml=junit/test-results.xml --cov=PyHPC --cov-report=xml --cov-report=html
