@@ -1,4 +1,4 @@
-﻿PyHPC.PyHPC_Core.log
+PyHPC.PyHPC_Core.log
 ====================
 
 .. automodule:: PyHPC.PyHPC_Core.log

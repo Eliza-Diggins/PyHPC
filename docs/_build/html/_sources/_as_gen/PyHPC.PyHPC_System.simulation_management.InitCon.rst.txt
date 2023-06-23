@@ -1,4 +1,4 @@
-﻿PyHPC.PyHPC_System.simulation_management.InitCon
+PyHPC.PyHPC_System.simulation_management.InitCon
 ================================================
 
 .. currentmodule:: PyHPC.PyHPC_System.simulation_management

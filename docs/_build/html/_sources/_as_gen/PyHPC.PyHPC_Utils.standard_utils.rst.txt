@@ -1,4 +1,4 @@
-﻿PyHPC.PyHPC_Utils.standard_utils
+PyHPC.PyHPC_Utils.standard_utils
 ================================
 
 .. automodule:: PyHPC.PyHPC_Utils.standard_utils

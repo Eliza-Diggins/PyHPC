@@ -378,14 +378,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="PyHPC.PyHPC_Visualization.image.html">PyHPC.PyHPC_Visualization.image</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.PyHPC_unittests.html">PyHPC.PyHPC_unittests</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.html">PyHPC.PyHPC_unittests.standard_tests</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="PyHPC.PyHPC_unittests.standard_tests.TestCore.html">PyHPC.PyHPC_unittests.standard_tests.TestCore</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.setup.html">PyHPC.setup</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="PyHPC.setup.html">PyHPC.setup</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.generate_directories.html">PyHPC.setup.generate_directories</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.print_title.html">PyHPC.setup.print_title</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PyHPC.setup.print_verbose.html">PyHPC.setup.print_verbose</a></li>
@@ -397,7 +390,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="PyHPC_executables.html">PyHPC_executables</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="PyHPC_executables.html">PyHPC_executables</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="PyHPC_executables.ic_report.html">PyHPC_executables.ic_report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PyHPC_executables.run_ic_gen.html">PyHPC_executables.run_ic_gen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PyHPC_executables.run_ramses.html">PyHPC_executables.run_ramses</a></li>
@@ -480,10 +473,18 @@ The configuration management in PyHPC is housed within the PyHPC.PyHPC_Core.conf
 of the configuration files located in the /bin/configs folder of the user installation.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_Core.errors.html#module-PyHPC.PyHPC_Core.errors" title="PyHPC.PyHPC_Core.errors"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PyHPC.PyHPC_Core.errors</span></code></a></p></td>
-<td><p>Error Classes</p></td>
+<td><p>PyHPC Errors
+
+The classes included in this area of the module for a core set of specialized error codes which are called
+throughout the PyHPC system in different contexts.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="PyHPC.PyHPC_Core.log.html#module-PyHPC.PyHPC_Core.log" title="PyHPC.PyHPC_Core.log"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PyHPC.PyHPC_Core.log</span></code></a></p></td>
-<td><p></p></td>
+<td><p>PyHPC Logging
+
+The PyHPC system uses a sophisticated set of logging methodologies to produce comprehensive communicative methods
+for users. Generally speaking, the configuration information for logging is stored in the CONFIG.config file;
+which is where most user level options are stored and in the /bin/inst/log/logcon.yaml file, which holds most of
+the backend for the logging system.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="PyHPC.PyHPC_Core.utils.html#module-PyHPC.PyHPC_Core.utils" title="PyHPC.PyHPC_Core.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PyHPC.PyHPC_Core.utils</span></code></a></p></td>
 <td><p>Simply, Core utilities for the PyHPC project.</p></td>

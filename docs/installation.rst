@@ -30,4 +30,11 @@ This will initialize the startup system. You may follow the prompts to successfu
 =========================
 PyHPC Basic Configuration
 =========================
-Once ``PyHPC`` is  installed
+Once ``PyHPC`` is  installed, there are some significant configuration related issues that need to be managed before
+you can fully take advantage of the pipeline and its various options. To modify the configuration files, navigate to
+``<user_directory>/bin/configs``. There are several files here, generally speaking, each one controls the default execution behavior
+of the software it is named after. The ``Simlog.json`` file is a simulation log file, which you can read more about
+in the documentation on project management. At this stage, the most important file is ``CONFIG.CONFIG``, which should
+look something like this:
+
+.. include

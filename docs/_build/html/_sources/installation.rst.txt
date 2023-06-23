@@ -26,3 +26,8 @@ of the source code, run the following command:
 
 where ``user_directory`` is the directory in which all of the datasets will be kept.
 This will initialize the startup system. You may follow the prompts to successfully complete the setup process.
+
+=========================
+PyHPC Basic Configuration
+=========================
+Once ``PyHPC`` is  installed

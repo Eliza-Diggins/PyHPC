@@ -1,4 +1,4 @@
-﻿PyHPC.PyHPC_Utils.text_display_utilities
+PyHPC.PyHPC_Utils.text_display_utilities
 ========================================
 
 .. automodule:: PyHPC.PyHPC_Utils.text_display_utilities

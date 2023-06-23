@@ -1,4 +1,4 @@
-﻿PyHPC.PyHPC_System.simulation_management.SimulationLog
+PyHPC.PyHPC_System.simulation_management.SimulationLog
 ======================================================
 
 .. currentmodule:: PyHPC.PyHPC_System.simulation_management
