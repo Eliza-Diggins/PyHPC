@@ -867,7 +867,7 @@ class SimRec:
     def __missing__(self, key):
         return None
 
-    def log(self, message, action, auto_save=True, **kwargs):
+    def log(self, message, action, auto_save=True, object_rec = None,**kwargs):
         """
         logs the ``message`` to the ``self.raw.action_log``. Additional entries in the record are specified with ``**kwargs``.
 
@@ -880,6 +880,8 @@ class SimRec:
             best impact.
         auto_save : bool
             ``True`` to automatically write all the data to file.
+        object_rec : str or None, default=None
+            The object record to log too. If ``None``, then it isn't logged elsewhere.
         kwargs : optional
             Additional attributes to log with the message. All entries should be ``key="string"``. If entries overlap
             with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.
@@ -897,7 +899,8 @@ class SimRec:
             "act"   : action,
             "lineno": caller.lineno,
             "file"  : caller.filename,
-            "time"  : datetime.now().strftime('%m-%d-%Y_%H-%M-%S')
+            "time"  : datetime.now().strftime('%m-%d-%Y_%H-%M-%S'),
+            "object": str(object_rec) if object_rec else "Self"
 
         }
 
@@ -911,6 +914,10 @@ class SimRec:
 
         self.raw["action_log"][log_time] = entries
 
+        if object_rec:
+            self.raw["outputs"][object_rec]["action_log"][log_time] = entries
+
+        self.parent.log(message,action,object_rec = self.name,**kwargs,level="SimRec")
         if auto_save:
             self.parent.parent.save()
 

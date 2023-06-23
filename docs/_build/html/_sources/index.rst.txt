@@ -1,5 +1,3 @@
-|yt-project| |linting| |coverage|
-
 .. |coverage| image:: https://coveralls.io/repos/github/Eliza-Diggins/PyHPC/badge.svg?branch=master
     :target: https://coveralls.io/github/Eliza-Diggins/PyHPC?branch=master
 
@@ -9,9 +7,13 @@
 .. |linting| image:: https://img.shields.io/badge/linting-pylint-yellowgreen
     :target: https://github.com/pylint-dev/pylint
 
-Welcome to PyHPC's documentation!
-=================================
+The PyHPC System
+=================
+|yt-project| |linting| |coverage|
 
+
+Navigation
+--------
 .. toctree::
    :maxdepth: 2
    :caption: Contents:

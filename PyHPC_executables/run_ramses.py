@@ -58,6 +58,27 @@ given choice of software.
 .. include:: ../../PyHPC/bin/lib/imp/types.json
     :code:
 
+Simulation Logging Pathway
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. mermaid::
+
+    flowchart TD
+    A[run_ramses execution begins] --nml not given --> C{Found ic?}
+    A --nml given RAMSES-GRAB ic logged-->D(SimRec object located)
+    D --> G[[RAMSES-GRAB nml]]
+    C -- no ic, selected ic --> F
+    C -- ic --> F[[RAMSES-GRAB ic logged]]
+    H --> I[[RAMSES-BUILD nml logged]]
+    I --> G
+    F --> H
+    G --> J[[SLURM-GENERATE output]]
+    J --"`Make output record in SimRec<br>Add SLURM GEN, SLURM file.`"--> J
+    J --> K{-s}
+    K --True-->L(exit)
+    K --False--> M[[SLURM-RUN output]]
+    M --> L
+
 Developer Information
 ---------------------
 """
@@ -183,8 +204,9 @@ if __name__ == '__main__':
 
         try:
             nml_log = simlog.get_simulation_records()[user_nml_path]
-            nml_log.log("Loaded nml_log at %s for run." % user_nml_path, action="LOAD_TO_RUN")
+            nml_log.log("Loaded nml for run." % user_nml_path, action="RAMSES-GRAB")
             init_con_log = nml_log.parent
+            init_con_log.log("Loaded ic for run.",action="RAMSES-GRAB",object_rec=nml_log.name)
             printer.print(done_string)
         except KeyError:
             # -> Failed to add the simulation log entry.
@@ -255,7 +277,7 @@ if __name__ == '__main__':
             }, auto_save=True)
             printer.print(done_string)
             init_con_log = simlog.ics[str(selected_initial_condition_path)]
-
+        init_con_log.log("Grabbed for run.",action="RAMSES-GRAB")
         # ---------------------------------------------------------------------------------------------------------------- #
         # Managing the nml construction ================================================================================== #
         # ---------------------------------------------------------------------------------------------------------------- #
@@ -328,7 +350,7 @@ if __name__ == '__main__':
             }
         }, auto_save=True)
         nml_log = init_con_log.sims[nml_output_loc]
-        nml_log.log("Created nml_log object for path=%s." % nml_output_loc, action="CREATED")
+        nml_log.log("Created nml.", action="RAMSES-BUILD")
 
     # -------------------------------------------------------------------------------------------------------------------- #
     # Passing command to batch runner ==================================================================================== #
@@ -368,22 +390,23 @@ if __name__ == '__main__':
             os.path.join(CONFIG["System"]["Simulations"]["simulation_directory"],nml_software, output_directory))
 
     if str(output_directory) not in nml_log.raw["outputs"]:
-        nml_log.raw["outputs"][str(output_directory)] = {
+        nml_log.add({str(output_directory):{
             "meta": {
                 "path"       : str(output_directory),
                 "dateCreated": datetime.now().strftime('%m-%d-%Y_%H-%M-%S'),
-                "slurm_path" : str(slurm_path)
+                "slurm_path" : str(slurm_path)+".slurm"
             }
-        }
-        nml_log.log("Added output at %s." % str(output_directory), "ADD_OUTPUT")
+        }})
+        nml_log.log("created slurm file.",action= "SLURM-GENERATE",object_rec=str(output_directory))
     else:
         nml_log.raw["outputs"][str(output_directory)]["meta"] = {
             "path"       : str(output_directory),
             "dateCreated": datetime.now().strftime('%m-%d-%Y_%H-%M-%S'),
-            "slurm_path" : str(slurm_path)
+            "slurm_path" : str(slurm_path)+".slurm"
         }
         nml_log.save()
-        nml_log.log("Updated output at %s." % str(output_directory), "UPDATED_OUTPUT")
+        nml_log.log("created slurm file.", action="SLURM-REPLACE", object_rec=str(output_directory))
+        nml_log.log("created slurm file.",action= "SLURM-GENERATE",object_rec=str(output_directory))
 
     #  Generating the slurm file
     # ----------------------------------------------------------------------------------------------------------------- #
@@ -400,8 +423,6 @@ if __name__ == '__main__':
                          executable=CONFIG["System"]["Executables"][types["software"]["RAMSES"][nml_software]["exec"]]
                          )
 
-    nml_log.log("Generated slurm file for %s" % str(output_directory), "MADE_SLURM", output=str(output_directory))
-
     os.system('cls' if os.name == 'nt' else 'clear')
     printer.reprint(end="")
     printer.print(done_string)
@@ -409,6 +430,6 @@ if __name__ == '__main__':
     if not user_arguments.stop:
         printer.print("%sAdding the job to the SLURM queue..." % fdbg_string, end="")
         os.system("sbatch %s.SLURM" % slurm_path)
-        nml_log.log("Ran slurm file for %s" % str(output_directory), "RAN_SLURM", output=str(output_directory))
+        nml_log.log("Ran slurm file for %s" % str(output_directory), "SLURM-RUN", object_rec=str(output_directory))
 
         printer.print(done_string)

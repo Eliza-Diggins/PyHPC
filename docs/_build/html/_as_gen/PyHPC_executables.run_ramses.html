@@ -539,6 +539,25 @@ given choice of software.</p>
 </pre></div>
 </div>
 </section>
+<section id="simulation-logging-pathway">
+<h4>Simulation Logging Pathway<a class="headerlink" href="#simulation-logging-pathway" title="Permalink to this heading">#</a></h4>
+<div class="mermaid">
+            flowchart TD
+A[run_ramses execution begins] --nml not given --&gt; C{Found ic?}
+A --nml given RAMSES-GRAB ic logged--&gt;D(SimRec object located)
+D --&gt; G[[RAMSES-GRAB nml]]
+C -- no ic, selected ic --&gt; F
+C -- ic --&gt; F[[RAMSES-GRAB ic logged]]
+H --&gt; I[[RAMSES-BUILD nml logged]]
+I --&gt; G
+F --&gt; H
+G --&gt; J[[SLURM-GENERATE output]]
+J --&quot;`Make output record in SimRec&lt;br&gt;Add SLURM GEN, SLURM file.`&quot;--&gt; J
+J --&gt; K{-s}
+K --True--&gt;L(exit)
+K --False--&gt; M[[SLURM-RUN output]]
+M --&gt; L
+        </div></section>
 </section>
 <section id="developer-information">
 <h3>Developer Information<a class="headerlink" href="#developer-information" title="Permalink to this heading">#</a></h3>
@@ -597,6 +616,7 @@ given choice of software.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-notes">Advanced Notes</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#software-options">Software Options</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-logging-pathway">Simulation Logging Pathway</a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-information">Developer Information</a></li>

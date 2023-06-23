@@ -342,6 +342,9 @@ class KeyLogger:
             if key == "e":
                 self.command = "edit"
                 stop_listening()
+            if key == "v":
+                self.command = "view"
+                stop_listening()
             if key == "a":
                 self.command = "add"
                 stop_listening()

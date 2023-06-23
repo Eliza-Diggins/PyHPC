@@ -1,21 +1,12 @@
 {
-  "test.g2": {
-    "information": "A simple test case to guide development use.",
+  "test-NO-USE.dat": {
+    "information": "",
     "meta": {
-      "dateCreated": "01_01_2000-01:00:00",
-      "lastEdited": "01_01_2000-01:00:00"
+      "dateCreated": "06-23-2023_13-27-41",
+      "lastEdited": "06-23-2023_13-27-41"
     },
-    "simulations": {
-      "test.nml": {
-        "information": "Simulation example entry.",
-        "action_log": {
-          "created": "date = something"
-        },
-        "meta": {},
-        "core": {},
-        "outputs": {}
-      }
-    },
-    "core": {}
+    "simulations": {},
+    "core": {},
+    "action_log":{}
   }
 }

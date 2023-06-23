@@ -2,6 +2,7 @@
 ======================
 Simulation Log Manager
 ======================
+
 """
 import os
 import pathlib as pt
@@ -20,6 +21,7 @@ import logging
 from PyHPC.PyHPC_Core.log import configure_logging
 import json
 from PyHPC.PyHPC_Utils.standard_utils import getFromDict,isInDict
+from colorama import Fore,Back,Style
 from sshkeyboard import listen_keyboard
 # -------------------------------------------------------------------------------------------------------------------- #
 # Setup ============================================================================================================== #
@@ -54,7 +56,7 @@ def get_frame(simobject, available_columns):
 
     data = simobject.listed
 
-    output_frame = pd.DataFrame({**{"Name":[key for key in data]},**{
+    output_frame = pd.DataFrame({**{"Name":[pt.Path(key).name for key in data]},**{
         column: [getFromDict(data[key], maplist) if isInDict(data[key], maplist) else "N.S." for key in data]  for column, maplist in columns.items()
     }})
 
@@ -166,9 +168,16 @@ if __name__ == '__main__':
                 if klog.command == "log" and len(klog.location) >= 1:
                     os.system('cls' if os.name == 'nt' else 'clear')
                     if type(klog.object).__name__ != "SimRec":
-                        print(get_dict_str(klog.object[list(klog.object.listed.keys())[klog.position]].raw["action_log"]))
+                        out_dict = klog.object[list(klog.object.listed.keys())[klog.position]].raw["action_log"].copy()
                     else:
-                        print(get_dict_str(klog.object["outputs"][list(klog.object.listed.keys())[klog.position]]["action_log"]))
+                        out_dict = klog.object["outputs"][list(klog.object.listed.keys())[klog.position]]["action_log"].copy()
+                    print_dict = {}
+                    for k,v in out_dict.items():
+                        out_dict[k]["act"] = Fore.RED+v["act"]+Style.RESET_ALL
+                        print_dict[Fore.GREEN+k+Style.RESET_ALL] = v
+
+                    print(get_dict_str(print_dict))
+
                     input("[Sim-Manager]: Hit any key and enter to return")
                 if klog.command == "back":
                     if type(klog.object).__name__ != "SimulationLog":
@@ -228,6 +237,14 @@ if __name__ == '__main__':
                 if klog.command == "add":
                     klog.object.add(edit_dictionary({},"Create the preferred dictionary"))
                     klog.reframe = True
+
+                if klog.command == "view":
+                    os.system('cls' if os.name == 'nt' else 'clear')
+                    if type(klog.object).__name__ != "SimRec":
+                        print(get_dict_str(klog.object[list(klog.object.listed.keys())[klog.position]].raw))
+                    else:
+                        print(get_dict_str(klog.object["outputs"][list(klog.object.listed.keys())[klog.position]]))
+                    input("[Sim-Manager]: Hit any key and enter to return")
 
 
             klog.command = None

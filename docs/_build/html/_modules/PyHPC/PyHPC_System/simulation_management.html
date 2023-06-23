@@ -1198,7 +1198,7 @@ document.write(`
     <span class="k">def</span> <span class="fm">__missing__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="SimRec.log"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.log.html#PyHPC.PyHPC_System.simulation_management.SimRec.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="SimRec.log"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.simulation_management.SimRec.log.html#PyHPC.PyHPC_System.simulation_management.SimRec.log">[docs]</a>    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">auto_save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">object_rec</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        logs the ``message`` to the ``self.raw.action_log``. Additional entries in the record are specified with ``**kwargs``.</span>
 
@@ -1211,6 +1211,8 @@ document.write(`
 <span class="sd">            best impact.</span>
 <span class="sd">        auto_save : bool</span>
 <span class="sd">            ``True`` to automatically write all the data to file.</span>
+<span class="sd">        object_rec : str or None, default=None</span>
+<span class="sd">            The object record to log too. If ``None``, then it isn&#39;t logged elsewhere.</span>
 <span class="sd">        kwargs : optional</span>
 <span class="sd">            Additional attributes to log with the message. All entries should be ``key=&quot;string&quot;``. If entries overlap</span>
 <span class="sd">            with required log elements ``[msg,lineno,file,act,time]``, then they are overridden by the values given.</span>
@@ -1228,7 +1230,8 @@ document.write(`
             <span class="s2">&quot;act&quot;</span>   <span class="p">:</span> <span class="n">action</span><span class="p">,</span>
             <span class="s2">&quot;lineno&quot;</span><span class="p">:</span> <span class="n">caller</span><span class="o">.</span><span class="n">lineno</span><span class="p">,</span>
             <span class="s2">&quot;file&quot;</span>  <span class="p">:</span> <span class="n">caller</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
-            <span class="s2">&quot;time&quot;</span>  <span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m-</span><span class="si">%d</span><span class="s1">-%Y_%H-%M-%S&#39;</span><span class="p">)</span>
+            <span class="s2">&quot;time&quot;</span>  <span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%m-</span><span class="si">%d</span><span class="s1">-%Y_%H-%M-%S&#39;</span><span class="p">),</span>
+            <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">object_rec</span><span class="p">)</span> <span class="k">if</span> <span class="n">object_rec</span> <span class="k">else</span> <span class="s2">&quot;Self&quot;</span>
 
         <span class="p">}</span>
 
@@ -1242,6 +1245,10 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;action_log&quot;</span><span class="p">][</span><span class="n">log_time</span><span class="p">]</span> <span class="o">=</span> <span class="n">entries</span>
 
+        <span class="k">if</span> <span class="n">object_rec</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;outputs&quot;</span><span class="p">][</span><span class="n">object_rec</span><span class="p">][</span><span class="s2">&quot;action_log&quot;</span><span class="p">][</span><span class="n">log_time</span><span class="p">]</span> <span class="o">=</span> <span class="n">entries</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">action</span><span class="p">,</span><span class="n">object_rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">,</span><span class="n">level</span><span class="o">=</span><span class="s2">&quot;SimRec&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">auto_save</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
 
