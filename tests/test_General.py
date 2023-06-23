@@ -11,6 +11,8 @@ import os
 import pathlib as pt
 import unittest
 import sys
+import pytest
+
 
 class TestCore(unittest.TestCase):
     with open(os.path.join(pt.Path(__file__).parents[0], "pytest_data.json")) as f:
@@ -30,6 +32,7 @@ class TestCore(unittest.TestCase):
 
         assert isinstance(CONFIG, dict)
 
+    @pytest.mark.skipif("worker" in str(pytest.FixtureRequest.config.rootdir),"remote")
     def test_logging(self):
         """Tests the ``PyHPC.PyHPC_core.log`` module."""
         #  Loading Modules
