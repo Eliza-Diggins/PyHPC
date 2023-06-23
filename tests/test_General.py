@@ -32,7 +32,7 @@ class TestCore(unittest.TestCase):
 
         assert isinstance(CONFIG, dict)
 
-    @pytest.mark.skipif("worker" in os.getcwd(),"remote")
+    @pytest.mark.skipif("worker" in os.getcwd(),reason="remote")
     def test_logging(self):
         """Tests the ``PyHPC.PyHPC_core.log`` module."""
         #  Loading Modules
