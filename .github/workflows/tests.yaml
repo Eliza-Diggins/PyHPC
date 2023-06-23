@@ -23,11 +23,7 @@ jobs:
       - name: Running pytest
         run: |
           python PyHPC/setup.py -ri -l /home/runner/work/PyHPC/PyHPC
-          pytest --doctest-modules --junitxml=junit/test-results.xml --cov=PyHPC --cov-report=xml --cov-report=html
-      - name: Upload pytest test results
-        uses: actions/upload-artifact@v3
-        with:
-          name: pytest-results-${{ matrix.python-version }}
-          path: junit/test-results.xml
-        # Use always() to always run this step to publish test results when there are test failures
-        if: ${{ always() }}
+          pip install coveralls
+          coverage run --source=PyHPC -m pytest tests/
+          coveralls
+
