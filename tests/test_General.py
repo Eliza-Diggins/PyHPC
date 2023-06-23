@@ -10,12 +10,13 @@ import logging
 import os
 import pathlib as pt
 import unittest
-
+import sys
 
 class TestCore(unittest.TestCase):
     with open(os.path.join(pt.Path(__file__).parents[0], "pytest_data.json")) as f:
         test_data = json.load(f)["TestCore"]
-
+    def setUp(self) -> None:
+        sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
     def test_configuration(self):
         """Tests the ``PyHPC.PyHPC_core.configuration`` module."""
         #  Loading Modules
