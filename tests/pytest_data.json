@@ -1,0 +1,8 @@
+{
+  "TestCore": {
+    "test_logging": {
+      "loggers": ["root","console","meta"],
+      "lengths": [2,1,1]
+    }
+  }
+}
