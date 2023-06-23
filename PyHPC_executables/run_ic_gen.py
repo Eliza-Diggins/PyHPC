@@ -18,6 +18,8 @@ General Execution
 softwares can be found in the :doc:`software guide <../software>`. To use the IC generator, the command line should
 be used,
 
+>>> import pytest
+>>> pytest.skip('Not a test.')
 >>> python3 'PyHPC_executables/run_ic_gen.py'
 optional arguments:
   -h, --help            show this help message and exit
@@ -122,6 +124,8 @@ The user may review and proceed if the information is correct.
 
 The user will then be asked to provide some basic input of the chosen initial conditions:
 
+>>> import pytest
+>>> pytest.skip('Not a test.')
 >>> Please enter a name for the IC file. [Relative to IC directory]: "example.dat"
 
 At this stage, the software will generate all of the necessary data to execute the construction process. If you have

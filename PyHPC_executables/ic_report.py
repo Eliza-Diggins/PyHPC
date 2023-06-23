@@ -9,6 +9,8 @@ are, in fact, those that suit your needs.
 
 To run an initial condition report, one simply needs to run
 
+>>> import pytest
+>>> pytest.skip('Not a test.')
 >>> python3 ic-report
     ic_report.py [-h] [-l {pynbody,yt}] [-o OUTPUT] [--simulation_log SIMULATION_LOG] ic
     positional arguments:
