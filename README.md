@@ -1,5 +1,6 @@
 [![yt-project](https://img.shields.io/static/v1?label="works%20with"&message="yt"&color="blueviolet")](https://yt-project.org)
 [![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
+[![Coverage Status](https://coveralls.io/repos/github/Eliza-Diggins/PyHPC/badge.svg?branch=master)](https://coveralls.io/github/Eliza-Diggins/PyHPC?branch=master)
 
 Welcome to PyHPC
 =================
