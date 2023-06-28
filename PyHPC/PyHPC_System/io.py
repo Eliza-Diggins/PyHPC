@@ -53,7 +53,12 @@ def write_command_string(command: str, *args, **kwargs) -> str:
     Examples
     --------
     >>> print(write_command_string("python3","example.py",o="output_file",r=True))
-    "python3 example.py -o output_file -r True"
+    python3 'example.py' -o 'output_file' -r 'True'
+
+    An example of using the ``write_command_string`` function to produce a ``python3`` execution.
+
+    >>> print(write_command_string("/path/ramses_3d","path/to/nml.nml",l="False"))
+    /path/ramses_3d 'path/to/nml.nml' -l 'False'
 
     """
     modlog.debug("Writing command %s with args %s and kwargs %s." % (command, args, kwargs))
