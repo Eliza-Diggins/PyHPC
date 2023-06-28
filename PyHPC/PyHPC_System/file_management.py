@@ -53,15 +53,29 @@ with open(os.path.join(pt.Path(__file__).parents[1], "bin", "lib", "struct", "fi
 @time_function
 def get_all_files(directory, top_directory=None):
     """
-    Finds all of the files within ``directory`` and returns as a formatted list with relative and absolute paths.
+    Fetches all relevant files and subfiles regarding the necessary ``directory``.
+
     Parameters
     ----------
-    directory: the directory from which to search.
-    top_directory: The directory from which to construct the relative paths.
-    Returns: Returns a list of tuples [(path,rel-path,file)].
-    -------
+    directory: str
+        The directory from which to find all of the files and subfiles.
+    top_directory: str
+        The ``top_directory`` is the directory from which the paths are listed.
 
+    Returns
+    -------
+    list of str
+        The files held in the ``directory``.
+
+    Examples
+    --------
+
+    >>> l = get_all_files(pt.Path(__file__).parents[0],top_directory=pt.Path(__file__).parents[2])
+    >>> print(len([file for file in l if ".py" in file[0]]))
+    8
     """
+
+
     #  Setup
     # ----------------------------------------------------------------------------------------------------------------- #
     # - Managing the top directory -#
@@ -89,14 +103,19 @@ def get_all_files(directory, top_directory=None):
 @time_function
 def get_all_remote_files(directory, top_directory=None):
     """
-    Grabs all of the files within the directory and returns as a list with (path, rel-path, file). [BOX]
+    Fetches all relevant files and subfiles regarding the necessary ``directory`` in the remote location.
+
     Parameters
     ----------
-    directory: the directory from which to search.
+    directory: str
+        The directory from which to find all of the files and subfiles.
+    top_directory: str
+        The ``top_directory`` is the directory from which the paths are listed.
 
-    Returns: Returns a list of tuples [(path,rel-path,file)].
+    Returns
     -------
-
+    list of str
+        The files held in the ``directory``.
     """
     #  Setup
     # ----------------------------------------------------------------------------------------------------------------- #

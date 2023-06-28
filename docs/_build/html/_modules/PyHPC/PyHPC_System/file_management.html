@@ -384,15 +384,29 @@ document.write(`
 <div class="viewcode-block" id="get_all_files"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.file_management.get_all_files.html#PyHPC.PyHPC_System.file_management.get_all_files">[docs]</a><span class="nd">@time_function</span>
 <span class="k">def</span> <span class="nf">get_all_files</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">top_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Finds all of the files within ``directory`` and returns as a formatted list with relative and absolute paths.</span>
+<span class="sd">    Fetches all relevant files and subfiles regarding the necessary ``directory``.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    directory: the directory from which to search.</span>
-<span class="sd">    top_directory: The directory from which to construct the relative paths.</span>
-<span class="sd">    Returns: Returns a list of tuples [(path,rel-path,file)].</span>
-<span class="sd">    -------</span>
+<span class="sd">    directory: str</span>
+<span class="sd">        The directory from which to find all of the files and subfiles.</span>
+<span class="sd">    top_directory: str</span>
+<span class="sd">        The ``top_directory`` is the directory from which the paths are listed.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of str</span>
+<span class="sd">        The files held in the ``directory``.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; l = get_all_files(pt.Path(__file__).parents[0],top_directory=pt.Path(__file__).parents[2])</span>
+<span class="sd">    &gt;&gt;&gt; print(len([file for file in l if &quot;.py&quot; in file[0]]))</span>
+<span class="sd">    8</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+
     <span class="c1">#  Setup</span>
     <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
     <span class="c1"># - Managing the top directory -#</span>
@@ -420,14 +434,19 @@ document.write(`
 <div class="viewcode-block" id="get_all_remote_files"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.file_management.get_all_remote_files.html#PyHPC.PyHPC_System.file_management.get_all_remote_files">[docs]</a><span class="nd">@time_function</span>
 <span class="k">def</span> <span class="nf">get_all_remote_files</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">top_directory</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Grabs all of the files within the directory and returns as a list with (path, rel-path, file). [BOX]</span>
+<span class="sd">    Fetches all relevant files and subfiles regarding the necessary ``directory`` in the remote location.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    directory: the directory from which to search.</span>
+<span class="sd">    directory: str</span>
+<span class="sd">        The directory from which to find all of the files and subfiles.</span>
+<span class="sd">    top_directory: str</span>
+<span class="sd">        The ``top_directory`` is the directory from which the paths are listed.</span>
 
-<span class="sd">    Returns: Returns a list of tuples [(path,rel-path,file)].</span>
+<span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-
+<span class="sd">    list of str</span>
+<span class="sd">        The files held in the ``directory``.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#  Setup</span>
     <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>

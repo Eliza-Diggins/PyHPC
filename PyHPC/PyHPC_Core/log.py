@@ -101,7 +101,7 @@ def configure_logging(location):
     # ------------------------------------------------------------------------------------------------------------ #
     for k, v in log_config_dict["handlers"].items():
         if "filename" in v:
-            exec('log_config_dict["handlers"][k]["filename"] = \'%s\'' % str(
+            exec('log_config_dict["handlers"][k]["filename"] = %s' % str(
                 v["filename"] % {"log_dir": __logging_data["dir"],
                                  "time"   : __logtime,
                                  "loc"    : pt.Path(location).name.replace(pt.Path(location).suffix, "")}))

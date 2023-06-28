@@ -466,12 +466,21 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="PyHPC.PyHPC_System.file_management.get_all_remote_files">
 <span class="sig-prename descclassname"><span class="pre">PyHPC.PyHPC_System.file_management.</span></span><span class="sig-name descname"><span class="pre">get_all_remote_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyHPC/PyHPC_System/file_management.html#get_all_remote_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyHPC.PyHPC_System.file_management.get_all_remote_files" title="Permalink to this definition">#</a></dt>
-<dd><p>Grabs all of the files within the directory and returns as a list with (path, rel-path, file). [BOX]
-:param directory:
-:type directory: the directory from which to search.
-:param Returns:
-:type Returns: Returns a list of tuples [(path,rel-path,file)].
-:param ——-:</p>
+<dd><p>Fetches all relevant files and subfiles regarding the necessary <code class="docutils literal notranslate"><span class="pre">directory</span></code> in the remote location.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> (<em>str</em>) – The directory from which to find all of the files and subfiles.</p></li>
+<li><p><strong>top_directory</strong> (<em>str</em>) – The <code class="docutils literal notranslate"><span class="pre">top_directory</span></code> is the directory from which the paths are listed.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The files held in the <code class="docutils literal notranslate"><span class="pre">directory</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

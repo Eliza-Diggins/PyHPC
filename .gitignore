@@ -3,3 +3,4 @@
 /PyHPC/bin/.tmp/
 /.pytest_cache/
 /coverage.xml
+*.pytest_cache/

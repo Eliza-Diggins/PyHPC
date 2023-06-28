@@ -466,11 +466,28 @@ document.write(`
 <dl class="py function">
 <dt class="sig sig-object py" id="PyHPC.PyHPC_System.io.write_command_string">
 <span class="sig-prename descclassname"><span class="pre">PyHPC.PyHPC_System.io.</span></span><span class="sig-name descname"><span class="pre">write_command_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PyHPC/PyHPC_System/io.html#write_command_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyHPC.PyHPC_System.io.write_command_string" title="Permalink to this definition">#</a></dt>
-<dd><p>Returns the corresponding command string in the format ‘’command arg[0] arg[…] -k[0] v[0] … -k[n] v[n].
-:param command: The command to run.
-:param args: Unflagged arguments to pass through the shell.
-:param kwargs: Flagged arguments to pass through the shell with corresponding &lt;b&gt;QUICK&lt;/b&gt; keys.
-:return: String.</p>
+<dd><p>Writes the command string corresponding to the specified command in a format which can be used to
+pass through the command line terminal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>command</strong> (<em>str</em>) – The command to use.</p></li>
+<li><p><strong>args</strong> (<em>list</em><em> of </em><em>any</em>) – The arguments that need to be passed. These might be things like <code class="docutils literal notranslate"><span class="pre">-h</span></code>, or <code class="docutils literal notranslate"><span class="pre">--help</span></code> as well as non-flag items
+like file-paths.</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em><em> of </em><em>any</em>) – These are keyword arguments to pass. They are formatted as <code class="docutils literal notranslate"><span class="pre">--key</span> <span class="pre">value</span></code> in order.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The string corresponding to the command.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">write_command_string</span><span class="p">(</span><span class="s2">&quot;python3&quot;</span><span class="p">,</span><span class="s2">&quot;example.py&quot;</span><span class="p">,</span><span class="n">o</span><span class="o">=</span><span class="s2">&quot;output_file&quot;</span><span class="p">,</span><span class="n">r</span><span class="o">=</span><span class="n">Truex</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>

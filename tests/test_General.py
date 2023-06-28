@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import pathlib as pt
+import shutil
 import unittest
 import sys
 import pytest
@@ -51,3 +52,31 @@ class TestCore(unittest.TestCase):
                 log = logging.getLogger(logger)
 
                 assert len(log.handlers) == length
+
+    def test_utils_getsystem(self):
+        """tests the ``PyHPC.PyHPC_Core.utils.get_system_info`` function"""
+        try:
+            from PyHPC.PyHPC_Core.utils import get_system_info
+        except ImportError:
+            raise AssertionError("Failed to import PyHPC.PyHPC_Core.utils")
+
+        get_system_info()
+
+    def test_utils_write_ini(self):
+        """tests the ``PyHPC.PyHPC_Core.utils.write_ini`` function."""
+        try:
+            from PyHPC.PyHPC_Core.utils import write_ini
+        except ImportError:
+            raise AssertionError("Failed to import PyHPC.PyHPC_Core.utils.")
+
+        with open(os.path.join(pt.Path(__file__).parents[0], "temp.ini"),"w") as f:
+            try:
+                write_ini(self.test_data["test_utils_write_ini"]["ini_dict"],f)
+            except Exception:
+                raise AssertionError
+
+        with open(os.path.join(pt.Path(__file__).parents[0], "temp.ini"),"r+") as f:
+            d = f.read()
+
+        os.remove(os.path.join(pt.Path(__file__).parents[0], "temp.ini"))
+        assert d == self.test_data["test_utils_write_ini"]["ini_dict_val"]

@@ -3,6 +3,15 @@
     "test_logging": {
       "loggers": ["root","console","meta"],
       "lengths": [2,1,1]
+    },
+    "test_utils_write_ini": {
+      "ini_dict": {
+        "Header1": {
+          "v1": 1,
+          "v2": "1,2,3"
+        }
+      },
+      "ini_dict_val": "[Header1]\nv1 = 1\nv2 = 1,2,3\n"
     }
   }
 }

@@ -329,10 +329,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <h1>Source code for PyHPC.PyHPC_System.io</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Core IO operations for passing objects to slurm, running commands, etc.</span>
-<span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">pathlib</span> <span class="k">as</span> <span class="nn">pt</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
@@ -340,12 +337,10 @@ document.write(`
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Core.configuration</span> <span class="kn">import</span> <span class="n">read_config</span>
-<span class="kn">import</span> <span class="nn">pathlib</span> <span class="k">as</span> <span class="nn">pt</span>
 <span class="kn">import</span> <span class="nn">threading</span> <span class="k">as</span> <span class="nn">t</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">toml</span>
 <span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Utils.text_display_utilities</span> <span class="kn">import</span> <span class="n">get_options</span>
-<span class="kn">from</span> <span class="nn">PyHPC.PyHPC_Utils.standard_utils</span> <span class="kn">import</span> <span class="n">setInDict</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
 <span class="c1"># generating screen locking #</span>
@@ -368,11 +363,29 @@ document.write(`
 <span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
 <div class="viewcode-block" id="write_command_string"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.io.write_command_string.html#PyHPC.PyHPC_System.io.write_command_string">[docs]</a><span class="k">def</span> <span class="nf">write_command_string</span><span class="p">(</span><span class="n">command</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the corresponding command string in the format &#39;&#39;command arg[0] arg[...] -k[0] v[0] ... -k[n] v[n].</span>
-<span class="sd">    :param command: The command to run.</span>
-<span class="sd">    :param args: Unflagged arguments to pass through the shell.</span>
-<span class="sd">    :param kwargs: Flagged arguments to pass through the shell with corresponding &lt;b&gt;QUICK&lt;/b&gt; keys.</span>
-<span class="sd">    :return: String.</span>
+<span class="sd">    Writes the command string corresponding to the specified command in a format which can be used to</span>
+<span class="sd">    pass through the command line terminal.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    command: str</span>
+<span class="sd">        The command to use.</span>
+<span class="sd">    args: list of any</span>
+<span class="sd">        The arguments that need to be passed. These might be things like ``-h``, or ``--help`` as well as non-flag items</span>
+<span class="sd">        like file-paths.</span>
+<span class="sd">    kwargs: dict of any</span>
+<span class="sd">        These are keyword arguments to pass. They are formatted as ``--key value`` in order.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str:</span>
+<span class="sd">        The string corresponding to the command.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; write_command_string(&quot;python3&quot;,&quot;example.py&quot;,o=&quot;output_file&quot;,r=Truex)</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing command </span><span class="si">%s</span><span class="s2"> with args </span><span class="si">%s</span><span class="s2"> and kwargs </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
     <span class="n">command_string</span> <span class="o">=</span> <span class="n">command</span>
@@ -392,33 +405,7 @@ document.write(`
 <span class="c1">#  Batch Management ================================================================================================== #</span>
 <span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
 <div class="viewcode-block" id="write_slurm_file"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.io.write_slurm_file.html#PyHPC.PyHPC_System.io.write_slurm_file">[docs]</a><span class="k">def</span> <span class="nf">write_slurm_file</span><span class="p">(</span><span class="n">command_string</span><span class="p">,</span> <span class="n">slurm_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Writes a ``.slurm`` file corresponding to the provided ``command_string``.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    command_string : str</span>
-<span class="sd">        The command string to run from. This should be a string representation of one of the ``.template`` files at</span>
-<span class="sd">        ``/bin/lib/templates`` or can be hand built. These should be ``csh`` files with ``%(option)s`` inserts for</span>
-<span class="sd">        string formatting.</span>
-
-<span class="sd">        ..info::</span>
-<span class="sd">            The options left in the ``.template`` file or string must correspond to key-words in ``kwargs``.</span>
-
-<span class="sd">    slurm_config : dict</span>
-<span class="sd">        The ``slurm_config`` option should specify the settings corresponding to the ``slurm_settings``. If ``None``, then</span>
-<span class="sd">        the ``slurm_config`` will be obtained from the user.</span>
-<span class="sd">    name : str</span>
-<span class="sd">        The name of the ``.slurm`` file.</span>
-
-<span class="sd">    kwargs :</span>
-<span class="sd">        additional entry options to be passed through the ``command_string``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    None</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#  Intro Debugging</span>
     <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
     <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing slurm file with name parameter </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
@@ -497,22 +484,7 @@ document.write(`
 <span class="c1"># Configuration Management =========================================================================================== #</span>
 <span class="c1"># -------------------------------------------------------------------------------------------------------------------- #</span>
 <div class="viewcode-block" id="write_ramses_nml"><a class="viewcode-back" href="../../../_as_gen/PyHPC.PyHPC_System.io.write_ramses_nml.html#PyHPC.PyHPC_System.io.write_ramses_nml">[docs]</a><span class="k">def</span> <span class="nf">write_ramses_nml</span><span class="p">(</span><span class="n">settings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">output_location</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Writes a RAMSES nml file at the output_location using the settings specified in ``settings``.</span>
 
-<span class="sd">    **Processes:**</span>
-
-<span class="sd">    1. Removes the meta key from the settings.</span>
-<span class="sd">    2. Converts the memory type to the correct form.</span>
-<span class="sd">    3. Removes disabled keys</span>
-<span class="sd">    4. Removes software non compatible headers.</span>
-<span class="sd">    5. Manages the initial condition file&#39;s location.</span>
-
-
-<span class="sd">    :param settings: The settings</span>
-<span class="sd">    :param output_location: The output location</span>
-<span class="sd">    :return: True if pass, Fail if not.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#  Debugging and setup</span>
     <span class="c1"># ----------------------------------------------------------------------------------------------------------------- #</span>
     <span class="n">modlog</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Generating ramses nml file at </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="n">output_location</span><span class="p">)</span>
@@ -572,9 +544,9 @@ document.write(`
 
     <span class="k">return</span> <span class="kc">None</span></div>
 
-
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">write_ramses_nml</span><span class="p">(</span><span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">CONFIG</span><span class="p">[</span><span class="s2">&quot;System&quot;</span><span class="p">][</span><span class="s2">&quot;Directories&quot;</span><span class="p">][</span><span class="s2">&quot;bin&quot;</span><span class="p">],</span> <span class="s2">&quot;configs&quot;</span><span class="p">,</span> <span class="s2">&quot;RAMSES.config&quot;</span><span class="p">)),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">write_command_string</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">write_command_string</span><span class="p">(</span><span class="s2">&quot;sdfs&quot;</span><span class="p">))</span>
 </pre></div>
 
                 </article>
