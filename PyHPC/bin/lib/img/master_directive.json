@@ -1,0 +1,45 @@
+{
+  "information": "This file contains the directive behavior of all of the implemented plotting functions.",
+  "functions": {
+    "plt.plot": {
+      "args": [
+        "<x>",
+        "<y>"
+      ],
+      "kwargs": {
+        "color": {
+          "type": [
+            "int",
+            "float",
+            "str"
+          ],
+          "default": "black"
+        },
+        "linewidth": {
+          "type": [
+            "int"
+          ],
+          "default": 3
+        }
+      },
+      "allowed_struct": [
+        "axes"
+      ],
+      "inherit_kwargs": []
+    }
+  },
+  "structure": {
+    "axes": {
+      "kwargs": {
+        "ylim": {
+          "command": ".set_ylim",
+          "type": "list[float]"
+        },
+        "xlim": {
+          "command": ".set_xlim",
+          "type": "list[float]"
+        }
+      }
+    }
+  }
+}

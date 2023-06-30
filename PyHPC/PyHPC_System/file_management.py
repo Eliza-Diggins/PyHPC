@@ -1,7 +1,9 @@
 """
-
-    Tools for remote file management using RClone or single transfer.
--- Last Check: 12/16 --
+================
+File Management
+================
+The file management system for ``PyHPC`` is where all of the routines necessary for the transfer of data and images
+between devices and the cloud is managed.
 """
 import os
 import pathlib as pt
@@ -67,15 +69,7 @@ def get_all_files(directory, top_directory=None):
     list of str
         The files held in the ``directory``.
 
-    Examples
-    --------
-
-    >>> l = get_all_files(pt.Path(__file__).parents[0],top_directory=pt.Path(__file__).parents[2])
-    >>> print(len([file for file in l if ".py" in file[0]]))
-    8
     """
-
-
     #  Setup
     # ----------------------------------------------------------------------------------------------------------------- #
     # - Managing the top directory -#
@@ -149,11 +143,15 @@ def get_remote_location(local_path, move_to_unfiled=CONFIG["System"]["Directorie
 
     Parameters
     ----------
-    local_path: The local path on the disk.
-    move_to_unfiled: If True, then we will move items without a reasonable path to an unfiled location.
+    local_path: str
+        The local path on the disk.
+    move_to_unfiled: bool
+        If True, then we will move items without a reasonable path to an unfiled location.
 
-    Returns: The correct path to copy to for that file.
+    Returns
     -------
+    str:
+        The correct path to copy to for that file.
 
     """
     # Introduction Debug
@@ -207,11 +205,15 @@ def get_local_location(remote_path, move_to_unfiled=CONFIG["System"]["Directorie
     Determines the correct path to use for rclone on the box side of file transfer.
     Parameters
     ----------
-    local_path: The local path on the disk.
-    move_to_unfiled: If True, then we will move items without a reasonable path to an unfiled location.
+    local_path: str
+        The local path on the disk.
+    move_to_unfiled: bool
+        If True, then we will move items without a reasonable path to an unfiled location.
 
-    Returns: The correct path to copy to for that file.
+    Returns
     -------
+    str
+        The correct path to copy to for that file.
 
     """
     #  Intro Debugging
@@ -262,10 +264,14 @@ def send_item_to_rclone(location_path, move_to_unfiled=CONFIG["System"]["Directo
     Sends the specified item to the correct rclone directory.
     Parameters
     ----------
-    location_path: The path to the correct directory.
+    location_path: str
+        The path to the correct directory.
+    move_to_unfiled: bool
+        if ``True``, will move the object to unfiled if it doesn't originate in a recognized location.
 
-    Returns: None.
+    Returns
     -------
+    None
 
     """
     #  Logging
@@ -293,14 +299,17 @@ def send_item_to_rclone(location_path, move_to_unfiled=CONFIG["System"]["Directo
 
 def mt_send_item_to_rclone(location_path, move_to_unfiled=CONFIG["System"]["Directories"]["Remote"]["send_to_unfiled"]):
     """
-    Sends the specified item to the correct rclone directory. (MULTI-Threaded)
+    Sends the specified item to the correct rclone directory.
     Parameters
     ----------
-    location_path: The path to the correct directory.
+    location_path: str
+        The path to the correct directory.
+    move_to_unfiled: bool
+        if ``True``, will move the object to unfiled if it doesn't originate in a recognized location.
 
-    Returns: None.
+    Returns
     -------
-
+    None
     """
     #  Intro debugging
     # ----------------------------------------------------------------------------------------------------------------- #
@@ -332,15 +341,18 @@ def mt_send_item_to_rclone(location_path, move_to_unfiled=CONFIG["System"]["Dire
 
 def get_item_from_rclone(location_path, move_to_unfiled=CONFIG["System"]["Directories"]["Remote"]["send_to_unfiled"]):
     """
-    Downloads an item from box using rclone
+    receives the specified item to the correct rclone directory.
     Parameters
     ----------
-    location_path: The path to the correct directory.
+    location_path: str
+        The path to the correct directory.
+    move_to_unfiled: bool
+        if ``True``, will move the object to unfiled if it doesn't originate in a recognized location.
 
-    Returns: None.
+    Returns
     -------
-
-        """
+    None
+    """
     #  Logging
     # ----------------------------------------------------------------------------------------------------------------- #
     modlog.debug("Getting file at %s to remote." % location_path)
@@ -367,13 +379,18 @@ def get_item_from_rclone(location_path, move_to_unfiled=CONFIG["System"]["Direct
 def mt_get_item_from_rclone(location_path,
                             move_to_unfiled=CONFIG["System"]["Directories"]["Remote"]["send_to_unfiled"]):
     """
-        Downloads an item from box using rclone. (MULTI-Threaded)
+    Downloads an item from box using rclone. (MULTI-Threaded)
+
     Parameters
     ----------
-    location_path: The path to the correct directory.
+    location_path: str
+        The path to the correct directory.
+    move_to_unfiled: bool
+        ``True`` to file under unfiled.
 
-    Returns: None.
+    Returns
     -------
+    None
 
     """
     t_s = perf_counter()

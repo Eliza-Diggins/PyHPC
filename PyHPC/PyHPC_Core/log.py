@@ -91,18 +91,37 @@ def _get_modules(path, mod_name=""):
 def configure_logging(location):
     """
     The ``configure_logging`` function forms the basis of the logging in ``H20``. This should always be called
-    anytime the system is
+    anytime the system is run.
+
+    Parameters
+    ----------
+    location: str
+        This is the location of the main running script (``__main__``). This determines the directory under which
+        the log is filed.
+
     Returns
     -------
     None
 
+    Examples
+    --------
+    >>> import pathlib as pt
+    >>> configure_logging(pt.Path(__file__).name.replace(".py",""))
+
+    Loading the configured logging.
+
+    >>> import pathlib as pt
+    >>> import logging
+    >>> configure_logging(pt.Path(__file__).name.replace(".py",""))
+    >>> logger = logging.getLogger("console")
+    >>> logger.critical("Help me!")
     """
     # Managing Filenames
     # ------------------------------------------------------------------------------------------------------------ #
     for k, v in log_config_dict["handlers"].items():
         if "filename" in v:
-            exec('log_config_dict["handlers"][k]["filename"] = %s' % str(
-                v["filename"] % {"log_dir": __logging_data["dir"],
+            exec(r"log_config_dict['handlers'][k]['filename'] = %s" % str(
+                v["filename"] % {"log_dir": pt.Path(__logging_data["dir"]),
                                  "time"   : __logtime,
                                  "loc"    : pt.Path(location).name.replace(pt.Path(location).suffix, "")}))
             if not os.path.exists(pt.Path(log_config_dict["handlers"][k]["filename"]).parents[0]):
@@ -134,7 +153,9 @@ def configure_logging(location):
 
 
 if __name__ == '__main__':
-    logger = logging.getLogger("root")
-    configure_logging(__file__)
-    logger.debug("heres something!")
-    logging.warning("Something bad is happening")
+    import pathlib as pt
+    import logging
+
+    configure_logging(pt.Path(__file__).name.replace(".py", ""))
+    logger = logging.getLogger("console")
+    logger.critical("Help me!")
