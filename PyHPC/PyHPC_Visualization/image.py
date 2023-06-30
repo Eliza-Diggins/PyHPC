@@ -103,15 +103,17 @@ if not CONFIG["System"]["Logging"]["warnings"]:
 #  Functions ========================================================================================================= #
 # -------------------------------------------------------------------------------------------------------------------- #
 
-def generate_image(image_directive):
+def generate_image(image_directive,**kwargs):
     """
-    sdfsdf
+    Generates the image from the ``image_directive``. Unless otherwise specified in the ``kwargs``, this will be done on its own figure.
+
     Parameters
     ----------
     image_directive
+    kwargs
 
     Returns
     -------
 
     """
-    pass
+
