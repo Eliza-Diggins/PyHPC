@@ -1,0 +1,32 @@
+information: &info |
+  This file is the master directive for plotting in the PyHPC project.
+structures: &structures
+  Figure: &plt-figure
+    kwargs: &plt-figure_kwargs
+      figsize:
+        args: [[10,10]]
+        kwargs: {}
+        command: .set_size_inches
+functions: &functions
+  plt.plot: &plt-plot
+    args: &plt-plot_args
+      - :x
+      - :y
+    kwargs: &plt-plot_kwargs
+      main:
+        color: &plt-plot_kwargs_color
+          default: red
+          type: str
+        linewidth: &plt-plot_kwargs_linewidth
+          default: 3
+          type: int,float
+    inherits:
+      Figure: *plt-figure_kwargs
+  yt.ProjectionPlot: &yt-ProjectionPlot
+    args: $yt-ProjectionPlot_args
+      - :ds
+      - axis
+      - :f
+    kwargs: &yt-ProjectionPlot_kwargs
+    inherits:
+      Figure: *plt-figure_kwargs

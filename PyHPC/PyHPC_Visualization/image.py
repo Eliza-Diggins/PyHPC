@@ -19,24 +19,25 @@ Plotting Directives
 ^^^^^^^^^^^^^^^^^^^
 The Plotting directive is a ``json`` style file / dictionary containing the execution data for given plotting function. The format is as follows:
 
-.. code-block:: json
+.. code-block:: yaml
 
-    {
-      "gridspec": [
-        ["1","1","2","2"],
-        ["1","1","2","2"]
-      ],
-      "functions": {
-        "<plotting function>": {
-          "axis": "<axis number to attach to>",
-          "args": ["args","in","order"],
-          "kwargs": {
-            "kw1": "v1",
-            "...": "..."
-          }
-        }
-      }
-    }
+    information: &info |
+      This file is an example file.
+    gridspec: &gridspec
+      - [1,1,2,2]
+      - [1,1,2,2]
+    functions: &functions
+      plt.plot: &plt-plot
+        axis: 1
+        args: &plt-plot_args
+          - :x
+          - :y
+        kwargs: &plt-plot_kwargs
+          color: red
+          linewidth: 3
+        inherits:
+
+structures: &structures
 
 The first section of the ``plotting_directive`` specifies the gridspec layout. This can generally be overridden (see the documentation for
 individual plotting routines), and so is not always necessary. The second part is used to specify the functions to use in the plotting.
@@ -48,8 +49,8 @@ The ``master directive`` is the file off of which all plotting execution is base
 ``kwargs`` and ``args`` which allow for execution of the script to occur. The master directive is included here as a guide for
 the available plotting options:
 
-.. include:: ../../PyHPC/bin/lib/img/master_directive.json
-    :code: json
+.. include:: ../../PyHPC/bin/lib/img/master_directive.yaml
+    :code: yaml
 
 Under the hood, the functionality is relatively simple. Every plot that can be made has an entry in ``functions``. The
 entry key can be used to call the function. The ``args`` list contains (in order) the arguments that have to be provided to

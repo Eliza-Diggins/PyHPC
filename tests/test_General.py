@@ -3,7 +3,7 @@ Testing PyHPC
 =============
 
 The ``PyHPC`` module relies on a system of unit-tests to establish errors in the development process. They are documented
-below
+below.
 """
 import json
 import logging

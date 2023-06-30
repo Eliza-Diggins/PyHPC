@@ -1,0 +1,15 @@
+information: &info |
+  This file is an example file.
+gridspec: &gridspec
+  - ['1','1','2','2']
+  - ['1','1','2','2']
+functions: &functions
+  plt.plot: &plt-plot
+    axis: 1
+    args: &plt-plot_args
+      - :x
+      - :y
+    kwargs: &plt-plot_kwargs
+      {}
+
+structures: &structures
