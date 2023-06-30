@@ -106,13 +106,13 @@ def configure_logging(location):
     Examples
     --------
     >>> import pytest
-    >>> @pytest.mark.skipif("runner" in os.getcwd(),reason="remote")
+    >>> if "runner" in os.getcwd(): pytest.skip("Remote")
     >>> import pathlib as pt
     >>> configure_logging(pt.Path(__file__).name.replace(".py",""))
 
     Loading the configured logging.
     >>> import pytest
-    >>> @pytest.mark.skipif("runner" in os.getcwd(),reason="remote")
+    >>> if "runner" in os.getcwd(): pytest.skip("Remote")
     >>> import pathlib as pt
     >>> import logging
     >>> configure_logging(pt.Path(__file__).name.replace(".py",""))
