@@ -76,6 +76,42 @@ Finally, the ``structure`` section of the ``master_directive`` is used to specif
 be added to the plot. This might include a ``legend`` or ``colorbar``. In cases where these need not always be
 present (such as for ``legend`` and ``colorbar``), the first ``kwarg`` (``enabled``) is used to specify whether or not
 to include that object in the final plot.
+
+Putting It All Together
+^^^^^^^^^^^^^^^^^^^^^^^
+Now that we understand the directives, we can now discuss how the actual plotting works. The plot for a given  ``PlotDirective`` is
+contained within the object (``PlotDirective.fig``), as are all of the axes: (``PlotDirective.axes``). The core data is **not** stored
+in the directive. As such, to plot something, we need to combine the directive with some additional data. Included in this module are a variety
+of plotting functions with the form
+
+.. code-block:: python
+
+    def some_plotting_function(directive,**kwargs):
+        pass # The function's internal machinery.
+
+In these cases, we pass ``PlotDirective`` into the ``directive`` slot and pass all of the data, corresponding to ``:x,:y,:f, etc.`` in the
+directive dictionary through the ``kwargs``. This will then pass the plotting functions through and generate a plot.
+
+What About Other Things?
+^^^^^^^^^^^^^^^^^^^^^^^^
+What happens if I want a colorbar or something else attached to my plot? What if I want to change something?
+
+This can be done by interaction with the underlying axes / figure if desired. Additionally, there are other utilities of the form
+
+.. code-block:: python
+
+    def another_plotting_function(directive,argument1,argument2,**kwargs):
+        pass
+
+In this case, we have to consult the documentation about the additional arguments; however, these items will then be able
+to add additional values and objects to the core plot.
+
+Examples
+--------
+>>> import numpy as np
+>>> from PyHPC.PyHPC_Visualization.utils import PlotDirective
+>>> x,y = np.linspace(0,10,1000),np.cos(np.linspace(0,10,1000))
+>>> directive = PlotDirective(str(os.path.join(pt.Path(__file__).parents[2], "tests", "examples", "directive-2.yaml")))
 """
 import json
 import os
@@ -109,11 +145,22 @@ def generate_image(image_directive,**kwargs):
 
     Parameters
     ----------
-    image_directive
-    kwargs
+    image_directive: PyHPC.PyHPC_Visualization.utils.PlotDirective
+        The ``PlotDirective`` object to use in the execution of the image generation process.
+    kwargs: dict
+        The ``kwargs`` associated with the necessary data entries. See notes for more information.
 
     Returns
     -------
+    None
+
+    Notes
+    -----
+
+    How it works
+    ^^^^^^^^^^^^
+    The ``PlotDirective`` object carries almost all of the information necessary to generate the plot. It provides all
+    of the functions and various kwargs. What remains the actual plotting procedure.
 
     """
 
