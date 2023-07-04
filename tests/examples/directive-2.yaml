@@ -2,14 +2,14 @@ information: &info |
   This file is an example file.
 Figure:
   grid:
-    - [1,2]
+    - [ 1,2 ]
   Subplots:
     1:
       Functions:
         uplots.plot:
-          args: ["%x%","%y1%"]
-          kwargs: {}
-      Parameters: {}
+          args: [ "%x%","%y1%" ]
+          kwargs: { }
+      Parameters: { }
     2:
       Functions:
         uplots.plot:
@@ -17,5 +17,9 @@ Figure:
           kwargs:
             color: "red"
             linewidth: 5
-      Parameters: {}
-  Parameters: {}
+      Parameters:
+        set_yscale:
+          args:
+            - "log"
+          kwargs: { }
+  Parameters: { }

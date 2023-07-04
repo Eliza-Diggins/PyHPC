@@ -6,12 +6,13 @@ import os
 import pathlib as pt
 import warnings
 
-import yaml
+import matplotlib.pyplot as plt
 import numpy as np
+import yaml
+import PyHPC.PyHPC_Visualization.uplots as uplots
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.errors import PyHPC_Error
-import matplotlib.pyplot as plt
-import uplots
+
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
 # ------------------------------------------------------ Setup ----------------------------------------------------------#
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
@@ -37,6 +38,7 @@ class PlotDirective:
     ----------
     directive_loc: str
         The ``str`` path to the file containing the ``directive`` object.
+
     Attributes
     ----------
 
@@ -122,6 +124,7 @@ class PlotDirective:
             script: |
                 pass
     """
+
     def __init__(self, directive_loc):
         #  Logging
         # ----------------------------------------------------------------------------------------------------------------- #
@@ -206,7 +209,8 @@ class PlotDirective:
                 _errors.append(
                     {"type": "function", "name": function_key,
                      "msg" : "Failed to find function in globals: %s." % err.__repr__()})
-
+        if len(_errors):
+            raise ValueError(_errors)
     # -------------------------------------------------------------------------------------------------------------------- #
     # Methods ============================================================================================================ #
     # -------------------------------------------------------------------------------------------------------------------- #
@@ -217,22 +221,29 @@ class PlotDirective:
         return "PlotDirective Object - %s" % (self._raw)
 
     def _assert_figure_structure(self):
-        for method,vals in self._raw["Figure"]["Parameters"]:
-            _args,_kwargs = vals["args"],vals["kwargs"]
+
+        for method, vals in _mdir["Structures"]["Figure"]["commands"].items():
+            if method in self._raw["Figure"]["Parameters"]:
+                _args, _kwargs = self._raw["Figure"]["Parameters"][method]["args"], self._raw["Figure"]["Parameters"][method]["kwargs"]
+            else:
+                _args,_kwargs = vals["args"],vals["kwargs"]
+            try:
+                getattr(self.figure, method)(*_args, **_kwargs)
+            except AttributeError:
+                modlog.warning("Failed to identify figure attribute %s." % method)
+
+    def _assert_subplot_structure(self, subplot):
+        for method, vals in _mdir["Structures"]["Subplot"]["commands"].items():
+            if method in self._raw["Figure"]["Subplots"][subplot]["Parameters"]:
+                _args, _kwargs = self._raw["Figure"]["Subplots"][subplot]["Parameters"][method]["args"], self._raw["Figure"]["Subplots"][subplot]["Parameters"][method]["kwargs"]
+            else:
+                _args,_kwargs = vals["args"],vals["kwargs"]
 
             try:
-                getattr(self.figure,method)(*_args,**_kwargs)
+                getattr(self.subplots[subplot], method)(*_args, **_kwargs)
             except AttributeError:
-                modlog.warning("Failed to identify figure attribute %s."%method)
+                modlog.warning("Failed to identify subplot attribute %s." % method)
 
-    def _assert_subplot_structure(self,subplot):
-        for method,vals in self._raw["Figure"]["Subplots"][subplot]["Parameters"]:
-            _args,_kwargs = vals["args"],vals["kwargs"]
-
-            try:
-                getattr(self.subplots[subplot],method)(*_args,**_kwargs)
-            except AttributeError:
-                modlog.warning("Failed to identify subplot attribute %s."%method)
 
 # -------------------------------------------------------------------------------------------------------------------- #
 #  Functions ========================================================================================================= #
@@ -258,8 +269,32 @@ def generate_image(image_directive, **kwargs):
 
     Returns
     -------
-    None
+    plt.Figure
+        The figure object.
 
+    Examples
+    --------
+
+    Example 1
+    ^^^^^^^^^
+
+    **PlotDirective:**
+
+    .. include:: ../../tests/examples/directive-2.yaml
+        :code:
+
+    >>> import os
+    >>> import pathlib as pt
+    >>> import numpy as np
+    >>> plot_directive = PlotDirective(os.path.join(pt.Path(__file__).parents[2],"tests","examples","directive-2.yaml"))
+    >>> x = np.linspace(0,2*np.pi,1000)
+    >>> y1,y2 = np.sin(x),np.cos(x)
+    >>> fig = generate_image(plot_directive,x=x,y1=y1,y2=y2)
+    >>> plt.savefig(os.path.join(pt.Path(__file__).parents[2],"tests","examples","directive-2.png"))
+
+    .. figure:: ../../tests/examples/directive-2.png
+
+        Corresponding image output from example 1.
     """
     # Logging and Setup
     # ----------------------------------------------------------------------------------------------------------------- #
@@ -276,10 +311,3 @@ def generate_image(image_directive, **kwargs):
             func(*_args, **_kwargs, axes=subplot)
 
     return image_directive.figure
-
-# -------------------------------------------------------------------------------------------------------------------- #
-#      =============================================================================================================== #
-# -------------------------------------------------------------------------------------------------------------------- #
-
-if __name__ == '__main__':
-    pass

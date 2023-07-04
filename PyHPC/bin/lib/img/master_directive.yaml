@@ -8,5 +8,29 @@ Functions: &functions
     args: ["%x%","%y%"]
 
     kwargs: {}
+Structures:
+  Figure:
+    args: []
+    kwargs: {}
+    commands:
+      set_size_inches:
+        args: [[10,10]]
+        kwargs: {}
+  Subplot:
+    args: []
+    kwargs: []
+    commands:
+      set_xlabel:
+        args: ["Test-X label"]
+        kwargs: {}
+      set_ylabel:
+        args: ["Test-Y label"]
+        kwargs: {}
+      set_yscale:
+        args: ["linear"]
+        kwargs: {}
+      set_xscale:
+        args: ["linear"]
+        kwargs: {}
 
 
