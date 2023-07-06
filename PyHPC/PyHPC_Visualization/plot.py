@@ -184,7 +184,6 @@ class PlotDirective:
         kwargs = explicit_kwargs
         for k,v in master_kwargs.items():
             if isinstance(v,dict) and k in explicit_kwargs:
-                modlog.debug("C1")
                 try:
                     kwargs[k] = self._get_kwargs(explicit_kwargs[k],master_kwargs[k])
                 except KeyError:
@@ -298,7 +297,7 @@ def generate_image(image_directive, **kwargs):
     """
     # Logging and Setup
     # ----------------------------------------------------------------------------------------------------------------- #
-    modlog.debug("Generating image for directive %s."%image_directive)
+    modlog.debug("Generating image.")
     #  Reading information from the directive.
     # ----------------------------------------------------------------------------------------------------------------- #
     for f in image_directive.functions:
@@ -311,7 +310,6 @@ def generate_image(image_directive, **kwargs):
 
         _args = [i if (str(i)[0] != "%") else kwargs[str(i).replace("%", "")] for i in list(vals["args"])]
         _kwargs = _parse_kwargs(vals["kwargs"],kwargs)
-        modlog.debug("%s,%s"%(_args,_kwargs))
         func(*_args, **_kwargs)
 
     return image_directive.figure
