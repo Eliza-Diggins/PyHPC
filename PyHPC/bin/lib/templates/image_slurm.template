@@ -24,10 +24,11 @@ ml parallel
 
 #---- Directory Management ----------------#
 echo " Managing directories for execution..."
-setenv SIMLOC %(simulation_location)s # Location of the simulation directory.
-setenv TEMP_DIR %(temp_dir)s # location of the directive.
-setenv ROOT_DIR %(root_directory)s # PyHPC base
-setenv OUTPUT_DIR %(output_directory)s # The output directory.
+setenv SIMLOC "%(simulation_location)s" # Location of the simulation directory.
+setenv TEMP_DIR "%(temp_dir)s" # location of the directive.
+setenv ROOT_DIR "%(root_directory)s" # PyHPC base
+setenv SLURM_OUTPUT "%(slurm_out)s"
+setenv OUTPUT_DIR "%(output_directory)s" # The output directory.
 
 echo "     -Simulation Directory = $SIMLOC"
 echo "     -Temp Directory = $TEMP_DIR"
