@@ -81,6 +81,7 @@ def projection_plot(path, field, **kwargs):
     ...                ("gas","density"),
     ...                main={"axis":"z"},special={
     ...                                           "figure":figure})
+    >>> pt.Path(os.path.join(pt.Path(__file__).parents[2],"tests","outputs")).mkdir(parents=True,exist_ok=True)
     >>> figure.savefig(os.path.join(pt.Path(__file__).parents[2],"tests","outputs","projection_plot_ex1.png"))
 
     """

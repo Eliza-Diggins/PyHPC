@@ -267,6 +267,7 @@ def generate_image(image_directive, **kwargs):
     >>> x = np.linspace(0,2*np.pi,1000)
     >>> y1,y2 = np.sin(x),np.cos(x)
     >>> fig = generate_image(plot_directive,x=x,y1=y1,y2=y2)
+    >>> pt.Path(os.path.join(pt.Path(__file__).parents[2],"tests","outputs")).mkdir(parents=True,exist_ok=True)
     >>> plt.savefig(os.path.join(pt.Path(__file__).parents[2],"tests","outputs","directive-2.png"))
 
     .. figure:: ../../tests/outputs/directive-2.png

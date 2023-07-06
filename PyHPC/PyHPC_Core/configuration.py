@@ -38,12 +38,17 @@ _dbg_string = "%s:%s" % (_location, _filename)
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
 def read_config() -> dict:
     """
-    Reads the configuration file.
-    Returns
-    dict
-        The configuration data.
-    -------
+    Reads the configuration file at ``/bin/configs/CONFIG.config``.
 
+    Returns
+    -------
+    dict:
+        The configuration dictionary.
+
+    Examples:
+    ---------
+    >>> CONFIG = read_config()
+    >>> assert len(CONFIG) != 0
     """
     ### reading the TOML string ###
     config_dict = tml.load(os.path.join(ticket_info.installation_location, "bin", "configs", "CONFIG.config"))
@@ -53,13 +58,6 @@ def read_config() -> dict:
     #
 
     ## Manging colormaps ##
-    _fdbg_string = _dbg_string + Fore.LIGHTMAGENTA_EX + ":read_config:" + Fore.WHITE
-    for key in config_dict["Visualization"]["Colormaps"]:
-        try:
-            config_dict["Visualization"]["Colormaps"][key] = cm.get_cmap(config_dict["Visualization"]["Colormaps"][key])
-        except ValueError:  # The colormap doesn't exist
-            raise ValueError("%s Configuration key %s failed. %s is not a colormap." % (
-                _fdbg_string, key, config_dict["Visualization"]["Colormaps"][key]))
 
     return config_dict
 
