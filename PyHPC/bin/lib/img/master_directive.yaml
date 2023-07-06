@@ -1,13 +1,5 @@
 information: &info |
   This file is the master directive for plotting in the PyHPC project.
-Functions: &functions
-  uplots.plot:
-    args: ["%x%","%y%"]
-    kwargs: {}
-  yt.ProjectionPlot:
-    args: ["%x%","%y%"]
-
-    kwargs: {}
 Structures:
   Figure:
     args: []
@@ -32,5 +24,47 @@ Structures:
       set_xscale:
         args: ["linear"]
         kwargs: {}
+Annotations:
+  # Annotations are additional components to add onto certain plots. To see which annotations are included in a given
+  # plot, look at the inclusion of those kwargs.
+  #
+  TimeStamp: &timestamp
+    enabled: False
+    command: "annotate_timestamp"
+    args: []
+    kwargs:
+      corner: "upper_left"
+      redshift: True
+      draw_inset_box: True
+  Contour: &contour
+    enabled: False
+    command: "annotate_contour"
+    args: ["%field%"]
+    kwargs: {}
+Functions: &functions
+  uplots.plot:
+    args: ["%x%","%y%"]
+    kwargs:
+      main: {}
+      special: {}
+  uplots.projection_plot:
+    args: ["%path%",!!python/tuple ["gas","density"]]
+    kwargs:
+      main:
+        axis: "z" # The direction of the projection.
+        width: !!python/tuple [ 1,"Mpc" ]
+        resolution: 2000
+      style:
+        cmap: "Blues"
+      special: {} # The special catagory is specifically for the axes object.
+      annotations:
+        timestamp:
+          <<: *timestamp
+        contour:
+          <<: *contour
+          args:
+          - !!python/tuple ["gas","temperature"]
+
+
 
 

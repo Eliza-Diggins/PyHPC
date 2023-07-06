@@ -1,0 +1,131 @@
+#!fortran
+&RUN_PARAMS
+cosmo=.false.
+pic=.true.
+poisson=.true.
+hydro=.true.
+nrestart=0
+nremap=25
+nsubcycle=1,1,2
+ncontrol=1
+rt=.false.
+/
+
+&INIT_PARAMS
+filetype='dice'
+initfile(1)='/uufs/astro.utah.edu/common/home/u1281896/NBodies/DICE_IC_FILES'
+/
+
+&DICE_PARAMS
+ic_file='Cluster1.g2'
+ic_nfile=1
+ic_ifout=1
+ic_format='Gadget2'
+ic_center=0.0,0.0,0.0
+ic_scale_pos=1.0
+ic_scale_vel=1.0
+ic_scale_mass=1.0
+ic_scale_u=1.0
+ic_scale_age=1.0
+ic_scale_metal=1.0
+ic_head_name='HEAD'
+ic_pos_name='POS '
+ic_vel_name='VEL '
+ic_mass_name='MASS'
+ic_id_name='ID  '
+ic_u_name='U   '
+ic_metal_name='Z   '
+ic_age_name='AGE '
+IG_rho=1.0D-6
+IG_T2=1.0D6
+IG_metal=0.0
+amr_struct=.false.
+gadget_scale_l=3.085677581282D21
+gadget_scale_v=1.0D5
+gadget_scale_m=1.9891D43
+gadget_scale_t=3.15360e+13
+ic_skip_type=-1
+cosmo_add_gas_index=-1
+ic_mag_const=0.0,0.0,0.0
+ic_mag_center_x=0.0
+ic_mag_center_y=0.0
+ic_mag_center_z=0.0
+ic_mag_axis_x=0.0
+ic_mag_axis_y=0.0
+ic_mag_axis_z=1.0
+ic_mag_scale_R=1.0
+ic_mag_scale_H=1.0
+ic_mag_scale_B=0.0
+/
+
+&BOUNDARY_PARAMS
+nboundary=6
+bound_type=2,2,2,2,2,2
+ibound_min=-1,1,-1,-1,-1,-1
+ibound_max=-1,1,1,1,1,1
+jbound_min=0,0,-1,1,-1,-1
+jbound_max=0,0,-1,1,1,1
+kbound_min=0,0,0,0,-1,1
+kbound_max=0,0,0,0,-1,1
+no_inflow=.true.
+/
+
+&OUTPUT_PARAMS
+delta_tout=0.64
+tend=20.0
+walltime_hrs=4.
+minutes_dump=10.
+/
+
+&AMR_PARAMS
+levelmin=7
+levelmax=14
+ngridtot=2000000
+nparttot=3000000
+boxlen=5
+/
+
+&REFINE_PARAMS
+m_refine=10*8.
+mass_sph=1e-6
+interpol_type=0
+interpol_var=1
+/
+
+&HYDRO_PARAMS
+gamma=1.6666667
+courant_factor=0.5
+slope_type=1
+pressure_fix=.true.
+beta_fix=0.5
+/
+
+&POISSON_PARAMS
+epsilon=1e-4
+/
+
+&MOVIE_PARAMS
+imovout=2000
+imov=0
+tendmov=50.
+movie=.false.
+nw_frame=1080
+nh_frame=1080
+levelmax_frame=14
+movie_vars_txt='stars','dens','pmag'
+proj_axis='zx'
+xcentre_frame=160,0.0,0.0,0.0 160,0.0,0.0,0.0
+ycentre_frame=160,0.0,0.0,0.0 160,0.0,0.0,0.0
+zcentre_frame=160,0.0,0.0,0.0 160,0.0,0.0,0.0
+deltax_frame=30,0.0 30,0.0
+deltay_frame=30,0.0 30,0.0
+deltaz_frame=30,0.0 30,0.0
+zoom_only_frame=.true.
+/
+
+&UNITS_PARAMS
+units_density=0.677025430198932E-22
+units_time=0.470430312423675E+15
+units_length=0.308567758128200E+25
+/
+

@@ -1,0 +1,83 @@
+#%(csh_interp)s
+#
+#   INFO:
+# $PYTHON_ENV_SCRIPT -> Script to load up the python environment.
+# $ PYTHON_EXEC -> this is the name of the python executable once configured.
+# $ TYPE -> Single or multi-execution.
+# $ WORK_DIR -> the clustep execution location
+# $ TEMP_DIR -> The relavent temp directory.
+# $ OUTPUT_DIR -> The correct output location for the final product.
+
+#----------------------------------------------------#
+# Managing modules ==================================#
+#----------------------------------------------------#
+setenv MSG "%(fdbg)s"
+echo "$MSG Executing no-batch image generation script."
+
+%(python_env_script)s
+
+echo "$MSG     Loaded Python environment."
+
+setenv PYTHON %(python_exec)s
+
+#---- Directory Management ----------------#
+echo "$MSG Managing directories for execution..."
+setenv SIMLOC %(simulation_location)s # Location of the simulation directory.
+setenv TEMP_DIR %(temp_dir)s # location of the directive.
+setenv ROOT_DIR %(root_directory)s # PyHPC base
+setenv OUTPUT_DIR %(output_directory)s # The output directory.
+
+echo "$MSG     -Simulation Directory = $SIMLOC"
+echo "$MSG     -Temp Directory = $TEMP_DIR"
+echo "$MSG     -Root Directory = $ROOT_DIR"
+echo "$MSG     -Output Directory = $OUTPUT_DIR"
+
+cd $ROOT_DIR
+#----------------------------------------------------#
+# Managing Core variables ===========================#
+#----------------------------------------------------#
+echo "----------------- EXECUTION -----------------"
+setenv TYPE %(type)d # Stores the number of components
+echo "$MSG Execution type = $TYPE."
+
+if ( $TYPE == 0 ) then
+  echo "$MSG         TYPE=0: Full simulation imaging (No-Batch)"
+
+  #--------------------------------------------------------#
+  # Generating the output list ============================#
+  #--------------------------------------------------------#
+  ls $SIMLOC | grep 'output_*' > $TEMP_DIR/outputs.txt
+    echo "$MSG     Generated the outputs.txt file."
+
+  echo "\n-- EXECUTION LOG --\n"
+  foreach v (`cat $TEMP_DIR/outputs.txt`)
+    echo "      $v"
+    $PYTHON ./PyHPC_executables/sub-exec/build_image.py $TEMP_DIR/directive.yaml -o $OUTPUT_DIR/$v.png --path $SIMLOC/$v
+  end
+
+else
+  echo "$MSG       TYPE=1: Single output image."
+
+  setenv OUTPUT %(output)s
+  echo "$MSG     Output was found to be $OUTPUT."
+
+  echo "$MSG Checking output viability."
+  if ( ! -d "$SIMLOC/$OUTPUT" ) then
+    echo "$MSG      [FAILED] $OUTPUT could not be found."
+    exit
+  else
+    echo "$MSG      Located $OUTPUT and verified existence."
+  endif
+
+
+  #-----------------------------------------------#
+  # Producing the plot ========================== #
+  #-----------------------------------------------#
+  echo "$MSG Executing core command..."
+  $PYTHON ./PyHPC_executables/sub-exec/build_image.py $TEMP_DIR/directive.yaml -o $OUTPUT_DIR/$OUTPUT.png --path $SIMLOC/$OUTPUT
+  echo "$MSG     [Finished]"
+endif
+cd $TEMP_DIR
+cd ../..
+./clear_temp.sh $TEMP_DIR &
+echo "$MSG Finished generating the image."

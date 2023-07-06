@@ -1,0 +1,85 @@
+#%(csh_interp)s
+%(batch_options)s
+#
+#   INFO:
+# $PYTHON_ENV_SCRIPT -> Script to load up the python environment.
+# $ PYTHON_EXEC -> this is the name of the python executable once configured.
+# $ TYPE -> Single or multi-execution.
+# $ WORK_DIR -> the clustep execution location
+# $ TEMP_DIR -> The relavent temp directory.
+# $ OUTPUT_DIR -> The correct output location for the final product.
+
+#----------------------------------------------------#
+# Managing modules ==================================#
+#----------------------------------------------------#
+echo " Executing no-batch image generation script."
+
+%(python_env_script)s
+
+echo "     Loaded Python environment."
+
+setenv PYTHON %(python_exec)s
+
+ml parallel
+
+#---- Directory Management ----------------#
+echo " Managing directories for execution..."
+setenv SIMLOC %(simulation_location)s # Location of the simulation directory.
+setenv TEMP_DIR %(temp_dir)s # location of the directive.
+setenv ROOT_DIR %(root_directory)s # PyHPC base
+setenv OUTPUT_DIR %(output_directory)s # The output directory.
+
+echo "     -Simulation Directory = $SIMLOC"
+echo "     -Temp Directory = $TEMP_DIR"
+echo "     -Root Directory = $ROOT_DIR"
+echo "     -Output Directory = $OUTPUT_DIR"
+
+cd $ROOT_DIR
+
+setenv OMP_NUM_THREADS 1
+setenv SRUN "srun --exclusive --ntasks 1"
+#----------------------------------------------------#
+# Managing Core variables ===========================#
+#----------------------------------------------------#
+echo "----------------- EXECUTION -----------------"
+setenv TYPE %(type)d # Stores the number of components
+echo " Execution type = $TYPE."
+
+if ( $TYPE == 0 ) then
+  echo "         TYPE=0: Full simulation imaging"
+
+  #--------------------------------------------------------#
+  # Generating the output list ============================#
+  #--------------------------------------------------------#
+  ls $SIMLOC | grep 'output_*' > $TEMP_DIR/outputs.txt
+    echo "     Generated the outputs.txt file."
+
+  echo "\n-- EXECUTION LOG --\n"
+  parallel --max-procs "$SLURM_NTASKS" --joblog "$SLURM_OUTPUT" "$SRUN $PYTHON  ./PyHPC_executables/sub-exec/build_image.py $TEMP_DIR/directive.yaml -o $OUTPUT_DIR/{}.png --path $SIMLOC/{}" :::: $TEMPDIR/outputs.txt
+
+else
+  echo "       TYPE=1: Single output image."
+
+  setenv OUTPUT %(output)s
+  echo "     Output was found to be $OUTPUT."
+
+  echo " Checking output viability."
+  if ( ! -d "$SIMLOC/$OUTPUT" ) then
+    echo "      [FAILED] $OUTPUT could not be found."
+    exit
+  else
+    echo "      Located $OUTPUT and verified existence."
+  endif
+
+
+  #-----------------------------------------------#
+  # Producing the plot ========================== #
+  #-----------------------------------------------#
+  echo " Executing core command..."
+  $PYTHON ./PyHPC_executables/sub-exec/build_image.py $TEMP_DIR/directive.yaml -o $OUTPUT_DIR/$OUTPUT.png --path $SIMLOC/$OUTPUT
+  echo "     [Finished]"
+endif
+cd $TEMP_DIR
+cd ../..
+./clear_temp.sh $TEMP_DIR &
+echo " Finished generating the image."

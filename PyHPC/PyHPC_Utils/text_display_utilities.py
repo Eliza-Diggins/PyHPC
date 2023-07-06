@@ -8,7 +8,6 @@ import sys
 sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[2]))
 
 from colorama import Fore, Back, Style
-import re
 from PyHPC.PyHPC_Core.utils import get_system_info
 from PyHPC.PyHPC_Utils.standard_utils import getFromDict, setInDict
 import logging
@@ -162,7 +161,7 @@ class TerminalString:
 
         return self.str_in_grid(out_string)
 
-    def print_frame(self,dataframe, columns=None,selected=None,location=None):
+    def print_frame(self, dataframe, columns=None, selected=None, location=None):
         """
         Prints the input dataframe to the terminal in a correctly outputted table format.
         Parameters
@@ -186,24 +185,28 @@ class TerminalString:
         if not columns:
             columns = dataframe.columns
 
-        col_width_base = int((self.dim_alt[0]-(len(columns)-1))/len(columns)) #: This is the natural length we want
-        col_width_offset = (self.dim_alt[0]-(len(columns)-1)) % len(columns) #: This is the remainer on the outsides.
+        col_width_base = int(
+            (self.dim_alt[0] - (len(columns) - 1)) / len(columns))  #: This is the natural length we want
+        col_width_offset = (self.dim_alt[0] - (len(columns) - 1)) % len(
+            columns)  #: This is the remainer on the outsides.
 
-        column_widths = [col_width_base for i in range(len(columns))] + [col_width_offset+col_width_base]
+        column_widths = [col_width_base for i in range(len(columns))] + [col_width_offset + col_width_base]
 
-        #- Configuring the columns for the printing process -#
-        column_names = [column+(" "*(column_width-2-len(column))) if len(column)<column_width-2 else column[:column_width-5]+"..." for column_width,column in zip(column_widths,columns)]
+        # - Configuring the columns for the printing process -#
+        column_names = [column + (" " * (column_width - 2 - len(column))) if len(column) < column_width - 2 else column[
+                                                                                                                 :column_width - 5] + "..."
+                        for column_width, column in zip(column_widths, columns)]
 
-        #- generating the print header -#
-        return_string = "" #: This is the string that is eventually returned from the function.
-        header_string = self.span_v #: This is the header specific string.
+        # - generating the print header -#
+        return_string = ""  #: This is the string that is eventually returned from the function.
+        header_string = self.span_v  #: This is the header specific string.
 
         for column in column_names:
-            header_string += (" %s %s" % (Fore.RED + Style.BRIGHT + column + Style.RESET_ALL,self.span_v))
+            header_string += (" %s %s" % (Fore.RED + Style.BRIGHT + column + Style.RESET_ALL, self.span_v))
 
-        return_string += self.h+"\n"
+        return_string += self.h + "\n"
         return_string += header_string + "\n"
-        return_string += _non_span_v_re.subn("-",_no_color_re.subn("",header_string)[0])[0] + '\n'
+        return_string += _non_span_v_re.subn("-", _no_color_re.subn("", header_string)[0])[0] + '\n'
 
         #  Managing rows
         # ----------------------------------------------------------------------------------------------------------------- #
@@ -213,24 +216,24 @@ class TerminalString:
             location = None
 
         for row_id in range(len(dataframe)):
-            #- Grabbing the color precursor -#
+            # - Grabbing the color precursor -#
             if row_id == location:
                 prec = Back.BLUE
             elif row_id in selected:
-                prec = Fore.BLACK+Back.WHITE
+                prec = Fore.BLACK + Back.WHITE
             else:
                 prec = ""
 
-            return_string+= prec+self.span_v
-            values = [str(i)  for i in list(dataframe.iloc[row_id,:][columns])]
+            return_string += prec + self.span_v
+            values = [str(i) for i in list(dataframe.iloc[row_id, :][columns])]
             values = [
                 value + (" " * (column_width - 2 - lenwc(value))) if lenwc(value) < column_width - 2 else value[
-                                                                                                         :column_width - 5] + "..."
+                                                                                                          :column_width - 5] + "..."
                 for column_width, value in zip(column_widths, values)]
             for v in values:
                 return_string += (" %s %s" % (v, self.span_v))
 
-            return_string += Style.RESET_ALL+"\n"
+            return_string += Style.RESET_ALL + "\n"
         return_string += self.h + "\n"
         print(return_string)
 
@@ -313,7 +316,8 @@ class KeyLogger:
                 stop_listening()
         except AttributeError as ex:
             pass
-    def sim_manager_keylog(self,key):
+
+    def sim_manager_keylog(self, key):
         try:
             if key == "enter":
                 self.command = "enter"
@@ -350,7 +354,8 @@ class KeyLogger:
                 stop_listening()
         except AttributeError as ex:
             pass
-    def edit_dict_keylog(self,key):
+
+    def edit_dict_keylog(self, key):
         try:
             if key == "enter":
                 self.command = "enter"
@@ -378,7 +383,8 @@ class KeyLogger:
                 stop_listening()
         except AttributeError as ex:
             pass
-    def build_dict_keylog(self,key):
+
+    def build_dict_keylog(self, key):
         try:
             if key == "enter":
                 self.command = "enter"
@@ -402,6 +408,7 @@ class KeyLogger:
                 stop_listening()
         except AttributeError as ex:
             pass
+
     def menu_keylog(self, key):
         # Key logger for the options navigation #
         try:
@@ -409,10 +416,10 @@ class KeyLogger:
                 self.command = "enter"
                 stop_listening()
             if key == "down":
-                self.location = (self.location + 1 if self.location != len(self.sub_dict) - 1 else 0)
+                self.location = (self.location + 1 if self.location != len(self.options) - 1 else 0)
                 stop_listening()
             if key == "up":
-                self.location = (self.location - 1 if self.location != 0 else len(self.sub_dict) - 1)
+                self.location = (self.location - 1 if self.location != 0 else len(self.options) - 1)
                 stop_listening()
         except AttributeError as ex:
             pass
@@ -452,6 +459,7 @@ class PrintRetainer:
         self.end = ""
 
     def print(self, msg, end="\n"):
+        modlog.debug(msg)
         self.string += msg + end
         print(msg, end=end)
         self.end = end
@@ -498,6 +506,7 @@ def get_dict_str(di, tabs=0):
 
     return str
 
+
 def print_option_dict(dict, location, header=None):
     """
     Prints an options dictionary in corrected format.
@@ -523,6 +532,7 @@ def print_option_dict(dict, location, header=None):
 
     print(text_t.h)
 
+
 def print_dictionary(dictionary, location):
     """
     Prints an options dictionary in corrected format.
@@ -534,17 +544,17 @@ def print_dictionary(dictionary, location):
     # - loading the terminal string -#
     text_t = TerminalString()
 
-    for k,v in dictionary.items():
+    for k, v in dictionary.items():
         if location != str(k):
-            if not isinstance(v,dict):
-                print(text_t.print_option_string(str(k),{"v":str(v),"d":"","i":""},selected=False))
+            if not isinstance(v, dict):
+                print(text_t.print_option_string(str(k), {"v": str(v), "d": "", "i": ""}, selected=False))
             else:
-                print(text_t.str_in_grid("%s"%(Fore.CYAN+str(k))))
+                print(text_t.str_in_grid("%s" % (Fore.CYAN + str(k))))
         else:
-            if not isinstance(v,dict):
-                print(text_t.print_option_string(str(k),{"v":str(v),"d":"","i":""},selected=True))
+            if not isinstance(v, dict):
+                print(text_t.print_option_string(str(k), {"v": str(v), "d": "", "i": ""}, selected=True))
             else:
-                print(Fore.BLACK+Back.WHITE+text_t.str_in_grid("%s"%(str(k)))+Style.RESET_ALL)
+                print(Fore.BLACK + Back.WHITE + text_t.str_in_grid("%s" % (str(k))) + Style.RESET_ALL)
 
     print(text_t.h)
 
@@ -805,8 +815,7 @@ def build_options(option_dict, title):
     header = "Select the option to edit..."
 
     # startup copy and setting #
-    settings = {"Component 1":deepcopy(option_dict)}  # create the copy we are going to use for the setting storage.
-
+    settings = {"Component 1": deepcopy(option_dict)}  # create the copy we are going to use for the setting storage.
 
     klog = KeyLogger(position=["Component 1"],
                      location=0,
@@ -832,7 +841,8 @@ def build_options(option_dict, title):
         # Printing the options dictionary ==================================================================================== #
         # -------------------------------------------------------------------------------------------------------------------- #
         print_option_dict(klog.sub_dict, klog.position[-1], header=header)
-        print("'backspace': move up level\n'enter': move down level / edit\n'+': add component\n'-': remove component\n'd': reset")
+        print(
+            "'backspace': move up level\n'enter': move down level / edit\n'+': add component\n'-': remove component\n'd': reset")
         # -------------------------------------------------------------------------------------------------------------------- #
         #  Navigation ======================================================================================================== #
         # -------------------------------------------------------------------------------------------------------------------- #
@@ -898,14 +908,14 @@ def build_options(option_dict, title):
                     pass
                 else:
                     comps = [int(k.split(" ")[1]) for k in settings]
-                    settings = {**settings,"Component %s"%str(max(comps)+1):deepcopy(option_dict)}
+                    settings = {**settings, "Component %s" % str(max(comps) + 1): deepcopy(option_dict)}
                     klog.sub_dict = getFromDict(settings, klog.position[:-1])
 
             elif klog.command == "remove":
-                if len(klog.position) > 1 or len(settings) <=1:
+                if len(klog.position) > 1 or len(settings) <= 1:
                     pass
                 else:
-                    settings ={k:v for k,v in settings.items() if k!=klog.position[-1]}
+                    settings = {k: v for k, v in settings.items() if k != klog.position[-1]}
                     klog.position = ["Component 1"]
                     klog.sub_dict = getFromDict(settings, klog.position[:-1])
             klog.command = None
@@ -1181,7 +1191,8 @@ def option_menu(options, desc=True, title=None):
 
         os.system('cls' if os.name == 'nt' else 'clear')
 
-def edit_dictionary(dictionary,title):
+
+def edit_dictionary(dictionary, title):
     """
     Allows for editing of the dictionary.
     Parameters
@@ -1201,8 +1212,7 @@ def edit_dictionary(dictionary,title):
 
     #  Managing structure
     # ----------------------------------------------------------------------------------------------------------------- #
-    klog = KeyLogger(sub_dict=dictionary, location=0, exit=False, command=None,position=[])
-
+    klog = KeyLogger(sub_dict=dictionary, location=0, exit=False, command=None, position=[])
 
     # - Fetching terminal - #
     terminal_string = TerminalString()
@@ -1216,7 +1226,7 @@ def edit_dictionary(dictionary,title):
             terminal_string.print_title(title)
 
         if len(klog.sub_dict):
-            print_dictionary(klog.sub_dict,location=str(list(klog.sub_dict.keys())[klog.location]))
+            print_dictionary(klog.sub_dict, location=str(list(klog.sub_dict.keys())[klog.location]))
         else:
             print("-- Nothing Here --")
         listen_keyboard(on_press=klog.build_dict_keylog)
@@ -1225,7 +1235,7 @@ def edit_dictionary(dictionary,title):
         # ----------------------------------------------------------------------------------------------------------------- #
         if klog.command:  # we have a command to execute
             if klog.command == "enter":
-                if len(klog.sub_dict) and isinstance(klog.sub_dict[list(klog.sub_dict.keys())[klog.location]],dict):
+                if len(klog.sub_dict) and isinstance(klog.sub_dict[list(klog.sub_dict.keys())[klog.location]], dict):
                     klog.position.append(list(klog.sub_dict.keys())[klog.location])
                     klog.sub_dict = klog.sub_dict[list(klog.sub_dict.keys())[klog.location]]
                     klog.location = 0
@@ -1234,8 +1244,9 @@ def edit_dictionary(dictionary,title):
                     if type in ["D", "dict", 'DICT']:
                         setInDict(dictionary, klog.position + [list(klog.sub_dict.keys())[klog.location]], {})
                     if type == "L":
-                        setInDict(dictionary, klog.position + [list(klog.sub_dict.keys())[klog.location]], input("[Dict-Manager]: Enter the new value: ").split(","))
-                    elif type not in { "I": int, "F": float, "S": str}:
+                        setInDict(dictionary, klog.position + [list(klog.sub_dict.keys())[klog.location]],
+                                  input("[Dict-Manager]: Enter the new value: ").split(","))
+                    elif type not in {"I": int, "F": float, "S": str}:
                         input(
                             "[Dict-Manager]: The datatype you entered isn't valid. Press any key top return to execution...")
                     else:
@@ -1247,9 +1258,9 @@ def edit_dictionary(dictionary,title):
                     klog.sub_dict = getFromDict(dictionary, klog.position)
 
             elif klog.command == "back":
-                if len(klog.position)> 0:
+                if len(klog.position) > 0:
                     klog.position = klog.position[:-1]
-                    klog.sub_dict = getFromDict(dictionary,klog.position)
+                    klog.sub_dict = getFromDict(dictionary, klog.position)
                     klog.location = 0
                 else:
                     val = get_yes_no("Exit Dictioanry Editor?")
@@ -1259,48 +1270,192 @@ def edit_dictionary(dictionary,title):
             elif klog.command == "add":
                 key = input("[Dict-Manager]: Enter the key name:")
                 type = input("[Dict-Manager]: Data type? [L[ist],D[ict],I[nt],F[loat],S[tring]")
-                if type in ["D","dict",'DICT']:
-                    setInDict(dictionary,klog.position+[key],{})
-                elif type not in {"L":list,"D":dict,"I":int,"F":float,"S":str}:
-                    input("[Dict-Manager]: The datatype you entered isn't valid. Press any key top return to execution...")
+                if type in ["D", "dict", 'DICT']:
+                    setInDict(dictionary, klog.position + [key], {})
+                elif type not in {"L": list, "D": dict, "I": int, "F": float, "S": str}:
+                    input(
+                        "[Dict-Manager]: The datatype you entered isn't valid. Press any key top return to execution...")
                 else:
-                    setInDict(dictionary,klog.position+[key],{"L":list,"D":dict,"I":int,"F":float,"S":str}[type](input("[Dict-Manager]: Enter the new value: ")))
+                    setInDict(dictionary, klog.position + [key],
+                              {"L": list, "D": dict, "I": int, "F": float, "S": str}[type](
+                                  input("[Dict-Manager]: Enter the new value: ")))
 
                 print(dictionary)
-                klog.sub_dict = getFromDict(dictionary,klog.position)
+                klog.sub_dict = getFromDict(dictionary, klog.position)
             elif klog.command == "delete":
                 del klog.sub_dict[list(klog.sub_dict.keys())[klog.location]]
-                setInDict(dictionary,klog.position,klog.sub_dict.copy())
+                setInDict(dictionary, klog.position, klog.sub_dict.copy())
                 klog.location = 0
             klog.command = None
 
         os.system('cls' if os.name == 'nt' else 'clear')
         print(klog.position)
 
+
+def edit_pdir_dictionary(dictionary, title,_mdir):
+    """
+    Allows the user to edit the ``PlotDirective`` manually from the command line.
+    Parameters
+    ----------
+    dictionary: dict
+        The base ``dict`` representing the ``PlotDirective`` before any building takes place.
+    title: str
+        The title to display.
+    _mdir: dict
+        The master directive
+
+    Returns
+    -------
+    dict:
+        The dictionary representing the ``PlotDirective``.
+    """
+    #  Logging
+    # ----------------------------------------------------------------------------------------------------------------- #
+    modlog.debug("Building pdir from %s." % dictionary)
+
+    #  Managing structure
+    # ----------------------------------------------------------------------------------------------------------------- #
+    klog = KeyLogger(sub_dict=dictionary, location=0, exit=False, command=None, position=[])
+
+    # - Fetching terminal - #
+    terminal_string = TerminalString()
+
+    while not klog.exit:
+        #  Managing title printing
+        # ----------------------------------------------------------------------------------------------------------------- #
+        if title:
+            terminal_string.print_title(title)
+        else:
+            terminal_string.print_title(title)
+
+        if len(klog.sub_dict):
+            print_dictionary(klog.sub_dict, location=str(list(klog.sub_dict.keys())[klog.location]))
+        else:
+            print("-- Nothing Here --")
+        listen_keyboard(on_press=klog.build_dict_keylog)
+
+        #  Managing the commands
+        # ----------------------------------------------------------------------------------------------------------------- #
+        if klog.command:  # we have a command to execute
+            if klog.command == "enter":
+                if len(klog.sub_dict) and isinstance(klog.sub_dict[list(klog.sub_dict.keys())[klog.location]], dict):
+                    klog.position.append(list(klog.sub_dict.keys())[klog.location])
+                    klog.sub_dict = klog.sub_dict[list(klog.sub_dict.keys())[klog.location]]
+                    klog.location = 0
+                elif len(klog.sub_dict) and isinstance(klog.sub_dict[list(klog.sub_dict.keys())[klog.location]], list):
+                    data = input("[Dict-Manager]: Enter the new values for the list [...] using correct python notation: ")
+                    try:
+                        exec("setInDict(dictionary, klog.position + [list(klog.sub_dict.keys())[klog.location]],%s)"%data)
+                    except Exception as excep:
+                        print("[Dict-Manager]: (ERROR) %s"%excep.__repr__())
+                        input(
+                            "[Dict-Manager]: The addition failed! Press any key to continue...")
+                else:
+                    type = input("[Dict-Manager]: Data type? [L[ist],D[ict],I[nt],F[loat],S[tring]")
+                    if type in ["D", "dict", 'DICT']:
+                        setInDict(dictionary, klog.position + [list(klog.sub_dict.keys())[klog.location]], {})
+                    if type == "L":
+                        setInDict(dictionary, klog.position + [list(klog.sub_dict.keys())[klog.location]],
+                                  [])
+                    elif type not in {"I": int, "F": float, "S": str}:
+                        input(
+                            "[Dict-Manager]: The datatype you entered isn't valid. Press any key top return to execution...")
+                    else:
+                        setInDict(dictionary, klog.position + [list(klog.sub_dict.keys())[klog.location]],
+                                  {"I": int, "F": float, "S": str}[type](
+                                      input("[Dict-Manager]: Enter the new value: ")))
+
+                    print(dictionary)
+                    klog.sub_dict = getFromDict(dictionary, klog.position)
+
+            elif klog.command == "back":
+                if len(klog.position) > 0:
+                    klog.position = klog.position[:-1]
+                    klog.sub_dict = getFromDict(dictionary, klog.position)
+                    klog.location = 0
+                else:
+                    val = get_yes_no("Exit Dictioanry Editor?")
+
+                    if val:
+                        return dictionary
+            elif klog.command == "add":
+                #  Positional Management
+                # ---------------------------------------------------------------------------------------------------- #
+                if len(klog.position) == 0:
+                    # They are still in the root area and should not be allowed to proceed.
+                    pass
+                elif len(klog.position) == 1:
+                    if klog.position[-1] == "Figure":
+                        # They still need to run
+                        pass
+                    else:
+                        # They are in properties
+                        pass
+                elif len(klog.position) == 2:
+                    # They are in either Functions or in a property.
+                    if klog.position[-1] == "Functions":
+                        # They are adding a Function:
+                        available_functions = list(_mdir["Functions"].keys())
+                        function_choice = option_menu({k:"" for k in available_functions},False,"Select Function")
+                        setInDict(dictionary,klog.position+[function_choice],_mdir["Functions"][function_choice])
+                    else:
+                        # They are inside a property.
+                        available_params = list(_mdir["Structures"]["Figure"]["commands"].keys())
+                        param_choice = option_menu({k:"" for k in available_params},False,"Select Function")
+                        setInDict(dictionary,klog.position+[param_choice],_mdir["Structures"]["Figure"]["commands"][param_choice])
+                elif len(klog.position) == 3:
+                    # They are inside a function or they are adding kwargs
+                    if klog.position[-2] == "Functions":
+                        pass
+                else:
+                    key = input("[Dict-Manager]: Enter the key name:")
+                    type = input("[Dict-Manager]: Data type? [L[ist],D[ict],I[nt],F[loat],S[tring]")
+                    if type in ["D", "dict", 'DICT']:
+                        setInDict(dictionary, klog.position + [key], {})
+                    elif type in ["L", "list", "LIST"]:
+                        setInDict(dictionary, klog.position + [key], [])
+                    elif type not in {"L": list, "D": dict, "I": int, "F": float, "S": str}:
+                        input(
+                            "[Dict-Manager]: The datatype you entered isn't valid. Press any key top return to execution...")
+                    else:
+                        setInDict(dictionary, klog.position + [key],
+                                  {"I": int, "F": float, "S": str}[type](
+                                      input("[Dict-Manager]: Enter the new value: ")))
+                klog.sub_dict = getFromDict(dictionary, klog.position)
+            elif klog.command == "delete":
+                del klog.sub_dict[list(klog.sub_dict.keys())[klog.location]]
+                setInDict(dictionary, klog.position, klog.sub_dict.copy())
+                klog.location = 0
+            klog.command = None
+
+        os.system('cls' if os.name == 'nt' else 'clear')
+
+
 if __name__ == '__main__':
     stri = {
-  "test.g2": {
-    "information": "A simple test case to guide development use.",
-    "meta": {
-      "dateCreated": "01_01_2000-01:00:00",
-      "lastEdited": "01_01_2000-01:00:00"
-    },
-    "simulations": {
-      "test.nml": {
-        "information": "Simulation example entry.",
-        "action_log": {
-          "created": "date = something"
-        },
-        "meta": {},
-        "core": {},
-        "outputs": {}
-      }
-    },
-    "core": {}
-  }
-}
+        "test.g2": {
+            "information": "A simple test case to guide development use.",
+            "meta"       : {
+                "dateCreated": "01_01_2000-01:00:00",
+                "lastEdited" : "01_01_2000-01:00:00"
+            },
+            "simulations": {
+                "test.nml": {
+                    "information": "Simulation example entry.",
+                    "action_log" : {
+                        "created": "date = something"
+                    },
+                    "meta"       : {},
+                    "core"       : {},
+                    "outputs"    : {}
+                }
+            },
+            "core"       : {}
+        }
+    }
     text_t = TerminalString()
     import pandas as pd
-    x ={"1":{1:2,2:3,3:4},"2":"hemp","Somethin":"345"}
+
+    x = {"1": {1: 2, 2: 3, 3: 4}, "2": "hemp", "Somethin": "345"}
     t = TerminalString()
-    edit_dictionary(stri,"None")
+    edit_dictionary(stri, "None")

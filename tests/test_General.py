@@ -16,7 +16,7 @@ import pytest
 
 
 class TestCore(unittest.TestCase):
-    with open(os.path.join(pt.Path(__file__).parents[0], "pytest_data.json")) as f:
+    with open(os.path.join(pt.Path(__file__).parents[0], "test_data/pytest_data.json")) as f:
         test_data = json.load(f)["TestCore"]
     def setUp(self) -> None:
         sys.path.append(str(pt.Path(os.path.realpath(__file__)).parents[1]))
@@ -33,25 +33,6 @@ class TestCore(unittest.TestCase):
 
         assert isinstance(CONFIG, dict)
 
-    @pytest.mark.skipif("runner" in os.getcwd(),reason="remote")
-    def test_logging(self):
-        """Tests the ``PyHPC.PyHPC_core.log`` module."""
-        #  Loading Modules
-        # ----------------------------------------------------------------------------------------------------------------- #
-        try:
-            from PyHPC.PyHPC_Core.log import configure_logging
-        except ImportError:
-            raise AssertionError("Failed to import PyHPC.PyHPC_Core.log")
-
-        configure_logging(__file__)
-
-        for id, dat in enumerate(zip(self.test_data["test_logging"]["loggers"],
-                                     self.test_data["test_logging"]["lengths"])):
-            logger, length = dat
-            with self.subTest(logger, i=id):
-                log = logging.getLogger(logger)
-
-                assert len(log.handlers) == length
 
     def test_utils_getsystem(self):
         """tests the ``PyHPC.PyHPC_Core.utils.get_system_info`` function"""

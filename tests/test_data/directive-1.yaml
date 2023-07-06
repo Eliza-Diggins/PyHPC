@@ -1,0 +1,19 @@
+information: &info |
+  This file is an example file.
+Figure:
+  Functions:
+    uplots.projection_plot:
+      args: [ "%path%",!!python/tuple ["gas","temperature"] ]
+      kwargs:
+        main:
+          axis: "z"
+          cmap: "inferno"
+          width: !!python/tuple [1,"Mpc"]
+          resolution: 2000
+        annotations:
+          timestamp:
+            enabled: True
+          contour:
+            enabled: True
+
+  Parameters: { }

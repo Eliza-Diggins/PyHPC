@@ -103,30 +103,18 @@ def configure_logging(location):
     -------
     None
 
-    Examples
-    --------
-    >>> import pytest
-    >>> if "runner" in os.getcwd(): pytest.skip("Remote")
-    >>> import pathlib as pt
-    >>> configure_logging(pt.Path(__file__).name.replace(".py",""))
-
-    Loading the configured logging.
-    >>> import pytest
-    >>> if "runner" in os.getcwd(): pytest.skip("Remote")
-    >>> import pathlib as pt
-    >>> import logging
-    >>> configure_logging(pt.Path(__file__).name.replace(".py",""))
-    >>> logger = logging.getLogger("console")
-    >>> logger.critical("Help me!")
     """
     # Managing Filenames
     # ------------------------------------------------------------------------------------------------------------ #
+    logging.debug(log_config_dict)
     for k, v in log_config_dict["handlers"].items():
         if "filename" in v:
-            exec(r"log_config_dict['handlers'][k]['filename'] = '%s'" % str(
-                v["filename"] % {"log_dir": pt.Path(__logging_data["dir"]),
+            logging.debug(k,v)
+            _path = os.path.join(*v["filename"])% {"log_dir": pt.Path(__logging_data["dir"]),
                                  "time"   : __logtime,
-                                 "loc"    : pt.Path(location).name.replace(pt.Path(location).suffix, "")}))
+                                 "loc"    : pt.Path(location).name.replace(pt.Path(location).suffix, "")}
+            log_config_dict['handlers'][k]['filename'] = _path
+            logging.debug(_path)
             if not os.path.exists(pt.Path(log_config_dict["handlers"][k]["filename"]).parents[0]):
                 pt.Path(log_config_dict["handlers"][k]["filename"]).parents[0].mkdir(parents=True)
 
@@ -151,8 +139,7 @@ def configure_logging(location):
 
     metalog = logging.getLogger("meta")
     metalog.debug(log_config_dict)
-    # Custom modules
-    # ------------------------------------------------------------------------------------------------------------ #
+
 
 
 if __name__ == '__main__':

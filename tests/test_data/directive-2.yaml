@@ -1,0 +1,18 @@
+information: &info |
+  This file is an example file.
+Figure:
+  Functions:
+    uplots.plot\\1:
+      args: [ "%x%","%y1%" ]
+      kwargs:
+        main:
+          color: "cyan"
+          marker: "x"
+          ls: "--"
+    uplots.plot\\2:
+      args: [ "%x%","%y2%" ]
+      kwargs:
+        main:
+          color: "red"
+          linewidth: 5
+  Parameters: { }

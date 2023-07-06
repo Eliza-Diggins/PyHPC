@@ -11,9 +11,13 @@ The PyHPC System
 =================
 |yt-project| |linting| |coverage|
 
+Welcome to the ``PyHPC`` project. ``PyHPC`` provides direct interfacing between the ``CHPC``
+computational resources at the University of Utah and the user-side simulation resources necessary
+to successfully produce hydrodynamic / N-body simulations.
 
-Navigation
---------
+.. image:: ./images/render2.png
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
