@@ -313,7 +313,7 @@ if __name__ == '__main__':
         slurm_output = input("%sPlease enter the desired name of the .slurm file (EXCLUDE .slurm): " % fdbg_string)
         slurm_path = pt.Path(os.path.join(CONFIG["System"]["Directories"]["slurm_directory"], slurm_output))
         printer.print("%sGenerating the executable..." % fdbg_string, end="\n")
-        with open(os.path.join(pt.Path(__file__).parents[2], "PyHPC", "bin", "lib", "templates",
+        with open(os.path.join(pt.Path(__file__).parents[1], "PyHPC", "bin", "lib", "templates",
                                "image_slurm.template"),
                   "r") as template:
             write_slurm_file(template.read(), name=slurm_output, **{
