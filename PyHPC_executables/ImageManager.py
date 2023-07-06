@@ -324,6 +324,7 @@ if __name__ == '__main__':
                 "output_directory"   : output_directory,
                 "temp_dir"           : str(_temporary_directory),
                 "root_directory"     : str(pt.Path(__file__).parents[1]),
+                "output": f"output_{snap_choice:05d}",
                 "simulation_location": _selected_simulation_directory,
                 "slurm_out"        : os.path.join(CONFIG["System"]["Directories"]["reports_directory"], "slurm_outputs",
                                                   slurm_output, "parallel.log"),
