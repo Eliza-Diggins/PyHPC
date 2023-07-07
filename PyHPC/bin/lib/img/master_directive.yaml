@@ -1,14 +1,32 @@
 information: &info |
   This file is the master directive for plotting in the PyHPC project.
+#----------------------------------------------------------------------------------------------------------------------#
+#                                                                                                                      #
+# =============================================   STRUCTURES ==========================================================#
+#                                                                                                                      #
+#----------------------------------------------------------------------------------------------------------------------#
+# Each structure represents some common aspect of different plotting routines, from colorbars to loading in yt datasets.
+# Each structure contains *args,**kwargs, which are passed to the initialization function for that object at runtime,
+# as well as commands, which must correspond to methods on the resulting class's namespace.
 Structures:
-  Figure:
+  #
+  #-------------------------------- YT STRUCTURES ----------------------------------------------------------------------
+  #
+  yt_ds: &yt_ds # - This is the yt loading settings - #
+    args: []
+    kwargs: {}
+    commands: {}
+  #
+  #-------------------------------- MPL STRUCTURES ---------------------------------------------------------------------
+  #
+  Figure: # - This is the figure structure, which contains any functions to pass directly to the figure - #
     args: []
     kwargs: {}
     commands:
       set_size_inches:
         args: [[10,10]]
         kwargs: {}
-  Subplot:
+  Subplot: #- This is the subplot object, which we use to pass instructions to the particular axes of the plot.
     args: []
     kwargs: []
     commands:
@@ -24,10 +42,26 @@ Structures:
       set_xscale:
         args: ["linear"]
         kwargs: {}
+  AxesGrid: &AxesGrid
+    args:
+        - !!python/tuple [0.075, 0.075, 0.85, 0.85]
+    kwargs:
+      axes_pad: 1.0
+      label_mode: "1"
+      share_all: True
+      cbar_location: "right"
+      cbar_mode: "each"
+      cbar_size: "3%"
+      cbar_pad: "0%"
+#----------------------------------------------------------------------------------------------------------------------#
+#                                                                                                                      #
+# ============================================= ANNOTATIONS ===========================================================#
+#                                                                                                                      #
+#----------------------------------------------------------------------------------------------------------------------#
+# Annotations are yt components added to plots. These include adding text to a plot and including other things like
+# contours.
+#
 Annotations:
-  # Annotations are additional components to add onto certain plots. To see which annotations are included in a given
-  # plot, look at the inclusion of those kwargs.
-  #
   TimeStamp: &timestamp
     enabled: False
     command: "annotate_timestamp"
@@ -41,6 +75,48 @@ Annotations:
     command: "annotate_contour"
     args: ["%field%"]
     kwargs: {}
+  Arrow: &arrow
+    enabled: False
+    command: annotate_arrow
+    args: [!!python/tuple [0.5,0.5,0.5]]
+    kwargs:
+      coord_system: 'data'
+      length: 0.03 # arrow length
+      color: 'blue'
+  Quiver:
+    enabled: False
+    command: annotate_quiver
+    args:
+      - !!python/tuple ["gas","velocity_x"]
+      - !!python/tuple ["gas","velocity_y"]
+    kwargs:
+      field_c : !!python/tuple ["gas","temperature"]
+      scale: null
+      scale_units: null
+      normalize: False
+  Grid:
+    enabled: False
+    command: annotate_grids
+    args: []
+    kwargs:
+      alpha: 0.7
+  Cell:
+    enabled: False
+    command: annotate_cell_edges
+    args: []
+    kwargs:
+      line_width: 0.002
+      alpha: 1.0
+      color: 'black'
+
+#----------------------------------------------------------------------------------------------------------------------#
+#                                                                                                                      #
+# =============================================== FUNCTIONS ===========================================================#
+#                                                                                                                      #
+#----------------------------------------------------------------------------------------------------------------------#
+# Fuctions are the plotting functions accessible from the global namespace of plot.py.
+#
+#
 Functions: &functions
   uplots.plot:
     args: ["%x%","%y%"]
@@ -48,22 +124,105 @@ Functions: &functions
       main: {}
       special: {}
   uplots.projection_plot:
-    args: ["%path%",!!python/tuple ["gas","density"]]
+    args:
+        - "%path%"
+        - "z"
+        - !!python/tuple ["gas","density"]
+        - !!python/tuple [1,1] # (path,axis,field(s))
     kwargs:
+      #------- MAIN ---------#
       main:
-        axis: "z" # The direction of the projection.
-        width: !!python/tuple [ 1,"Mpc" ]
-        resolution: 2000
-      style:
-        cmap: "Blues"
-      special: {} # The special catagory is specifically for the axes object.
-      annotations:
+        # These are the main kwargs for projection plot #
+        center: "center" # The center of the plot.
+        width: !!python/tuple [ 1,"Mpc" ] # The width of the plot
+        axes_unit: "kpc" # The units on the axes
+        origin: null # The origin of the image.
+        max_level: null # The max level to render.
+        fontsize: null # The fontsize to render.
+        method: "integrate" # The method by which to project.
+        weight_field: null # The field on which to weight the projection if desired.
+        aspect: null # The aspect ratio of the resulting image.
+        buff_size: [1000,1000] # The buffer size of the plot (resolution).
+        moment: 1 # The moment. 2 will give projected std deviation.
+      #------- STYLE ---------# !! MANAGED MANUALLY
+      style: &projection_style
+        cmaps: ["Blues"]
+        background_colors: [null]
+
+      #------- SPECIAL ---------#
+      special: { } # The special catagory is specifically for the axes object.
+
+      #------- ANNOTATIONS ---------#
+      annotations: &projection_annotation
         timestamp:
           <<: *timestamp
         contour:
           <<: *contour
           args:
-          - !!python/tuple ["gas","temperature"]
+            - !!python/tuple [ "gas","temperature" ]
+      #------- COMMANDS ---------#
+      commands: &projection_commands
+        set_antialias:
+          use: [false]
+          args: [[true]]
+          kwargs: {}
+        set_log:
+          use: [false]
+          args: [[]]
+          kwargs:
+              log: [true]
+              linthresh: [null]
+
+        set_minorticks:
+          use: [false]
+          args: [[true]]
+          kwargs: {}
+        set_unit:
+          use: [false]
+          args: null
+          kwargs:
+            equivalency: null
+      yt_ds:
+        <<: *yt_ds
+      grid:
+        <<: *AxesGrid
+  uplots.slice_plot:
+    args:
+      - "%path%"
+      - "z"
+      - !!python/tuple [ "gas","density" ]
+      - !!python/tuple [ 1,1 ] # (path,axis,field(s))
+    kwargs:
+      #------- MAIN ---------#
+      main:
+        # These are the main kwargs for projection plot #
+        center: "center" # The center of the plot.
+        width: !!python/tuple [ 1,"Mpc" ] # The width of the plot
+        axes_unit: "kpc" # The units on the axes
+        origin: null # The origin of the image.
+        max_level: null # The max level to render.
+        fontsize: null # The fontsize to render.
+        aspect: null # The aspect ratio of the resulting image.
+        buff_size: [ 1000,1000 ] # The buffer size of the plot (resolution).
+      #------- STYLE ---------# !! MANAGED MANUALLY
+      style:
+        <<: *projection_style
+
+
+      #------- SPECIAL ---------#
+      special: { } # The special catagory is specifically for the axes object.
+
+      #------- ANNOTATIONS ---------#
+      annotations:
+        <<: *projection_annotation
+      #------- COMMANDS ---------#
+      commands:
+        <<: *projection_commands
+      grid:
+        <<: *AxesGrid
+      yt_ds:
+        <<: *yt_ds
+
 
 
 

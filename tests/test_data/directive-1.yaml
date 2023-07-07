@@ -3,17 +3,20 @@ information: &info |
 Figure:
   Functions:
     uplots.projection_plot:
-      args: [ "%path%",!!python/tuple ["gas","temperature"] ]
+      args: [ "%path%","z",!!python/tuple ["gas","temperature"] , !!python/tuple [1,1]]
       kwargs:
         main:
-          axis: "z"
-          cmap: "inferno"
           width: !!python/tuple [1,"Mpc"]
-          resolution: 2000
         annotations:
           timestamp:
             enabled: True
           contour:
             enabled: True
+        commands:
+          set_unit:
+            use: [false]
+            args: [["keV*cm"]]
+            kwargs:
+              equivalency: ["thermal"]
 
   Parameters: { }

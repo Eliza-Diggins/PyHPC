@@ -56,7 +56,7 @@ if ( $TYPE == 0 ) then
     echo "     Generated the outputs.txt file."
 
   echo "\n-- EXECUTION LOG --\n"
-  parallel --max-procs "$SLURM_NTASKS" --joblog "$SLURM_OUTPUT" "$SRUN $PYTHON  ./PyHPC_executables/sub-exec/build_image.py $TEMP_DIR/directive.yaml -o $OUTPUT_DIR/{}.png --path $SIMLOC/{}" :::: $TEMPDIR/outputs.txt
+  parallel --max-procs "$SLURM_NTASKS" --joblog "$SLURM_OUTPUT/parallel.lgo" "$SRUN $PYTHON  ./PyHPC_executables/sub-exec/build_image.py $TEMP_DIR/directive.yaml -o $OUTPUT_DIR/{}.png --path $SIMLOC/{}" :::: $TEMP_DIR/outputs.txt
 
 else
   echo "       TYPE=1: Single output image."

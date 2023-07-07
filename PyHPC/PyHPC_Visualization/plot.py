@@ -315,6 +315,7 @@ def generate_image(image_directive, **kwargs):
     return image_directive.figure
 
 def _parse_kwargs(dictionary,kwargs):
+
     _out = {}
     for k,v in dictionary.items():
         if isinstance(v,dict):
@@ -323,4 +324,7 @@ def _parse_kwargs(dictionary,kwargs):
             _out[k] = (v if str(v)[0] != "%" else kwargs[str(v).replace("%", "")])
 
     return _out
+
+
+
 
