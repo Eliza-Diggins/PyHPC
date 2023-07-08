@@ -8,9 +8,12 @@ Figure:
         main:
           width: !!python/tuple [1,"Mpc"]
         annotations:
-          timestamp:
+          TimeStamp:
             enabled: True
-          contour:
+          Contour:
+            enabled: True
+            args: [!!python/tuple ["gas","density"]]
+          Cell:
             enabled: True
         commands:
           set_unit:

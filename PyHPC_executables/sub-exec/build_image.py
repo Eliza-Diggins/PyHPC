@@ -61,19 +61,31 @@ if __name__ == '__main__':
 
     print("[PyHPC]:   (INFO) | Generating image...")
     try:
-        generate_image(plot_directive,**additional_kwargs)
+        dat = generate_image(plot_directive,**additional_kwargs)
     except Exception:
         modlog.exception("Failed to plot image.")
         print("[PyHPC]:   (ERROR) | FAILED. Exiting...")
         exit()
 
-    print("[PyHPC]:   (INFO) | Finished.")
-    print("[PyHPC]:   (INFO) | Saving to file at %s."%args.output)
-    if not os.path.exists(pt.Path(args.output).parents[0]):
-        pt.Path(args.output).parents[0].mkdir(parents=True)
-    plot_directive.figure.savefig(args.output)
+    if dat[0] == "normal":
+        print("[PyHPC]:   (INFO) | Finished.")
+        print("[PyHPC]:   (INFO) | Saving to file at %s."%args.output)
+        if not os.path.exists(pt.Path(args.output).parents[0]):
+            pt.Path(args.output).parents[0].mkdir(parents=True)
+        plot_directive.figure.savefig(args.output)
 
-    print("[PyHPC]:   (INFO) | Finished.")
+        print("[PyHPC]:   (INFO) | Finished.")
+    elif dat[0] == "volume_render":
+        print("[PyHPC]:   (INFO) | Finished.")
+        print("[PyHPC]:   (INFO) | Saving to file at %s." % args.output)
+        if not os.path.exists(pt.Path(args.output).parents[0]):
+            pt.Path(args.output).parents[0].mkdir(parents=True)
+        dat[1].save(args.output,sigma_clip=3.0)
+
+        print("[PyHPC]:   (INFO) | Finished.")
+    else:
+        raise ValueError("Unknown status from generate_image.")
+
     exit()
 
 

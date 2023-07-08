@@ -12,10 +12,42 @@ Structures:
   #
   #-------------------------------- YT STRUCTURES ----------------------------------------------------------------------
   #
+  # - Loading Data - #
   yt_ds: &yt_ds # - This is the yt loading settings - #
     args: []
     kwargs: {}
     commands: {}
+  # - Volume Rendering - #
+      #-- Transfer functions --#
+  TransferFunction: &transfer_function # This contains all of the details for generating a transfer function
+        #
+        # -- Transfer Function (Model) Directive
+        #
+        args:
+            - "discrete" #--> MODE specifies what type of transfer function to create.
+            - !!python/tuple [3e-31,5e-27] #--> TUPLE of the bounds on this transfer function.
+        kwargs:
+            main:
+                grey_opacity: true #-> This determines if low values are opaque or not. False will brighten things.
+                cmap: "inferno"
+                log: true
+                ramp_function: "linear" #(Optional)
+            layers:
+                #
+                # -- Layers are only important if ``mode == "continuous"``.
+                #
+                layer_i:
+                    position: 3e30 #where in the domain to position the layer.
+                    width: null #The width of the corresponding gaussian.
+                    color: "inferno" #(SEE NOTES)
+                layer_2: {}
+  Camera: &camera
+    args: []
+    kwargs:
+      lens: "perspective"
+    commands:
+      width: !!python/tuple [2000,"kpc"]
+
   #
   #-------------------------------- MPL STRUCTURES ---------------------------------------------------------------------
   #
@@ -61,7 +93,7 @@ Structures:
 # Annotations are yt components added to plots. These include adding text to a plot and including other things like
 # contours.
 #
-Annotations:
+Annotations: &annotations
   TimeStamp: &timestamp
     enabled: False
     command: "annotate_timestamp"
@@ -108,6 +140,12 @@ Annotations:
       line_width: 0.002
       alpha: 1.0
       color: 'black'
+  Streamline:
+    enabled: False
+    command: annotate_streamlines
+    args: [!!python/tuple ["gas","velocity_x"], !!python/tuple ["gas","velocity_y"]]
+    kwargs: {}
+
 
 #----------------------------------------------------------------------------------------------------------------------#
 #                                                                                                                      #
@@ -153,13 +191,8 @@ Functions: &functions
       special: { } # The special catagory is specifically for the axes object.
 
       #------- ANNOTATIONS ---------#
-      annotations: &projection_annotation
-        timestamp:
-          <<: *timestamp
-        contour:
-          <<: *contour
-          args:
-            - !!python/tuple [ "gas","temperature" ]
+      annotations: *annotations
+
       #------- COMMANDS ---------#
       commands: &projection_commands
         set_antialias:
@@ -213,8 +246,7 @@ Functions: &functions
       special: { } # The special catagory is specifically for the axes object.
 
       #------- ANNOTATIONS ---------#
-      annotations:
-        <<: *projection_annotation
+      annotations: *annotations
       #------- COMMANDS ---------#
       commands:
         <<: *projection_commands
@@ -222,6 +254,18 @@ Functions: &functions
         <<: *AxesGrid
       yt_ds:
         <<: *yt_ds
+  uplots.volume_render:
+    args: []
+    kwargs:
+      main: {}
+      yt_ds:
+        <<: *yt_ds
+      transfer_function:
+        <<: *transfer_function
+      camera:
+        <<: *camera
+
+
 
 
 

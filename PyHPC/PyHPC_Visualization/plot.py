@@ -7,12 +7,11 @@ import pathlib as pt
 import warnings
 
 import matplotlib.pyplot as plt
-import numpy as np
 import yaml
-import PyHPC.PyHPC_Visualization.uplots as uplots
+
 from PyHPC.PyHPC_Core.configuration import read_config
 from PyHPC.PyHPC_Core.errors import PyHPC_Error
-
+from PyHPC.PyHPC_Visualization import uplots
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
 # ------------------------------------------------------ Setup ----------------------------------------------------------#
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
@@ -139,18 +138,17 @@ class PlotDirective:
                 function_root = function_key
                 function_name = ""
 
-
-
             # - Adding kwargs - #
-            kwargs = self._get_kwargs(self._raw["Figure"]["Functions"][_left_over_function_key]["kwargs"],_mdir["Functions"][function_key]["kwargs"])
+            kwargs = self._get_kwargs(self._raw["Figure"]["Functions"][_left_over_function_key]["kwargs"],
+                                      _mdir["Functions"][function_key]["kwargs"])
 
             try:
                 if len(function_name):
-                    self.functions.append({getattr(globals()[function_root], function_name) :{
+                    self.functions.append({getattr(globals()[function_root], function_name): {
                         "args": function_val["args"], "kwargs": kwargs}})
 
                 else:
-                    self.functions.append({globals()[function_root] : {"args": function_val["args"], "kwargs": kwargs}})
+                    self.functions.append({globals()[function_root]: {"args": function_val["args"], "kwargs": kwargs}})
 
             except KeyError as err:
                 _errors.append(
@@ -159,6 +157,7 @@ class PlotDirective:
 
         if len(_errors):
             raise ValueError(_errors)
+
     # -------------------------------------------------------------------------------------------------------------------- #
     # Methods ============================================================================================================ #
     # -------------------------------------------------------------------------------------------------------------------- #
@@ -172,23 +171,24 @@ class PlotDirective:
 
         for method, vals in _mdir["Structures"]["Figure"]["commands"].items():
             if method in self._raw["Figure"]["Parameters"]:
-                _args, _kwargs = self._raw["Figure"]["Parameters"][method]["args"], self._raw["Figure"]["Parameters"][method]["kwargs"]
+                _args, _kwargs = self._raw["Figure"]["Parameters"][method]["args"], \
+                                 self._raw["Figure"]["Parameters"][method]["kwargs"]
             else:
-                _args,_kwargs = vals["args"],vals["kwargs"]
+                _args, _kwargs = vals["args"], vals["kwargs"]
             try:
                 getattr(self.figure, method)(*_args, **_kwargs)
             except AttributeError:
                 modlog.warning("Failed to identify figure attribute %s." % method)
 
-    def _get_kwargs(self,explicit_kwargs,master_kwargs):
+    def _get_kwargs(self, explicit_kwargs, master_kwargs):
         kwargs = explicit_kwargs
-        for k,v in master_kwargs.items():
-            if isinstance(v,dict) and k in explicit_kwargs:
+        for k, v in master_kwargs.items():
+            if isinstance(v, dict) and k in explicit_kwargs:
                 try:
-                    kwargs[k] = self._get_kwargs(explicit_kwargs[k],master_kwargs[k])
+                    kwargs[k] = self._get_kwargs(explicit_kwargs[k], master_kwargs[k])
                 except KeyError:
-                    raise ValueError("Failed to find %s in the master directive or the explicit directive."%k)
-            elif isinstance(v,dict) and k not in explicit_kwargs:
+                    raise ValueError("Failed to find %s in the master directive or the explicit directive." % k)
+            elif isinstance(v, dict) and k not in explicit_kwargs:
                 kwargs[k] = v
             else:
                 if k not in explicit_kwargs:
@@ -197,7 +197,7 @@ class PlotDirective:
                     kwargs[k] = explicit_kwargs[k]
         return kwargs
 
-    def get_all_special_entities(self,dictionary=None):
+    def get_all_special_entities(self, dictionary=None):
         """
         Returns all of the ``special`` kwargs present in the ``PlotDirective``.
 
@@ -210,18 +210,19 @@ class PlotDirective:
             dictionary = self._raw
 
         specials = []
-        for k,v in dictionary.items():
-            if isinstance(v,dict):
+        for k, v in dictionary.items():
+            if isinstance(v, dict):
                 specials += self.get_all_special_entities(dictionary=v)
-            elif isinstance(v,list):
+            elif isinstance(v, list):
                 specials += [i for i in v if i[0] == "%" and i[-1] == "%"]
             else:
-                if len(str(v)) and (str(v)[0] =="%" and str(v)[-1] == "%"):
+                if len(str(v)) and (str(v)[0] == "%" and str(v)[-1] == "%"):
                     specials += v
 
-        return list(set([i.replace("%","") for i in specials]))
+        return list(set([i.replace("%", "") for i in specials]))
 
-#-------------------------------------------------------------------------------------------------------------------- #
+
+# -------------------------------------------------------------------------------------------------------------------- #
 #  Functions ========================================================================================================= #
 # -------------------------------------------------------------------------------------------------------------------- #
 
@@ -245,8 +246,9 @@ def generate_image(image_directive, **kwargs):
 
     Returns
     -------
-    plt.Figure
-        The figure object.
+    tuple of str,plt.Figure
+        ``(status,figure)``.
+
 
     Examples
     --------
@@ -265,7 +267,7 @@ def generate_image(image_directive, **kwargs):
     >>> plot_directive = PlotDirective(os.path.join(pt.Path(__file__).parents[2],"tests","test_data","directive-2.yaml"))
     >>> x = np.linspace(0,2*np.pi,1000)
     >>> y1,y2 = np.sin(x),np.cos(x)
-    >>> fig = generate_image(plot_directive,x=x,y1=y1,y2=y2)
+    >>> fig = generate_image(plot_directive,x=x,y1=y1,y2=y2)[1]
     >>> pt.Path(os.path.join(pt.Path(__file__).parents[2],"tests","outputs")).mkdir(parents=True,exist_ok=True)
     >>> plt.savefig(os.path.join(pt.Path(__file__).parents[2],"tests","outputs","directive-2.png"))
 
@@ -288,7 +290,7 @@ def generate_image(image_directive, **kwargs):
     >>> plot_directive = PlotDirective(os.path.join(pt.Path(__file__).parents[2],"tests","test_data","directive-1.yaml"))
     >>> fig = generate_image(plot_directive,
     ...                      path=os.path.join(pt.Path(__file__).parents[2],"tests","test_core","output_00001"),
-    ...                      field = ("gas","temperature"))
+    ...                      field = ("gas","temperature"))[1]
     >>> plt.savefig(os.path.join(pt.Path(__file__).parents[2],"tests","outputs","directive-1.png"))
 
         .. figure:: ../../tests/outputs/directive-1.png
@@ -300,8 +302,9 @@ def generate_image(image_directive, **kwargs):
     modlog.debug("Generating image.")
     #  Reading information from the directive.
     # ----------------------------------------------------------------------------------------------------------------- #
-    for f in image_directive.functions:
-        modlog.debug("Generating function %s."%f)
+    if image_directive.functions[0] == "uplots.volume_render":
+        f = image_directive.functions[0]
+        modlog.debug("Generating function %s." % f)
         func = list(f.keys())[0]
         vals = f[func]
         if not "special" in vals["kwargs"]:
@@ -309,22 +312,30 @@ def generate_image(image_directive, **kwargs):
         vals["kwargs"]["special"]["figure"] = image_directive.figure
 
         _args = [i if (str(i)[0] != "%") else kwargs[str(i).replace("%", "")] for i in list(vals["args"])]
-        _kwargs = _parse_kwargs(vals["kwargs"],kwargs)
+        _kwargs = _parse_kwargs(vals["kwargs"], kwargs)
+        return "volume_render", func(*_args, **_kwargs)
+
+    for f in image_directive.functions:
+        modlog.debug("Generating function %s." % f)
+        func = list(f.keys())[0]
+        vals = f[func]
+        if not "special" in vals["kwargs"]:
+            vals["kwargs"]["special"] = {}
+        vals["kwargs"]["special"]["figure"] = image_directive.figure
+
+        _args = [i if (str(i)[0] != "%") else kwargs[str(i).replace("%", "")] for i in list(vals["args"])]
+        _kwargs = _parse_kwargs(vals["kwargs"], kwargs)
         func(*_args, **_kwargs)
 
-    return image_directive.figure
+    return "normal", image_directive.figure
 
-def _parse_kwargs(dictionary,kwargs):
 
+def _parse_kwargs(dictionary, kwargs):
     _out = {}
-    for k,v in dictionary.items():
-        if isinstance(v,dict):
-            _out[k] = _parse_kwargs(v,kwargs)
+    for k, v in dictionary.items():
+        if isinstance(v, dict):
+            _out[k] = _parse_kwargs(v, kwargs)
         else:
             _out[k] = (v if str(v)[0] != "%" else kwargs[str(v).replace("%", "")])
 
     return _out
-
-
-
-

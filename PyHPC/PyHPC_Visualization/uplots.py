@@ -13,7 +13,7 @@ from itertools import cycle, islice
 from PyHPC.PyHPC_Core.configuration import read_config
 import yaml
 import matplotlib.pyplot as plt
-from PyHPC.PyHPC_Visualization.utils import assert_kwargs
+from PyHPC.PyHPC_Visualization.utils import assert_kwargs,build_transfer_function
 import inspect
 from mpl_toolkits.axes_grid1 import AxesGrid
 
@@ -266,14 +266,35 @@ def slice_plot(path, axis, field,geo, **kwargs):
         plot.cax = grid.cbar_axes[i]
     px.render()
 
+def volume_render(path,**kwargs):
+    modlog.debug("Generating projection_plot of %s with field." % (path))
+    kwargs = assert_kwargs("uplots." + inspect.stack()[0][3], kwargs)
+    modlog.debug(kwargs)
+
+    #  Loading the dataset from yt loader
+    # ----------------------------------------------------------------------------------------------------------------- #
+    ds = yt.load(path, *kwargs["yt_ds"]["args"], **kwargs["yt_ds"]["kwargs"])
+
+    # Loading the commands being passed through.
+    for command, values in kwargs["yt_ds"]["commands"].items():
+        try:
+            getattr(ds, command)(*values["args"], **values["kwargs"])
+        except AttributeError:
+            modlog.exception("Failed to find command %s for yt data object." % command)
+
+    #  generating the scene
+    # ----------------------------------------------------------------------------------------------------------------- #
+    sc = yt.create_scene(ds,lens_type=kwargs["camera"]["lens"])
+
+    #  Managing Sources
+    # ----------------------------------------------------------------------------------------------------------------- #
+    source = sc[0]
+
+    source.tfh.tf = build_transfer_function(kwargs["transfer_function"])
+    source.tfh.grey_opacity = False
+
+    return sc
 
 
 if __name__ == '__main__':
-    figure = plt.figure()
-
-    projection_plot(os.path.join(pt.Path(__file__).parents[2], "tests", "test_core", "output_00001"),
-                    ("gas", "density"),
-                    main={"axis": "z"}, special={
-            "figure": figure})
-
-    plt.show()
+    volume_render(os.path.join(pt.Path(__file__).parents[2],"tests","test_core","output_00001"))

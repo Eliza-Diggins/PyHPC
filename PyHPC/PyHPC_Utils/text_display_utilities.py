@@ -459,7 +459,6 @@ class PrintRetainer:
         self.end = ""
 
     def print(self, msg, end="\n"):
-        modlog.debug(msg)
         self.string += msg + end
         print(msg, end=end)
         self.end = end
