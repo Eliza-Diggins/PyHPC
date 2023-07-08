@@ -116,7 +116,6 @@ class PlotDirective:
 
         #: functions associated with the plots. ``{subplot_id: {f1: {},f2:{},...}``.
         self.functions = []  #: initializing the self.functions dictionary.
-
         for function_key, function_val in self._raw["Figure"]["Functions"].items():
             # - Is the function actually in the master directive? - #
             _left_over_function_key = function_key
@@ -299,36 +298,35 @@ def generate_image(image_directive, **kwargs):
     """
     # Logging and Setup
     # ----------------------------------------------------------------------------------------------------------------- #
-    modlog.debug("Generating image.")
-    #  Reading information from the directive.
+    modlog.debug("Generating image from a directive...")
+
+    #  Selecting by directive type
     # ----------------------------------------------------------------------------------------------------------------- #
-    if image_directive.functions[0] == "uplots.volume_render":
+    modlog.debug("\tDetermining the directive's correct path.")
+    if list(image_directive._raw["Figure"]["Functions"].keys()) == ["uplots.volume_render"]:
+        modlog.debug("\t\tPATH=volume_render.")
         f = image_directive.functions[0]
-        modlog.debug("Generating function %s." % f)
         func = list(f.keys())[0]
         vals = f[func]
-        if not "special" in vals["kwargs"]:
-            vals["kwargs"]["special"] = {}
-        vals["kwargs"]["special"]["figure"] = image_directive.figure
 
         _args = [i if (str(i)[0] != "%") else kwargs[str(i).replace("%", "")] for i in list(vals["args"])]
         _kwargs = _parse_kwargs(vals["kwargs"], kwargs)
-        modlog.debug("Running a volume_render.")
         return "volume_render", func(*_args, **_kwargs)
+    else:
+        modlog.debug("\t\tPATH=STANDARD")
+        for f in image_directive.functions:
+            modlog.debug("Generating function %s." % f)
+            func = list(f.keys())[0]
+            vals = f[func]
+            if not "special" in vals["kwargs"]:
+                vals["kwargs"]["special"] = {}
+            vals["kwargs"]["special"]["figure"] = image_directive.figure
 
-    for f in image_directive.functions:
-        modlog.debug("Generating function %s." % f)
-        func = list(f.keys())[0]
-        vals = f[func]
-        if not "special" in vals["kwargs"]:
-            vals["kwargs"]["special"] = {}
-        vals["kwargs"]["special"]["figure"] = image_directive.figure
+            _args = [i if (str(i)[0] != "%") else kwargs[str(i).replace("%", "")] for i in list(vals["args"])]
+            _kwargs = _parse_kwargs(vals["kwargs"], kwargs)
+            func(*_args, **_kwargs)
 
-        _args = [i if (str(i)[0] != "%") else kwargs[str(i).replace("%", "")] for i in list(vals["args"])]
-        _kwargs = _parse_kwargs(vals["kwargs"], kwargs)
-        func(*_args, **_kwargs)
-
-    return "normal", image_directive.figure
+        return "normal", image_directive.figure
 
 
 def _parse_kwargs(dictionary, kwargs):

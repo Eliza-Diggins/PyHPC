@@ -70,6 +70,7 @@ if __name__ == '__main__':
         exit()
 
     if dat[0] == "normal":
+        print("[PyHPC]:   (INFO) | PATH=STANDARD")
         print("[PyHPC]:   (INFO) | Finished.")
         print("[PyHPC]:   (INFO) | Saving to file at %s."%args.output)
         if not os.path.exists(pt.Path(args.output).parents[0]):
@@ -78,7 +79,7 @@ if __name__ == '__main__':
 
         print("[PyHPC]:   (INFO) | Finished.")
     elif dat[0] == "volume_render":
-        modlog.debug("This is a volume_render.")
+        print("[PyHPC]:   (INFO) | PATH=VOLUME_RENDER")
         print("[PyHPC]:   (INFO) | Finished.")
         print("[PyHPC]:   (INFO) | Saving to file at %s." % args.output)
         if not os.path.exists(pt.Path(args.output).parents[0]):
