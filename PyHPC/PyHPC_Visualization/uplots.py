@@ -284,12 +284,12 @@ def volume_render(path,field,**kwargs):
 
     #  generating the scene
     # ----------------------------------------------------------------------------------------------------------------- #
-    sc = yt.create_scene(ds,lens_type=kwargs["camera"]["kwargs"]["lens"],profile_field=field)
+    sc = yt.create_scene(ds,lens_type=kwargs["camera"]["kwargs"]["lens"])
 
     #  Managing Sources
     # ----------------------------------------------------------------------------------------------------------------- #
     source = sc[0]
-
+    source.set_field(field)
     source.tfh.tf = build_transfer_function(kwargs["transfer_function"])
     source.tfh.grey_opacity = False
 
