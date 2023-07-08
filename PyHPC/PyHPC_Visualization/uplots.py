@@ -284,7 +284,7 @@ def volume_render(path,**kwargs):
 
     #  generating the scene
     # ----------------------------------------------------------------------------------------------------------------- #
-    sc = yt.create_scene(ds,lens_type=kwargs["camera"]["lens"])
+    sc = yt.create_scene(ds,lens_type=kwargs["camera"]["kwargs"]["lens"])
 
     #  Managing Sources
     # ----------------------------------------------------------------------------------------------------------------- #

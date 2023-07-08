@@ -255,7 +255,7 @@ Functions: &functions
       yt_ds:
         <<: *yt_ds
   uplots.volume_render:
-    args: []
+    args: ['%path%']
     kwargs:
       main: {}
       yt_ds:
