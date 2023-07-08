@@ -29,18 +29,19 @@ Structures:
         kwargs:
             main:
                 grey_opacity: true #-> This determines if low values are opaque or not. False will brighten things.
-                cmap: "inferno"
+                cmap: "cool"
                 log: true
                 ramp_function: "linear" #(Optional)
             layers:
                 #
                 # -- Layers are only important if ``mode == "continuous"``.
                 #
-                layer_i:
-                    position: 3e30 #where in the domain to position the layer.
-                    width: null #The width of the corresponding gaussian.
-                    color: "inferno" #(SEE NOTES)
+                layer_1: {}
                 layer_2: {}
+                layer_3: { }
+                layer_4: { }
+                layer_5: { }
+                layer_6: { }
   Camera: &camera
     args: []
     kwargs:
@@ -255,7 +256,7 @@ Functions: &functions
       yt_ds:
         <<: *yt_ds
   uplots.volume_render:
-    args: ['%path%']
+    args: ['%path%',!!python/tuple ["gas","density"]]
     kwargs:
       main: {}
       yt_ds:

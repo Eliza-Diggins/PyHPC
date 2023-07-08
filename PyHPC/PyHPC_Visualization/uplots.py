@@ -266,7 +266,7 @@ def slice_plot(path, axis, field,geo, **kwargs):
         plot.cax = grid.cbar_axes[i]
     px.render()
 
-def volume_render(path,**kwargs):
+def volume_render(path,field,**kwargs):
     modlog.debug("Generating projection_plot of %s with field." % (path))
     kwargs = assert_kwargs("uplots." + inspect.stack()[0][3], kwargs)
     modlog.debug(kwargs)
@@ -284,7 +284,7 @@ def volume_render(path,**kwargs):
 
     #  generating the scene
     # ----------------------------------------------------------------------------------------------------------------- #
-    sc = yt.create_scene(ds,lens_type=kwargs["camera"]["kwargs"]["lens"])
+    sc = yt.create_scene(ds,lens_type=kwargs["camera"]["kwargs"]["lens"],profile_field=field)
 
     #  Managing Sources
     # ----------------------------------------------------------------------------------------------------------------- #
