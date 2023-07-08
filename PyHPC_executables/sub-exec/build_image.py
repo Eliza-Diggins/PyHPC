@@ -15,6 +15,7 @@ import yaml
 import PyHPC.PyHPC_Visualization.uplots as uplots
 from PyHPC.PyHPC_Visualization.plot import PlotDirective,generate_image
 from PyHPC.PyHPC_Core.configuration import read_config
+from PyHPC.PyHPC_Core.log import configure_logging
 from PyHPC.PyHPC_Core.errors import PyHPC_Error
 
 # --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--#
@@ -33,6 +34,7 @@ if not CONFIG["System"]["Logging"]["warnings"]:
 if __name__ == '__main__':
     #  Debugging intro
     # ----------------------------------------------------------------------------------------------------------------- #
+    configure_logging(_filename)
     modlog.debug("Generating images.")
     print("[PyHPC]:   (INFO) | Generating image.")
     #  Loading command line arguments
