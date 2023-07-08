@@ -199,9 +199,8 @@ def slice_plot(path, axis, field,geo, **kwargs):
     """
     #  Logging and Debugging.
     # ----------------------------------------------------------------------------------------------------------------- #
-    modlog.debug("Generating projection_plot of %s with field %s." % (path, field))
+    modlog.debug("Generating slice_plot of %s with field %s." % (path, field))
     kwargs = assert_kwargs("uplots." + inspect.stack()[0][3], kwargs)
-    modlog.debug(kwargs)
 
     #  Loading the dataset from yt loader
     # ----------------------------------------------------------------------------------------------------------------- #
@@ -267,12 +266,12 @@ def slice_plot(path, axis, field,geo, **kwargs):
     px.render()
 
 def volume_render(path,field,**kwargs):
-    modlog.debug("Generating projection_plot of %s with field." % (path))
+    modlog.debug("Generating volume_render of %s with field %s." % (path,field))
     kwargs = assert_kwargs("uplots." + inspect.stack()[0][3], kwargs)
-    modlog.debug(kwargs)
 
     #  Loading the dataset from yt loader
     # ----------------------------------------------------------------------------------------------------------------- #
+    modlog.debug("Loading the dataset at %s."%path)
     ds = yt.load(path, *kwargs["yt_ds"]["args"], **kwargs["yt_ds"]["kwargs"])
 
     # Loading the commands being passed through.
@@ -281,16 +280,19 @@ def volume_render(path,field,**kwargs):
             getattr(ds, command)(*values["args"], **values["kwargs"])
         except AttributeError:
             modlog.exception("Failed to find command %s for yt data object." % command)
-
+    modlog.debug("\t[FINISHED]")
     #  generating the scene
     # ----------------------------------------------------------------------------------------------------------------- #
+    modlog.debug("Creating the scene.")
     sc = yt.create_scene(ds,lens_type=kwargs["camera"]["kwargs"]["lens"])
-
+    modlog.debug("\t[FINISHED]")
     #  Managing Sources
     # ----------------------------------------------------------------------------------------------------------------- #
     source = sc[0]
     source.set_field(field)
+    modlog.debug("Creating the transfer function.")
     source.tfh.tf = build_transfer_function(kwargs["transfer_function"])
+    modlog.debug("[FINISHED]")
     source.tfh.grey_opacity = False
 
     return sc

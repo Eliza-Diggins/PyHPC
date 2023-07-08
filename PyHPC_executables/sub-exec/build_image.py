@@ -78,10 +78,12 @@ if __name__ == '__main__':
 
         print("[PyHPC]:   (INFO) | Finished.")
     elif dat[0] == "volume_render":
+        modlog.debug("This is a volume_render.")
         print("[PyHPC]:   (INFO) | Finished.")
         print("[PyHPC]:   (INFO) | Saving to file at %s." % args.output)
         if not os.path.exists(pt.Path(args.output).parents[0]):
             pt.Path(args.output).parents[0].mkdir(parents=True)
+        dat[1].render()
         dat[1].save(args.output,sigma_clip=3.0)
 
         print("[PyHPC]:   (INFO) | Finished.")

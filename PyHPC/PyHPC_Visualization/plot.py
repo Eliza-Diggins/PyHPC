@@ -313,6 +313,7 @@ def generate_image(image_directive, **kwargs):
 
         _args = [i if (str(i)[0] != "%") else kwargs[str(i).replace("%", "")] for i in list(vals["args"])]
         _kwargs = _parse_kwargs(vals["kwargs"], kwargs)
+        modlog.debug("Running a volume_render.")
         return "volume_render", func(*_args, **_kwargs)
 
     for f in image_directive.functions:

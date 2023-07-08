@@ -222,7 +222,7 @@ def build_transfer_function(directive):
     """
     #  Logging and debugging
     # ----------------------------------------------------------------------------------------------------------------- #
-    modlog.debug(f"Initializing a TransferFunction object with mode {directive['args'][1]}.")
+    modlog.debug(f"Initializing a TransferFunction object with mode {directive['args'][0]}.")
 
     assert directive["args"][0] in ["continuous", "discrete"], "Specified mode was invalid."
     assert isinstance(directive["args"][1], (tuple, list)) and len(directive["args"][1]) == 2, "Bounds were invalid."
