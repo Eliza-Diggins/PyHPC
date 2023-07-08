@@ -297,4 +297,5 @@ def volume_render(path,field,**kwargs):
 
 
 if __name__ == '__main__':
-    volume_render(os.path.join(pt.Path(__file__).parents[2],"tests","test_core","output_00001"))
+    data = volume_render(os.path.join(pt.Path(__file__).parents[2],"tests","test_core","output_00001"),("gas","density"))
+    data.save(os.path.join(pt.Path(__file__).parents[2],"tests","outputs","render.png"))

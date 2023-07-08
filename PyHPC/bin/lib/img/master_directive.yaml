@@ -25,10 +25,10 @@ Structures:
         #
         args:
             - "discrete" #--> MODE specifies what type of transfer function to create.
-            - !!python/tuple [3e-31,5e-27] #--> TUPLE of the bounds on this transfer function.
+            - !!python/tuple [!!float 3e-31, !!float 5e-27] #--> TUPLE of the bounds on this transfer function.
         kwargs:
             grey_opacity: true #-> This determines if low values are opaque or not. False will brighten things.
-            cmap: "cool"
+            cmap: "cool_r"
             log: true
             ramp_function: "linear" #(Optional)
             layers:
