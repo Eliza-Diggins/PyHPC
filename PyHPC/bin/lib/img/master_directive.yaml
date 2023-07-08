@@ -27,11 +27,10 @@ Structures:
             - "discrete" #--> MODE specifies what type of transfer function to create.
             - !!python/tuple [3e-31,5e-27] #--> TUPLE of the bounds on this transfer function.
         kwargs:
-            main:
-                grey_opacity: true #-> This determines if low values are opaque or not. False will brighten things.
-                cmap: "cool"
-                log: true
-                ramp_function: "linear" #(Optional)
+            grey_opacity: true #-> This determines if low values are opaque or not. False will brighten things.
+            cmap: "cool"
+            log: true
+            ramp_function: "linear" #(Optional)
             layers:
                 #
                 # -- Layers are only important if ``mode == "continuous"``.
