@@ -17,7 +17,7 @@ The options are as follows:
 
   .. code-block:: commandline
 
-  python3 animate.py -o "/home/images/image_test" -f "/home/images_1" "/home/images_2"
+    python3 animate.py -o "/home/images/image_test" -f "/home/images_1" "/home/images_2"
 
   will produce 2 files: ``/home/images/image_test/images_1.mp4``, and ``/home/images/image_test/images_2.mp4``. If instead, a list
   of outputs is provided which is the same length as the list of files, then each file will be directly mapped to that
@@ -140,10 +140,10 @@ if __name__ == '__main__':
             continue
 
         #- Dealing with the output directory -#
-        if os.path.isdir(animation_directory):
+        if os.path.isdir(output_directory):
             output_path = os.path.join(output_directory,pt.Path(animation_directory).name+".mp4")
         else:
-            output_path = animation_directory
+            output_path = output_directory
 
         pt.Path(output_path).parents[0].mkdir(exist_ok=True,parents=True)
 
