@@ -116,7 +116,7 @@ def configure_logging(location):
             log_config_dict['handlers'][k]['filename'] = _path
             logging.debug(_path)
             if not os.path.exists(pt.Path(log_config_dict["handlers"][k]["filename"]).parents[0]):
-                pt.Path(log_config_dict["handlers"][k]["filename"]).parents[0].mkdir(parents=True)
+                pt.Path(log_config_dict["handlers"][k]["filename"]).parents[0].mkdir(parents=True,exist_ok=True)
 
     # Generating modules
     # ------------------------------------------------------------------------------------------------------------ #
@@ -133,7 +133,7 @@ def configure_logging(location):
             "formatter": "fileFormatter"
         }
         if not os.path.exists(pt.Path(log_config_dict["handlers"]["%s_handler" % mod]["filename"]).parents[0]):
-            pt.Path(log_config_dict["handlers"]["%s_handler" % mod]["filename"]).parents[0].mkdir(parents=True)
+            pt.Path(log_config_dict["handlers"]["%s_handler" % mod]["filename"]).parents[0].mkdir(parents=True,exist_ok=True)
 
     logging.config.dictConfig(log_config_dict)
 

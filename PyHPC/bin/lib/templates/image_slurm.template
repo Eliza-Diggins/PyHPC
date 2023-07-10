@@ -38,7 +38,7 @@ echo "     -Output Directory = $OUTPUT_DIR"
 cd $ROOT_DIR
 
 setenv OMP_NUM_THREADS 1
-setenv SRUN "srun --exclusive --ntasks 1"
+setenv SRUN "srun --exclusive --ntasks 1 --nnodes 1"
 #----------------------------------------------------#
 # Managing Core variables ===========================#
 #----------------------------------------------------#
